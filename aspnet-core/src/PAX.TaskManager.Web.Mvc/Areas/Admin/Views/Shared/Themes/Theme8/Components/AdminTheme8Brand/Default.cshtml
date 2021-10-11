@@ -1,0 +1,11 @@
+@using Abp.Runtime.Session
+@using PAX.TaskManager.Web.Areas.Admin.Models.Layout
+@using PAX.TaskManager.Web.Areas.Admin.Views.Shared.Components.AdminLogo
+@model HeaderViewModel
+@{
+    Layout = null;
+}
+
+<a href="@Url.Action("Index", "Home", new {area = string.Empty})" target="_blank" class="mr-20 brand-logo">
+    @await Component.InvokeAsync(typeof(AdminLogoViewComponent), new {logoSkin="dark", logoClass = "klogo-default max-h-35px"})
+</a>

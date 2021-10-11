@@ -1,0 +1,26 @@
+@using PAX.TaskManager.Web.Areas.Admin.Models.Common.Modals
+@using PAX.TaskManager.Authorization
+@model PAX.TaskManager.Web.Areas.Admin.Models.DynamicEntityProperty.CreateEntityDynamicPropertyViewModel
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Common/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(""))
+
+<div class="modal-body">
+    @if (IsGranted(AppPermissions.Pages_Administration_DynamicEntityProperties_Create))
+    {
+        <button id="CreateNewDynamicEntityProperty" class="btn btn-primary pull-right">
+            <i class="fa fa-plus"></i> @L("AddNewDynamicEntityProperty")
+        </button>
+    }
+    <div class="align-items-center">
+        <table class="table table-separate table-head-custom dataTable no-footer dtr-inline dt-responsive nowrap ManageDynamicEntityPropertiesTable">
+            <thead>
+            <tr>
+                <th class="w-100">@L("DynamicProperty")</th>
+                <th class="w-10px"></th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Common/Modals/_ModalFooterWithClose.cshtml")

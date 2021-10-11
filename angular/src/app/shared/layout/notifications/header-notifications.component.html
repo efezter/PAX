@@ -1,0 +1,76 @@
+<div dropdown class="topbar-item" data-toggle="dropdown" aria-expanded="true"
+     [dropup]="isDropup" container="{{isDropup ? null: 'body'}}">
+    <div dropdownToggle [class]="customStyle" id="notificationIcon">
+        <i class="flaticon-alert-2 unread-notification" *ngIf="unreadNotificationCount"></i>
+        <span class="label label-warning unread-notification-count" *ngIf="unreadNotificationCount">
+            {{unreadNotificationCount}}
+        </span>
+        <i class="flaticon-alarm" *ngIf="!unreadNotificationCount"></i>
+    </div>
+    <div *dropdownMenu
+         class="dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-sm dropdown-menu-lg">
+        <perfect-scrollbar>
+            <div class="d-flex flex-column pt-5 bgi-size-cover bgi-no-repeat rounded-top bg-primary"
+                 style="min-height: 70px;">
+                <h4 class="d-flex flex-center" style="align-items:center;justify-content: space-between;">
+                    <span class="ml-5">
+                        <span class="text-white">{{"Notifications" | localize}}</span>
+                        <span
+                            class="btn btn-text btn-white btn-sm font-weight-bold btn-font-md ml-2">{{unreadNotificationCount}}
+                            {{"New" | localize}}</span>
+                    </span>
+                    <a id="openNotificationSettingsModalLink" class="btn btn-md btn-icon btn-secondary mr-5"
+                       href="javascript:;"
+                       (click)="openNotificationSettingsModal()"><i class="flaticon2-gear"></i></a>
+                </h4>
+            </div>
+            <div>
+                <div class="navi navi-hover my-1 ps" data-scroll="true" data-height="300" data-mobile-height="200"
+                     style="height: 300px; overflow: hidden;">
+
+                    <a *ngFor="let notification of notifications" (click)="gotoUrl(notification.url)"
+                       [ngClass]="{'user-notification-item-clickable': notification.url,'user-notification-item-unread': notification.isUnread}"
+                       class="navi-item">
+                        <div class="navi-link">
+                            <div class="navi-icon mr-2">
+                                <i class="{{notification.icon}} {{notification.iconFontClass}} icon-lg"></i>
+                            </div>
+                            <div class="navi-text">
+                                <div class="font-weight-bold">
+                                    {{notification.text}}
+                                </div>
+                                <div class="text-muted">
+                                    {{notification.creationTime | luxonFromNow}}
+                                    <span *ngIf="notification.isUnread"
+                                          class="btn btn-link-success set-notification-as-read pull-right"
+                                          (click)="setNotificationAsRead(notification); $event.preventDefault(); $event.stopPropagation();">
+                                    {{"SetAsRead" | localize}}
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                    <hr style="border-top: 2px solid #f9f9f9;margin: 3px 20px;"/>
+                    </a>
+
+                    <span *ngIf="!notifications.length" class="notification-empty-text text-center  p-5">
+                        {{"ThereAreNoNotifications" | localize}}
+                    </span>
+                </div>
+                <hr *ngIf="notifications.length"/>
+                <div class="m-4 d-flex" style="align-items:center;justify-content: space-between;"
+                     *ngIf="notifications.length">
+                    <a href="javascript:;" class="btn btn-secondary col-md-6 col-xs-12"
+                       (click)="setAllNotificationsAsRead(); $event.preventDefault(); $event.stopPropagation();"
+                       id="setAllNotificationsAsReadLink"
+                       *ngIf="unreadNotificationCount">{{"SetAllAsRead" | localize}}</a>
+
+                    <a routerLink="notifications"
+                       [class.col-md-6]="unreadNotificationCount"
+                       [class.col-md-12]="!unreadNotificationCount"
+                       class="btn btn-primary col-xs-12">{{"SeeAllNotifications" | localize}}</a>
+
+                </div>
+            </div>
+        </perfect-scrollbar>
+    </div>
+</div>
