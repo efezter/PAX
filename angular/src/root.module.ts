@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppAuthService } from '@app/shared/common/auth/app-auth.service';
 import { AppConsts } from '@shared/AppConsts';
-import { TaskManagerCommonModule } from '@shared/common/common.module';
+import { NextCommonModule } from '@shared/common/common.module';
 import { AppSessionService } from '@shared/common/session/app-session.service';
 import { AppUiCustomizationService } from '@shared/common/ui/app-ui-customization.service';
 import { UrlHelper } from '@shared/helpers/UrlHelper';
@@ -76,10 +76,10 @@ export function appInitializerFactory(
 function initializeLocalForage() {
     localForage.config({
         driver: localForage.LOCALSTORAGE,
-        name: 'TaskManager',
+        name: 'Next',
         version: 1.0,
-        storeName: 'taskmanager_local_storage',
-        description: 'Cached data for TaskManager'
+        storeName: 'next_local_storage',
+        description: 'Cached data for Next'
     });
 }
 
@@ -238,7 +238,7 @@ function handleLogoutRequest(authService: AppAuthService) {
         BrowserModule,
         BrowserAnimationsModule,
         AppModule,
-        TaskManagerCommonModule.forRoot(),
+        NextCommonModule.forRoot(),
         ServiceProxyModule,
         HttpClientModule,
         RootRoutingModule,

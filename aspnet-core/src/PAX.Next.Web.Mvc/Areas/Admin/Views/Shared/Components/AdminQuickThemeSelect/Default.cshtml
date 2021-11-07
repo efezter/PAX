@@ -1,0 +1,11 @@
+@using Abp.Configuration
+@using PAX.Next.Configuration
+@model PAX.Next.Web.Areas.Admin.Models.Layout.QuickThemeSelectionViewModel
+@if (SettingManager.GetSettingValue<bool>(AppSettings.UserManagement.IsQuickThemeSelectEnabled))
+{
+    <div id="kt_demo_panel_toggle" class="topbar-item">
+        <div class="@Model.CssClass">
+            <i class="flaticon-interface-7"></i>
+        </div>
+    </div>
+}

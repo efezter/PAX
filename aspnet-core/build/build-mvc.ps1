@@ -3,8 +3,8 @@
 $buildFolder = (Get-Item -Path "./" -Verbose).FullName
 $slnFolder = Join-Path $buildFolder "../"
 $outputFolder = Join-Path $buildFolder "outputs"
-$webMvcFolder = Join-Path $slnFolder "src/PAX.TaskManager.Web.Mvc"
-$webPublicFolder = Join-Path $slnFolder "src/PAX.TaskManager.Web.Public"
+$webMvcFolder = Join-Path $slnFolder "src/PAX.Next.Web.Mvc"
+$webPublicFolder = Join-Path $slnFolder "src/PAX.Next.Web.Public"
 
 ## CLEAR ######################################################################
 
@@ -14,7 +14,7 @@ New-Item -Path $outputFolder -ItemType Directory
 ## RESTORE NUGET PACKAGES #####################################################
 
 Set-Location $slnFolder
-dotnet restore PAX.TaskManager.Web.sln
+dotnet restore PAX.Next.Web.sln
 
 ## PUBLISH WEB MVC PROJECT ####################################################
 
@@ -48,7 +48,7 @@ Remove-Item ("Dockerfile")
 Rename-Item -Path "Dockerfile.original" -NewName "Dockerfile"
 dotnet dev-certs https -v -ep aspnetzero-devcert-mvc.pfx -p 2825e4d9-5cef-4373-bed3-d7ebf59de216
 
-docker rmi paxtaskmanagerwebmvc -f
+docker rmi paxnextwebmvc -f
 docker compose -f docker-compose.yml build
 
 ## CREATE DOCKER IMAGES #######################################################
@@ -59,7 +59,7 @@ Remove-Item ("Dockerfile")
 Rename-Item -Path "Dockerfile.original" -NewName "Dockerfile"
 dotnet dev-certs https -v -ep aspnetzero-devcert-public.pfx -p b7ca126d-5085-47a0-8ac3-1b5971bd65a1
 
-docker rmi paxtaskmanagerwebpublic -f
+docker rmi paxnextwebpublic -f
 docker compose -f docker-compose.yml build
 
 ## FINALIZE ###################################################################

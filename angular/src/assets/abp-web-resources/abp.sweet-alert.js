@@ -10,7 +10,7 @@ var abp = abp || {};
         options = options || {};
         options.title = title;
         options.icon = type;
-        options.confirmButtonText = options.confirmButtonText || abp.localization.localize('Ok', 'TaskManager');
+        options.confirmButtonText = options.confirmButtonText || abp.localization.localize('Ok', 'Next');
 
         if (options.isHtml) {
             options.html = message;
@@ -40,11 +40,11 @@ var abp = abp || {};
 
     abp.message.confirm = function (message, title, callback, options) {
         options = options || {};
-        options.title = title ? title : abp.localization.localize('AreYouSure', 'TaskManager');
+        options.title = title ? title : abp.localization.localize('AreYouSure', 'Next');
         options.icon = 'warning';
 
-        options.confirmButtonText = options.confirmButtonText || abp.localization.localize('Yes', 'TaskManager');
-        options.cancelButtonText = options.cancelButtonText || abp.localization.localize('Cancel', 'TaskManager');
+        options.confirmButtonText = options.confirmButtonText || abp.localization.localize('Yes', 'Next');
+        options.cancelButtonText = options.cancelButtonText || abp.localization.localize('Cancel', 'Next');
         options.showCancelButton = true;
 
         if (options.isHtml) {

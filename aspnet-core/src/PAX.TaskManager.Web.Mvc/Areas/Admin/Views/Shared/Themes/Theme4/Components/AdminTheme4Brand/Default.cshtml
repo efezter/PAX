@@ -1,9 +1,0 @@
-@using PAX.TaskManager.Web.Areas.Admin.Models.Layout
-@using PAX.TaskManager.Web.Areas.Admin.Views.Shared.Components.AdminLogo
-@model HeaderViewModel
-@{
-    Layout = null;
-}
-<a href="@Url.Action("Index", "Home", new {area = string.Empty})" class="light brand-logo">
-    @await Component.InvokeAsync(typeof(AdminLogoViewComponent), new {LogoSkin = "dark-sm", logoClass = "max-h-30px"})
-</a>

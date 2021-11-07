@@ -122,7 +122,7 @@ export class UserNotificationHelper extends AppComponentBase {
         });
         if (Push.default.Permission.has()) {
             //Desktop notification
-            Push.default.create('TaskManager', {
+            Push.default.create('Next', {
                 body: this.format(userNotification).text,
                 icon: abp.appPath + 'assets/common/images/app-logo-on-dark-sm.svg',
                 timeout: 6000,

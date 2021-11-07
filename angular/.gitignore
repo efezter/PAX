@@ -38,10 +38,10 @@ package-lock.json
 Thumbs.db
 
 # VS files
-/TaskManager.AngularUI.csproj.user
+/Next.AngularUI.csproj.user
 project.lock.json
 Properties/launchSettings.json
-/PAX.TaskManager.AngularUI.xproj.user
+/PAX.Next.AngularUI.xproj.user
 /src/assets/common/styles/**/*.min.*
 
 src/assets/metronic/themes/**/css/*.min.css

@@ -3,8 +3,8 @@
 $buildFolder = (Get-Item -Path "./" -Verbose).FullName
 $slnFolder = Join-Path $buildFolder "../"
 $outputFolder = Join-Path $buildFolder "outputs"
-$webHostFolder = Join-Path $slnFolder "src/PAX.TaskManager.Web.Host"
-$webPublicFolder = Join-Path $slnFolder "src/PAX.TaskManager.Web.Public"
+$webHostFolder = Join-Path $slnFolder "src/PAX.Next.Web.Host"
+$webPublicFolder = Join-Path $slnFolder "src/PAX.Next.Web.Public"
 $ngFolder = Join-Path $buildFolder "../../angular"
 
 ## CLEAR ######################################################################
@@ -60,7 +60,7 @@ Remove-Item ("Dockerfile")
 Rename-Item -Path "Dockerfile.original" -NewName "Dockerfile"
 dotnet dev-certs https -v -ep aspnetzero-devcert-host.pfx -p 2825e4d9-5cef-4373-bed3-d7ebf59de216
 
-docker rmi paxtaskmanagerwebhost -f
+docker rmi paxnextwebhost -f
 docker compose -f docker-compose.yml build
 
 # Public
@@ -70,13 +70,13 @@ Remove-Item ("Dockerfile")
 Rename-Item -Path "Dockerfile.original" -NewName "Dockerfile"
 dotnet dev-certs https -v -ep aspnetzero-devcert-public.pfx -p b7ca126d-5085-47a0-8ac3-1b5971bd65a1
 
-docker rmi paxtaskmanagerwebpublic -f
+docker rmi paxnextwebpublic -f
 docker compose -f docker-compose.yml build
 
 # Angular UI
 Set-Location (Join-Path $outputFolder "ng")
 
-docker rmi paxtaskmanagerwebangular -f
+docker rmi paxnextwebangular -f
 docker compose -f docker-compose.yml build
 
 ## FINALIZE ###################################################################

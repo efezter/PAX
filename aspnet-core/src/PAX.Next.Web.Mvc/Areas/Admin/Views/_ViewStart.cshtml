@@ -1,0 +1,5 @@
+@using PAX.Next.UiCustomization.Dto
+@{
+    UiCustomizationSettingsDto theme = await GetTheme();
+    Layout = "~/Areas/Admin/Views/Layout/" + theme.BaseSettings.Theme + "/_Layout.cshtml";
+}

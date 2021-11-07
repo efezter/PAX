@@ -1,6 +1,6 @@
 import { browser, element, by, protractor, ExpectedConditions as EC } from 'protractor';
 
-export class TaskManagerPage {
+export class NextPage {
     navigateTo() {
         return browser.get('/');
     }

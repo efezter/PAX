@@ -26,7 +26,7 @@ export class RolesComponent extends AppComponentBase implements OnInit {
     @ViewChild('dataTable', {static: true}) dataTable: Table;
     @ViewChild('permissionFilterTreeModal', {static: true}) permissionFilterTreeModal: PermissionTreeModalComponent;
 
-    _entityTypeFullName = 'PAX.TaskManager.Authorization.Roles.Role';
+    _entityTypeFullName = 'PAX.Next.Authorization.Roles.Role';
     entityHistoryEnabled = false;
 
     constructor(

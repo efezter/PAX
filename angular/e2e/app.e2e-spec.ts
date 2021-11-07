@@ -1,11 +1,11 @@
-import { TaskManagerPage } from './app.po';
+import { NextPage } from './app.po';
 import { browser, element, by } from 'protractor';
 
 describe('abp-zero-template App', () => {
-    let page: TaskManagerPage;
+    let page: NextPage;
 
     beforeEach(() => {
-        page = new TaskManagerPage();
+        page = new NextPage();
 
         browser.driver.manage().deleteAllCookies();
 

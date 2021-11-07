@@ -1,0 +1,9 @@
+@using PAX.Next.Web.Areas.Admin.Models.Common
+@model IPermissionsEditViewModel
+
+<div class="form-group">
+    <input id="PermissionTreeFilter" type="text" class="form-control" placeholder="@L("SearchWithThreeDot")">
+</div>
+<div class="permission-tree">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Common/_PermissionTreeItem.cshtml", new PermissionTreeItemModel(Model, null))
+</div>

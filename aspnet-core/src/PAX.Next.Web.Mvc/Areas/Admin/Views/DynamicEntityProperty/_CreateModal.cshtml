@@ -1,0 +1,14 @@
+@using PAX.Next.Web.Areas.Admin.Models.Common.Modals
+@model PAX.Next.Web.Areas.Admin.Models.DynamicEntityProperty.CreateEntityDynamicPropertyViewModel
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Common/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel(L("AssignDynamicPropertiesToEntity")))
+
+<div class="modal-body">
+    <input type="hidden" id="edp-create-modal-entityFullName" value="@Model.EntityFullName">
+    <div class="form-group col-12">
+        <label for="edp-create-modal-dynamicPropertyId">@L("Property")</label>
+        @Html.DropDownList("edp-create-modal-dynamicPropertyId", new SelectList(Model.DynamicProperties, "Id", "DisplayName"), L("SelectADynamicProperty"), new {@class = "form-control"})
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Common/Modals/_ModalFooterWithSaveAndCancel.cshtml")

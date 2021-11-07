@@ -10,7 +10,7 @@ import { CookieConsentService } from './session/cookie-consent.service';
         CommonModule
     ]
 })
-export class TaskManagerCommonModule {
+export class NextCommonModule {
     static forRoot(): ModuleWithProviders<CommonModule> {
         return {
             ngModule: CommonModule,

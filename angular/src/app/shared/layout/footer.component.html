@@ -2,7 +2,7 @@
 	<div [class]="containerClass + ' d-flex flex-column flex-md-row align-items-center justify-content-between'">
 		<div class="text-dark order-2 order-md-1">
 			<span class="text-muted font-weight-bold mr-2">
-                TaskManager <span
+                Next <span
                     *ngIf="appSession.tenant && appSession.tenant.edition && appSession.tenant.edition.displayName">
                     {{appSession.tenant.edition.displayName}}</span> | API: v{{appSession.application.version}} | Client: v{{webAppGuiVersion}}
                 [{{releaseDate}}]

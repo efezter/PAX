@@ -17,7 +17,7 @@ export class AppConsts {
     };
 
     static readonly localization = {
-        defaultLocalizationSourceName: 'TaskManager'
+        defaultLocalizationSourceName: 'Next'
     };
 
     static readonly authorization = {

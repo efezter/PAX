@@ -35,7 +35,7 @@ export class TenantsComponent extends AppComponentBase implements OnInit {
     subscriptionDateRange: DateTime[] = [this._dateTimeService.getStartOfDay(), this._dateTimeService.getEndOfDayPlusDays(30)];
     creationDateRange: DateTime[] = [this._dateTimeService.getStartOfDay(), this._dateTimeService.getEndOfDay()];
 
-    _entityTypeFullName = 'PAX.TaskManager.MultiTenancy.Tenant';
+    _entityTypeFullName = 'PAX.Next.MultiTenancy.Tenant';
     entityHistoryEnabled = false;
 
     filters: {
