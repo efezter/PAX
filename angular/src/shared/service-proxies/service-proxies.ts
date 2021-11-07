@@ -9484,6 +9484,7 @@ export class SessionServiceProxy {
 }
 
 @Injectable()
+<<<<<<< Updated upstream
 export class SeveritiesServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -9889,6 +9890,8 @@ export class SeveritiesServiceProxy {
 }
 
 @Injectable()
+=======
+>>>>>>> Stashed changes
 export class StripePaymentServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -16131,6 +16134,7 @@ export interface ICreateInvoiceDto {
     subscriptionPaymentId: number;
 }
 
+<<<<<<< Updated upstream
 export class CreateOrEditSeverityDto implements ICreateOrEditSeverityDto {
     name!: string;
     order!: number;
@@ -16175,6 +16179,8 @@ export interface ICreateOrEditSeverityDto {
     id: number | undefined;
 }
 
+=======
+>>>>>>> Stashed changes
 export class CreateOrganizationUnitInput implements ICreateOrganizationUnitInput {
     parentId!: number | undefined;
     displayName!: string;
@@ -20300,6 +20306,7 @@ export interface IGetSalesSummaryOutput {
     salesSummary: SalesSummaryData[] | undefined;
 }
 
+<<<<<<< Updated upstream
 export class GetSeverityForEditOutput implements IGetSeverityForEditOutput {
     severity!: CreateOrEditSeverityDto;
 
@@ -20372,6 +20379,8 @@ export interface IGetSeverityForViewDto {
     severity: SeverityDto;
 }
 
+=======
+>>>>>>> Stashed changes
 export class GetTenantFeaturesEditOutput implements IGetTenantFeaturesEditOutput {
     featureValues!: NameValueDto[] | undefined;
     features!: FlatFeatureDto[] | undefined;
@@ -23603,6 +23612,7 @@ export interface IPagedResultDtoOfGetAllSendAttemptsOutput {
     items: GetAllSendAttemptsOutput[] | undefined;
 }
 
+<<<<<<< Updated upstream
 export class PagedResultDtoOfGetSeverityForViewDto implements IPagedResultDtoOfGetSeverityForViewDto {
     totalCount!: number;
     items!: GetSeverityForViewDto[] | undefined;
@@ -23651,6 +23661,8 @@ export interface IPagedResultDtoOfGetSeverityForViewDto {
     items: GetSeverityForViewDto[] | undefined;
 }
 
+=======
+>>>>>>> Stashed changes
 export class PagedResultDtoOfLanguageTextListDto implements IPagedResultDtoOfLanguageTextListDto {
     totalCount!: number;
     items!: LanguageTextListDto[] | undefined;
@@ -25439,6 +25451,7 @@ export enum SettingScopes {
     All = 7,
 }
 
+<<<<<<< Updated upstream
 export class SeverityDto implements ISeverityDto {
     name!: string | undefined;
     order!: number;
@@ -25487,6 +25500,8 @@ export interface ISeverityDto {
     id: number;
 }
 
+=======
+>>>>>>> Stashed changes
 export class StringOutput implements IStringOutput {
     output!: string | undefined;
 
