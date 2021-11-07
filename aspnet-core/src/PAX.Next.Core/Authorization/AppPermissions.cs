@@ -1,4 +1,4 @@
-namespace PAX.Next.Authorization
+﻿namespace PAX.Next.Authorization
 {
     /// <summary>
     /// Defines string constants for application's permission names.
@@ -6,6 +6,11 @@ namespace PAX.Next.Authorization
     /// </summary>
     public static class AppPermissions
     {
+        public const string Pages_Severities = "Pages.Severities";
+        public const string Pages_Severities_Create = "Pages.Severities.Create";
+        public const string Pages_Severities_Edit = "Pages.Severities.Edit";
+        public const string Pages_Severities_Delete = "Pages.Severities.Delete";
+
         //COMMON PERMISSIONS (FOR BOTH OF TENANTS AND HOST)
 
         public const string Pages = "Pages";

@@ -1,0 +1,70 @@
+﻿<div
+    bsModal
+    #createOrEditModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="createOrEditModal"
+    aria-hidden="true"
+    [config]="{ backdrop: 'static' }"
+>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #severityForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="severity.id">{{ l('EditSeverity') }}</span>
+                        <span *ngIf="!severity.id">{{ l('CreateNewSeverity') }}</span>
+                    </h4>
+                    <button type="button" class="close" (click)="close()" aria-label="Close" [disabled]="saving">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="Severity_Name">{{ l('Name') }} *</label>
+                        <input
+                            type="text"
+                            #Severity_Name="ngModel"
+                            id="Severity_Name"
+                            class="form-control"
+                            [(ngModel)]="severity.name"
+                            name="Name"
+                            minlength="1"
+                            maxlength="25"
+                            required
+                        />
+                        <validation-messages [formCtrl]="Severity_Name"></validation-messages>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Severity_Order">{{ l('Order') }}</label>
+                        <input
+                            type="number"
+                            #Severity_Order="ngModel"
+                            id="Severity_Order"
+                            class="form-control"
+                            [(ngModel)]="severity.order"
+                            name="Order"
+                        />
+                        <validation-messages [formCtrl]="Severity_Order"></validation-messages>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
+                        {{ l('Cancel') }}
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary blue"
+                        [disabled]="!severityForm.form.valid"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i> <span>{{ l('Save') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

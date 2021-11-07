@@ -232,7 +232,17 @@
             "placeholder": "{{Form_Class_Here}}",
             "condition": "{{Project_Version_Here}} >= 090000",
             "content": "form"
-        }
+        },
+        {
+            "placeholder": "{{Seperator_Div_Here}}",
+            "condition": "{{Project_Version_Here}} < 090000",
+            "content": "<div class=\"kt-separator kt-separator--border-dashed\"></div>"
+        },
+        {
+            "placeholder": "{{Seperator_Div_Here}}",
+            "condition": "{{Project_Version_Here}} >= 090000",
+            "content": "<div class=\"separator separator-dashed\"></div>"
+        },
 	],
 "navigationPropertyOneToManyTableTemplates": [
         {

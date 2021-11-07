@@ -1,4 +1,4 @@
-@using {{Namespace_Here}}.Authorization
+﻿@using {{Namespace_Here}}.Authorization
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Models.{{Entity_Name_Plural_Here}}
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Startup
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Models.Common.Modals
@@ -19,7 +19,7 @@
             <div class="{{Form_Class_Here}}">
                 <div class="row align-items-center mb-4">
                     <div class="col-xl-12">
-                        <div class="kt-group align-items-center">
+                        <div class="{{Input_Group_Here}} align-items-center">
                             <div class="input-group">
                                 <input type="text" id="{{NP_Foreign_Entity_Name_Here}}TableFilter" class="form-control m-input" placeholder="@L("SearchWithThreeDot")" value="@Model.FilterText">
                                 <span class="input-group-btn">

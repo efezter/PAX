@@ -50,6 +50,28 @@
 					"
 					},
 					{
+					"type" : "file",
+					"content" : "
+                                <div class=\"form-group\">
+                                    <label for=\"{{Entity_Name_Here}}_{{Property_Name_Here}}\">{{ l(\"{{Property_Name_Here}}\") }}</label>
+                                    <input type=\"file\" class=\"form-control\" id=\"{{Entity_Name_Here}}_{{Property_Name_Here}}\" name=\"{{Entity_Name_Here}}_{{Property_Name_Here}}\" (change)=\"onSelect{{Property_Name_Here}}File($event)\" [accept]=\"{{property_Name_Here}}FileAcceptedTypes\"/>
+                                    <div *ngIf=\"{{property_Name_Here}}FileName\" style=\"background-color:#e5e5e5; padding:5px\">
+                                        <span class=\"font-weight-bold\">{{\'CurrentFile\' |localize}} :</span>
+                                        <div class=\"alert alert-custom alert-white alert-bold m-1\" role=\"alert\">
+                                            <div class=\"alert-text\"> 
+                                                <a href=\"{{getDownloadUrl({{entity_Name_Here}}.{{property_Name_Here}})}}\" target=\"_blank\">{{{{property_Name_Here}}FileName}}</a>
+                                            </div>
+                                            <div class=\"alert-close\">
+                                                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">
+                                                    <span aria-hidden=\"true\" (click)=\"remove{{Property_Name_Here}}File()\"><i class=\"la la-close fa-1x\"></i></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>  
+                                </div>
+					"
+					},
+					{
 					"type" : "default",
 					"content" : "
 								<div class=\"form-group\">

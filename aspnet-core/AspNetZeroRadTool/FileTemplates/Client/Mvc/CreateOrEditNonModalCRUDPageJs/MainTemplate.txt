@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     $(function () {
         var _{{entity_Name_Plural_Here}}Service = abp.services.app.{{entity_Name_Plural_Here}};
 

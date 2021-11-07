@@ -1,4 +1,4 @@
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using System;
 
 namespace {{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.Dtos

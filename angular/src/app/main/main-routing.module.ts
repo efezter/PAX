@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+﻿import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
@@ -7,6 +7,13 @@ import { RouterModule } from '@angular/router';
             {
                 path: '',
                 children: [
+                    
+                    {
+                        path: 'taskManager/severities',
+                        loadChildren: () => import('./taskManager/severities/severity.module').then(m => m.SeverityModule),
+                        data: { permission: 'Pages.Severities' }
+                    },
+                
                     {
                         path: 'dashboard',
                         loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),

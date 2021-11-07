@@ -1,4 +1,4 @@
-@using {{Namespace_Here}}.Authorization
+﻿@using {{Namespace_Here}}.Authorization
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Models.{{Entity_Name_Plural_Here}}
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Startup
 @model {{Entity_Name_Plural_Here}}ViewModel
@@ -31,7 +31,7 @@
 			</div>
                 <div id="AdvacedAuditFiltersArea" style="display: none" class="row mb-4">
                     <div class="col-md-12">
-						<div class="kt-separator kt-separator--border-dashed"></div>
+						{{Seperator_Div_Here}}
 					</div>
 {{Property_Filter_Template_Here}}{{NP_Filter_Template_Here}}
                 </div>
