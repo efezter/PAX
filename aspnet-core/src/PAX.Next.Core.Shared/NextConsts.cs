@@ -6,7 +6,7 @@ namespace PAX.Next
 
         public const string ConnectionStringName = "Default";
 
-        public const bool MultiTenancyEnabled = False;
+        public const bool MultiTenancyEnabled = false;
 
         public const bool AllowTenantsToChangeEmailSettings = false;
 

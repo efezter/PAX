@@ -1,8 +1,8 @@
 {
   "CompanyName": "PAX",
   "ProjectName": "Next",
-  "ProjectType": "ProjectType",
-  "ProjectVersion":"ProjectVersion",
+  "ProjectType": "Angular",
+  "ProjectVersion":"10.3.0",
   "ApplicationAreaName": "Admin",
   "LicenseCode": "LicenseCodePlaceHolderToReplace",
   "AngularSrcPath": "\\..\\..\\angular\\src\\",
