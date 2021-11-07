@@ -1,6 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="TaskManager">Task manager</text>
+  <texts>    <text name="TaskStatus">Task status</text>
+    <text name="PAX.Next.TaskManager.TaskStatus">TaskStatus</text>
+    <text name="TaskStatusesHeaderInfo">Task statuses header info</text>
+    <text name="CreateNewTaskStatus">Create new task status</text>
+    <text name="EditTaskStatus">Edit task status</text>
+    <text name="DeleteTaskStatus">Delete task status</text>
+    <text name="TaskStatuses">Task statuses</text>
+    <text name="TaskManager">Task manager</text>
     <text name="PAX.Next.TaskManager.Severity">Severity</text>
     <text name="Order">Order</text>
     <text name="InsertedDate">Inserted date</text>

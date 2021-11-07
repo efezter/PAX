@@ -140,7 +140,8 @@ import { SubheaderModule } from './shared/common/sub-header/subheader.module';
         SessionTimeoutModalComponent,
         SessionTimeoutComponent,
         MenuSearchBarComponent,
-        ActiveDelegatedUsersComboComponent
+        ActiveDelegatedUsersComboComponent,
+        
     ],
     imports: [
         CommonModule,

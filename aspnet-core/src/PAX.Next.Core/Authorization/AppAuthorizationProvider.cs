@@ -30,6 +30,11 @@ namespace PAX.Next.Authorization
 
             var pages = context.GetPermissionOrNull(AppPermissions.Pages) ?? context.CreatePermission(AppPermissions.Pages, L("Pages"));
 
+            var taskStatuses = pages.CreateChildPermission(AppPermissions.Pages_TaskStatuses, L("TaskStatuses"));
+            taskStatuses.CreateChildPermission(AppPermissions.Pages_TaskStatuses_Create, L("CreateNewTaskStatus"));
+            taskStatuses.CreateChildPermission(AppPermissions.Pages_TaskStatuses_Edit, L("EditTaskStatus"));
+            taskStatuses.CreateChildPermission(AppPermissions.Pages_TaskStatuses_Delete, L("DeleteTaskStatus"));
+
             var severities = pages.CreateChildPermission(AppPermissions.Pages_Severities, L("Severities"));
             severities.CreateChildPermission(AppPermissions.Pages_Severities_Create, L("CreateNewSeverity"));
             severities.CreateChildPermission(AppPermissions.Pages_Severities_Edit, L("EditSeverity"));

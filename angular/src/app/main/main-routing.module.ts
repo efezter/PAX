@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+﻿import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
@@ -7,6 +7,13 @@ import { RouterModule } from '@angular/router';
             {
                 path: '',
                 children: [
+                    
+                    {
+                        path: 'taskManager/taskStatuses',
+                        loadChildren: () => import('./taskManager/taskStatuses/taskStatus.module').then(m => m.TaskStatusModule),
+                        data: { permission: 'Pages.TaskStatuses' }
+                    },
+                
                     
                     {
                         path: 'taskManager/severities',

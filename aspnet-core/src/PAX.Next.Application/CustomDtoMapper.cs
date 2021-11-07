@@ -50,6 +50,8 @@ namespace PAX.Next
     {
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
+            configuration.CreateMap<CreateOrEditTaskStatusDto, TaskStatus>().ReverseMap();
+            configuration.CreateMap<TaskStatusDto, TaskStatus>().ReverseMap();
             configuration.CreateMap<CreateOrEditSeverityDto, Severity>().ReverseMap();
             configuration.CreateMap<SeverityDto, Severity>().ReverseMap();
             //Inputs

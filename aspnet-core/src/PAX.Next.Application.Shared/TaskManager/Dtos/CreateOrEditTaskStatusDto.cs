@@ -1,0 +1,17 @@
+﻿using System;
+using Abp.Application.Services.Dto;
+using System.ComponentModel.DataAnnotations;
+
+namespace PAX.Next.TaskManager.Dtos
+{
+    public class CreateOrEditTaskStatusDto : EntityDto<int?>
+    {
+
+        [Required]
+        [StringLength(TaskStatusConsts.MaxNameLength, MinimumLength = TaskStatusConsts.MinNameLength)]
+        public string Name { get; set; }
+
+        public string IconUrl { get; set; }
+
+    }
+}
