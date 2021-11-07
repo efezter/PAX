@@ -1,6 +1,24 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>
+  <texts>    <text name="TaskManager">Task manager</text>
+    <text name="PAX.Next.TaskManager.Severity">Severity</text>
+    <text name="Order">Order</text>
+    <text name="InsertedDate">Inserted date</text>
+    <text name="SeveritiesHeaderInfo">Severities header info</text>
+    <text name="CreateNewSeverity">Create new severity</text>
+    <text name="EditSeverity">Edit severity</text>
+    <text name="DeleteSeverity">Delete severity</text>
+    <text name="Severities">Severities</text>
+    <text name="{0}IsRequired">{0} is required.</text>
+    <text name="View">View</text>
+    <text name="Details">Details</text>
+    <text name="Pick">Pick</text>
+    <text name="True">True</text>
+    <text name="False">False</text>
+    <text name="MinValue">Min</text>
+    <text name="MaxValue">Max</text>
+    <text name="InsertedDateRange">Inserted date range</text>
+
     <text name="HomePage">Home page</text>
     <text name="AboutUs">About us</text>
     <text name="Administration">Administration</text>

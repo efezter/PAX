@@ -1,4 +1,4 @@
-<div [@routerTransition]>
+﻿<div [@routerTransition]>
   {{Content_Class_After_Metronic_V606}}
   {{Content_Class_After_Metronic_V90}}
   {{Page_Header_Here}} 

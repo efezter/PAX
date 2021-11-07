@@ -1,4 +1,4 @@
-{{Enum_Using_Looped_Template_Here}}
+﻿{{Enum_Using_Looped_Template_Here}}
 @using System.Globalization
 @using {{Namespace_Here}}.Authorization
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Models.{{Entity_Name_Plural_Here}}

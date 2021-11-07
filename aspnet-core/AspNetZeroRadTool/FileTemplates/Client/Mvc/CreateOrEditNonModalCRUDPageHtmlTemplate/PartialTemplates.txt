@@ -46,6 +46,30 @@
 					"
 					},
 					{
+					"type" : "file",
+					"content" : "
+								<div class=\"form-group\">
+									<label for=\"{{Entity_Name_Here}}_{{Property_Name_Here}}\">@L(\"{{Property_Name_Here}}\")</label>
+									<input type=\"file\" name=\"{{Entity_Name_Here}}\" id=\"{{Entity_Name_Here}}_{{Property_Name_Here}}\" accept=\"@Model.{{Property_Name_Here}}FileAcceptedTypes\"/>                                    
+                                    <div id=\"div_current_file\" style=\"background-color: #e5e5e5; padding: 5px @(Model.{{Property_Name_Here}}FileName.IsNullOrEmpty()?\";display:none\":\"\")\">
+                                        <span class=\"font-weight-bold\">@L(\"CurrentFile\") :</span>
+                                        <div class=\"alert alert-custom alert-white alert-bold m-1\" role=\"alert\">
+                                            <div class=\"alert-text\">
+                                                <a href=\"@(\"/File/DownloadBinaryFile?id=\" + Model.{{Entity_Name_Here}}.{{Property_Name_Here}})\" target=\"_blank\">@Model.{{Property_Name_Here}}FileName</a>
+                                            </div>
+                                            <div class=\"alert-close\">
+                                                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\" id=\"{{Entity_Name_Here}}_{{Property_Name_Here}}_Remove\">
+                                                    <span aria-hidden=\"true\">
+                                                        <i class=\"la la-close fa-1x\"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>									
+								</div>
+					"
+					},
+					{
 					"type" : "default",
 					"content" : "
 								<div class=\"form-group\">

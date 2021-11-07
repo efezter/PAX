@@ -1,4 +1,4 @@
-.{{nP_Foreign_Entity_Name_Here}}-lookup-table-paginator {
+﻿.{{nP_Foreign_Entity_Name_Here}}-lookup-table-paginator {
     .ui-paginator-rpp-options {
         display: none;
     }

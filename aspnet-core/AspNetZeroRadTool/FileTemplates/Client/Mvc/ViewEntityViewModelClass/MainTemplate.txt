@@ -1,4 +1,4 @@
-using {{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.Dtos;
+﻿using {{Namespace_Here}}.{{Namespace_Relative_Full_Here}}.Dtos;
 
 namespace {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Models.{{Entity_Name_Plural_Here}}
 {

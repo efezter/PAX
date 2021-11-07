@@ -1,4 +1,4 @@
-{{Enum_Using_Looped_Template_Here}}{{NP_Using_Looped_Template_Here}}using System;
+﻿{{Enum_Using_Looped_Template_Here}}{{NP_Using_Looped_Template_Here}}using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities.Auditing;

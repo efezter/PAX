@@ -1,4 +1,4 @@
-    <div {{Container_Class_Here}}{{Container_Class_V2_Here}}{{Container_Class_V3_Here}}>
+﻿    <div {{Container_Class_Here}}{{Container_Class_V2_Here}}{{Container_Class_V3_Here}}>
         <div class="{{Portlet_Class_Here}}{{Card_Class_Here}}">
           {{Portlet_Header_Here}} {{Card_Header_Here}}
             <div class="{{Portlet_Body_Here}}{{Card_Body_Here}}">
@@ -18,7 +18,7 @@
                         </div>
 						 <div class="row" [hidden]="!advancedFiltersAreShown">
 						 	<div class="col-md-12">
-						         <div class="kt-separator kt-separator--border-dashed"></div>
+						         {{Seperator_Div_Here}}
 						     </div>
 
 {{Property_Filter_Template_Here}}{{NP_Filter_Template_Here}}
@@ -84,11 +84,11 @@
                                          #paginator
                                          (onPageChange)="get{{Entity_Name_Plural_Here}}($event)"
                                          [totalRecords]="primengTableHelper.totalRecordsCount"
-                                         [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage">
+                                         [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage"
+                                         [showCurrentPageReport]="true"
+                                         [currentPageReportTemplate]="'TotalRecordsCount' | localize:primengTableHelper.totalRecordsCount"    
+                            >
                             </p-paginator>
-                            <span class="total-records-count">
-                                {{l('TotalRecordsCount', primengTableHelper.totalRecordsCount)}}
-                            </span>
                         </div>
                     </div>
                     <!--<Primeng-Datatable-End>-->

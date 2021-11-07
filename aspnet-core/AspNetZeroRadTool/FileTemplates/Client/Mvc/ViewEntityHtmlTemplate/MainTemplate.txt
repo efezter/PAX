@@ -1,4 +1,4 @@
-
+﻿
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Models.Common.Modals
 @using {{Namespace_Here}}.Web.Areas.{{App_Area_Name_Here}}.Models.{{Entity_Name_Plural_Here}}
 @model {{Master_Detail_Child_Prefix_Here}}{{Entity_Name_Here}}ViewModel

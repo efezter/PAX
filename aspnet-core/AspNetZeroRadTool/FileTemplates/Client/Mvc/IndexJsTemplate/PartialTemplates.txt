@@ -5,6 +5,20 @@
 			"condition" : "{{Property_Listed_Here}} == true",
 			"templates" : [
 					{
+                        "type" : "file",
+                        "content" : ",
+                        {
+                            targets: {{Combined_Loop_Index}},
+                            data: \"{{entity_Name_Here}}\",
+                            render: function ({{entity_Name_Here}}) {
+                                if (!{{entity_Name_Here}}.{{property_Name_Here}}){
+                                    return '';
+                                }
+                                return `<a href=\"/File/DownloadBinaryFile?id=${{{entity_Name_Here}}.{{property_Name_Here}}}\" target=\"_blank\">${{{entity_Name_Here}}.{{property_Name_Here}}FileName}</a>`;
+                            }
+                        }"
+					},
+					{
 					"type" : "default",
 					"content" : ",
 					{

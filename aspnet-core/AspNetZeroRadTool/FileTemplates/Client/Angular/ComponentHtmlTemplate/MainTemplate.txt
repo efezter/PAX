@@ -1,4 +1,4 @@
-<div [@routerTransition]>
+﻿<div [@routerTransition]>
     <div class="m-subheader">
         <div class="d-flex align-items-center">
             <div class="mr-auto col-md-6">

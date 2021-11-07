@@ -56,6 +56,11 @@
                         _ => _timeZoneConverter.Convert(_.{{Entity_Name_Here}}.{{Property_Name_Here}}, _abpSession.TenantId, _abpSession.GetUserId())"
 					},
 					{
+					"type" : "file",
+					"content" : ",
+                        _ => _.{{Entity_Name_Here}}.{{Property_Name_Here}}FileName"
+					},
+					{
 					"type" : "default",
 					"content" : ",
                         _ => _.{{Entity_Name_Here}}.{{Property_Name_Here}}"

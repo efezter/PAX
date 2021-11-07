@@ -32,12 +32,12 @@
         },
         {
             "placeholder": "{{PrimeNG_Column_Title_Class_Here}}",
-            "condition": "{{Project_Version_Here}} < 101000",
+            "condition": "{{Project_Version_Here}} < 100100",
             "content": "ui-column-title"
         },
         {
             "placeholder": "{{PrimeNG_Column_Title_Class_Here}}",
-            "condition": "{{Project_Version_Here}} >= 101000",
+            "condition": "{{Project_Version_Here}} >= 100100",
             "content": "p-column-title"
         }
     ]

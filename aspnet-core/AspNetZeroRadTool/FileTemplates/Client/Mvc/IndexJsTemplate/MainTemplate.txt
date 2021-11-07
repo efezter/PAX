@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     $(function () {
 
         var _${{entity_Name_Plural_Here}}Table = $('#{{Master_Detail_Child_Prefix_Here}}{{Entity_Name_Plural_Here}}Table');
