@@ -25,6 +25,8 @@ export class AppNavigationService {
             new AppMenuItem('Severities', 'Pages.Severities', 'flaticon-more', '/app/main/taskManager/severities'),
             
             new AppMenuItem('TaskStatuses', 'Pages.TaskStatuses', 'flaticon-more', '/app/main/taskManager/taskStatuses'),
+            
+            new AppMenuItem('PaxTasks', 'Pages.PaxTasks', 'flaticon-more', '/app/main/taskManager/paxTasks'),
              new AppMenuItem('Administration', '', 'flaticon-interface-8', '', [], [
                 new AppMenuItem('OrganizationUnits', 'Pages.Administration.OrganizationUnits', 'flaticon-map', '/app/admin/organization-units'),
                 new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),

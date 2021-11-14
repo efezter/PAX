@@ -222,6 +222,5 @@ namespace PAX.Next.TaskManager
             CreateOrEditTaskStatusDto input = new CreateOrEditTaskStatusDto { Id = taskStatusId,Name = taskStatus.Name, IconUrl = iconUrl};
             ObjectMapper.Map(input, taskStatus);
         }
-
     }
 }

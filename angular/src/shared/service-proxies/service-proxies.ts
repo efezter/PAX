@@ -7337,6 +7337,658 @@ export class OrganizationUnitServiceProxy {
 }
 
 @Injectable()
+export class PaxTasksServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param headerFilter (optional) 
+     * @param maxCreatedDateFilter (optional) 
+     * @param minCreatedDateFilter (optional) 
+     * @param taskTypeFilter (optional) 
+     * @param taskTypePeriodFilter (optional) 
+     * @param maxPeriodIntervalFilter (optional) 
+     * @param minPeriodIntervalFilter (optional) 
+     * @param userNameFilter (optional) 
+     * @param userName2Filter (optional) 
+     * @param severityNameFilter (optional) 
+     * @param taskStatusNameFilter (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAll(filter: string | undefined, headerFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAll?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (headerFilter === null)
+            throw new Error("The parameter 'headerFilter' cannot be null.");
+        else if (headerFilter !== undefined)
+            url_ += "HeaderFilter=" + encodeURIComponent("" + headerFilter) + "&";
+        if (maxCreatedDateFilter === null)
+            throw new Error("The parameter 'maxCreatedDateFilter' cannot be null.");
+        else if (maxCreatedDateFilter !== undefined)
+            url_ += "MaxCreatedDateFilter=" + encodeURIComponent(maxCreatedDateFilter ? "" + maxCreatedDateFilter.toJSON() : "") + "&";
+        if (minCreatedDateFilter === null)
+            throw new Error("The parameter 'minCreatedDateFilter' cannot be null.");
+        else if (minCreatedDateFilter !== undefined)
+            url_ += "MinCreatedDateFilter=" + encodeURIComponent(minCreatedDateFilter ? "" + minCreatedDateFilter.toJSON() : "") + "&";
+        if (taskTypeFilter === null)
+            throw new Error("The parameter 'taskTypeFilter' cannot be null.");
+        else if (taskTypeFilter !== undefined)
+            url_ += "TaskTypeFilter=" + encodeURIComponent("" + taskTypeFilter) + "&";
+        if (taskTypePeriodFilter === null)
+            throw new Error("The parameter 'taskTypePeriodFilter' cannot be null.");
+        else if (taskTypePeriodFilter !== undefined)
+            url_ += "TaskTypePeriodFilter=" + encodeURIComponent("" + taskTypePeriodFilter) + "&";
+        if (maxPeriodIntervalFilter === null)
+            throw new Error("The parameter 'maxPeriodIntervalFilter' cannot be null.");
+        else if (maxPeriodIntervalFilter !== undefined)
+            url_ += "MaxPeriodIntervalFilter=" + encodeURIComponent("" + maxPeriodIntervalFilter) + "&";
+        if (minPeriodIntervalFilter === null)
+            throw new Error("The parameter 'minPeriodIntervalFilter' cannot be null.");
+        else if (minPeriodIntervalFilter !== undefined)
+            url_ += "MinPeriodIntervalFilter=" + encodeURIComponent("" + minPeriodIntervalFilter) + "&";
+        if (userNameFilter === null)
+            throw new Error("The parameter 'userNameFilter' cannot be null.");
+        else if (userNameFilter !== undefined)
+            url_ += "UserNameFilter=" + encodeURIComponent("" + userNameFilter) + "&";
+        if (userName2Filter === null)
+            throw new Error("The parameter 'userName2Filter' cannot be null.");
+        else if (userName2Filter !== undefined)
+            url_ += "UserName2Filter=" + encodeURIComponent("" + userName2Filter) + "&";
+        if (severityNameFilter === null)
+            throw new Error("The parameter 'severityNameFilter' cannot be null.");
+        else if (severityNameFilter !== undefined)
+            url_ += "SeverityNameFilter=" + encodeURIComponent("" + severityNameFilter) + "&";
+        if (taskStatusNameFilter === null)
+            throw new Error("The parameter 'taskStatusNameFilter' cannot be null.");
+        else if (taskStatusNameFilter !== undefined)
+            url_ += "TaskStatusNameFilter=" + encodeURIComponent("" + taskStatusNameFilter) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfGetPaxTaskForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfGetPaxTaskForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfGetPaxTaskForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfGetPaxTaskForViewDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getPaxTaskForView(id: number | undefined): Observable<GetPaxTaskForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetPaxTaskForView?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPaxTaskForView(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPaxTaskForView(<any>response_);
+                } catch (e) {
+                    return <Observable<GetPaxTaskForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetPaxTaskForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetPaxTaskForView(response: HttpResponseBase): Observable<GetPaxTaskForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetPaxTaskForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetPaxTaskForViewDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getPaxTaskForEdit(id: number | undefined): Observable<GetPaxTaskForEditOutput> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetPaxTaskForEdit?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPaxTaskForEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPaxTaskForEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<GetPaxTaskForEditOutput>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetPaxTaskForEditOutput>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetPaxTaskForEdit(response: HttpResponseBase): Observable<GetPaxTaskForEditOutput> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetPaxTaskForEditOutput.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetPaxTaskForEditOutput>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createOrEdit(body: CreateOrEditPaxTaskDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/CreateOrEdit";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateOrEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateOrEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateOrEdit(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param headerFilter (optional) 
+     * @param maxCreatedDateFilter (optional) 
+     * @param minCreatedDateFilter (optional) 
+     * @param taskTypeFilter (optional) 
+     * @param taskTypePeriodFilter (optional) 
+     * @param maxPeriodIntervalFilter (optional) 
+     * @param minPeriodIntervalFilter (optional) 
+     * @param userNameFilter (optional) 
+     * @param userName2Filter (optional) 
+     * @param severityNameFilter (optional) 
+     * @param taskStatusNameFilter (optional) 
+     * @return Success
+     */
+    getPaxTasksToExcel(filter: string | undefined, headerFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined): Observable<FileDto> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetPaxTasksToExcel?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (headerFilter === null)
+            throw new Error("The parameter 'headerFilter' cannot be null.");
+        else if (headerFilter !== undefined)
+            url_ += "HeaderFilter=" + encodeURIComponent("" + headerFilter) + "&";
+        if (maxCreatedDateFilter === null)
+            throw new Error("The parameter 'maxCreatedDateFilter' cannot be null.");
+        else if (maxCreatedDateFilter !== undefined)
+            url_ += "MaxCreatedDateFilter=" + encodeURIComponent(maxCreatedDateFilter ? "" + maxCreatedDateFilter.toJSON() : "") + "&";
+        if (minCreatedDateFilter === null)
+            throw new Error("The parameter 'minCreatedDateFilter' cannot be null.");
+        else if (minCreatedDateFilter !== undefined)
+            url_ += "MinCreatedDateFilter=" + encodeURIComponent(minCreatedDateFilter ? "" + minCreatedDateFilter.toJSON() : "") + "&";
+        if (taskTypeFilter === null)
+            throw new Error("The parameter 'taskTypeFilter' cannot be null.");
+        else if (taskTypeFilter !== undefined)
+            url_ += "TaskTypeFilter=" + encodeURIComponent("" + taskTypeFilter) + "&";
+        if (taskTypePeriodFilter === null)
+            throw new Error("The parameter 'taskTypePeriodFilter' cannot be null.");
+        else if (taskTypePeriodFilter !== undefined)
+            url_ += "TaskTypePeriodFilter=" + encodeURIComponent("" + taskTypePeriodFilter) + "&";
+        if (maxPeriodIntervalFilter === null)
+            throw new Error("The parameter 'maxPeriodIntervalFilter' cannot be null.");
+        else if (maxPeriodIntervalFilter !== undefined)
+            url_ += "MaxPeriodIntervalFilter=" + encodeURIComponent("" + maxPeriodIntervalFilter) + "&";
+        if (minPeriodIntervalFilter === null)
+            throw new Error("The parameter 'minPeriodIntervalFilter' cannot be null.");
+        else if (minPeriodIntervalFilter !== undefined)
+            url_ += "MinPeriodIntervalFilter=" + encodeURIComponent("" + minPeriodIntervalFilter) + "&";
+        if (userNameFilter === null)
+            throw new Error("The parameter 'userNameFilter' cannot be null.");
+        else if (userNameFilter !== undefined)
+            url_ += "UserNameFilter=" + encodeURIComponent("" + userNameFilter) + "&";
+        if (userName2Filter === null)
+            throw new Error("The parameter 'userName2Filter' cannot be null.");
+        else if (userName2Filter !== undefined)
+            url_ += "UserName2Filter=" + encodeURIComponent("" + userName2Filter) + "&";
+        if (severityNameFilter === null)
+            throw new Error("The parameter 'severityNameFilter' cannot be null.");
+        else if (severityNameFilter !== undefined)
+            url_ += "SeverityNameFilter=" + encodeURIComponent("" + severityNameFilter) + "&";
+        if (taskStatusNameFilter === null)
+            throw new Error("The parameter 'taskStatusNameFilter' cannot be null.");
+        else if (taskStatusNameFilter !== undefined)
+            url_ += "TaskStatusNameFilter=" + encodeURIComponent("" + taskStatusNameFilter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPaxTasksToExcel(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPaxTasksToExcel(<any>response_);
+                } catch (e) {
+                    return <Observable<FileDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetPaxTasksToExcel(response: HttpResponseBase): Observable<FileDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FileDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileDto>(<any>null);
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAllUserForLookupTable(filter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfPaxTaskUserLookupTableDto> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAllUserForLookupTable?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllUserForLookupTable(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllUserForLookupTable(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfPaxTaskUserLookupTableDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfPaxTaskUserLookupTableDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllUserForLookupTable(response: HttpResponseBase): Observable<PagedResultDtoOfPaxTaskUserLookupTableDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfPaxTaskUserLookupTableDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfPaxTaskUserLookupTableDto>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllSeverityForTableDropdown(): Observable<PaxTaskSeverityLookupTableDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAllSeverityForTableDropdown";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllSeverityForTableDropdown(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllSeverityForTableDropdown(<any>response_);
+                } catch (e) {
+                    return <Observable<PaxTaskSeverityLookupTableDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PaxTaskSeverityLookupTableDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllSeverityForTableDropdown(response: HttpResponseBase): Observable<PaxTaskSeverityLookupTableDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PaxTaskSeverityLookupTableDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PaxTaskSeverityLookupTableDto[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllTaskStatusForTableDropdown(): Observable<PaxTaskTaskStatusLookupTableDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAllTaskStatusForTableDropdown";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllTaskStatusForTableDropdown(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllTaskStatusForTableDropdown(<any>response_);
+                } catch (e) {
+                    return <Observable<PaxTaskTaskStatusLookupTableDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PaxTaskTaskStatusLookupTableDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllTaskStatusForTableDropdown(response: HttpResponseBase): Observable<PaxTaskTaskStatusLookupTableDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PaxTaskTaskStatusLookupTableDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PaxTaskTaskStatusLookupTableDto[]>(<any>null);
+    }
+}
+
+@Injectable()
 export class PaymentServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -16847,6 +17499,82 @@ export interface ICreateInvoiceDto {
     subscriptionPaymentId: number;
 }
 
+export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
+    header!: string;
+    details!: string | undefined;
+    createdDate!: DateTime;
+    taskType!: TaskType;
+    taskTypePeriod!: TaskTypePeriod;
+    periodInterval!: number | undefined;
+    reporterId!: number;
+    assigneeId!: number | undefined;
+    severityId!: number | undefined;
+    taskStatusId!: number;
+    id!: number | undefined;
+
+    constructor(data?: ICreateOrEditPaxTaskDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.header = _data["header"];
+            this.details = _data["details"];
+            this.createdDate = _data["createdDate"] ? DateTime.fromISO(_data["createdDate"].toString()) : <any>undefined;
+            this.taskType = _data["taskType"];
+            this.taskTypePeriod = _data["taskTypePeriod"];
+            this.periodInterval = _data["periodInterval"];
+            this.reporterId = _data["reporterId"];
+            this.assigneeId = _data["assigneeId"];
+            this.severityId = _data["severityId"];
+            this.taskStatusId = _data["taskStatusId"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CreateOrEditPaxTaskDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateOrEditPaxTaskDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["header"] = this.header;
+        data["details"] = this.details;
+        data["createdDate"] = this.createdDate ? this.createdDate.toString() : <any>undefined;
+        data["taskType"] = this.taskType;
+        data["taskTypePeriod"] = this.taskTypePeriod;
+        data["periodInterval"] = this.periodInterval;
+        data["reporterId"] = this.reporterId;
+        data["assigneeId"] = this.assigneeId;
+        data["severityId"] = this.severityId;
+        data["taskStatusId"] = this.taskStatusId;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface ICreateOrEditPaxTaskDto {
+    header: string;
+    details: string | undefined;
+    createdDate: DateTime;
+    taskType: TaskType;
+    taskTypePeriod: TaskTypePeriod;
+    periodInterval: number | undefined;
+    reporterId: number;
+    assigneeId: number | undefined;
+    severityId: number | undefined;
+    taskStatusId: number;
+    id: number | undefined;
+}
+
 export class CreateOrEditSeverityDto implements ICreateOrEditSeverityDto {
     name!: string;
     order!: number;
@@ -20752,6 +21480,110 @@ export interface IGetPasswordComplexitySettingOutput {
     setting: PasswordComplexitySetting;
 }
 
+export class GetPaxTaskForEditOutput implements IGetPaxTaskForEditOutput {
+    paxTask!: CreateOrEditPaxTaskDto;
+    userName!: string | undefined;
+    userName2!: string | undefined;
+    severityName!: string | undefined;
+    taskStatusName!: string | undefined;
+
+    constructor(data?: IGetPaxTaskForEditOutput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paxTask = _data["paxTask"] ? CreateOrEditPaxTaskDto.fromJS(_data["paxTask"]) : <any>undefined;
+            this.userName = _data["userName"];
+            this.userName2 = _data["userName2"];
+            this.severityName = _data["severityName"];
+            this.taskStatusName = _data["taskStatusName"];
+        }
+    }
+
+    static fromJS(data: any): GetPaxTaskForEditOutput {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetPaxTaskForEditOutput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paxTask"] = this.paxTask ? this.paxTask.toJSON() : <any>undefined;
+        data["userName"] = this.userName;
+        data["userName2"] = this.userName2;
+        data["severityName"] = this.severityName;
+        data["taskStatusName"] = this.taskStatusName;
+        return data; 
+    }
+}
+
+export interface IGetPaxTaskForEditOutput {
+    paxTask: CreateOrEditPaxTaskDto;
+    userName: string | undefined;
+    userName2: string | undefined;
+    severityName: string | undefined;
+    taskStatusName: string | undefined;
+}
+
+export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
+    paxTask!: PaxTaskDto;
+    userName!: string | undefined;
+    userName2!: string | undefined;
+    severityName!: string | undefined;
+    taskStatusName!: string | undefined;
+
+    constructor(data?: IGetPaxTaskForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paxTask = _data["paxTask"] ? PaxTaskDto.fromJS(_data["paxTask"]) : <any>undefined;
+            this.userName = _data["userName"];
+            this.userName2 = _data["userName2"];
+            this.severityName = _data["severityName"];
+            this.taskStatusName = _data["taskStatusName"];
+        }
+    }
+
+    static fromJS(data: any): GetPaxTaskForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetPaxTaskForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paxTask"] = this.paxTask ? this.paxTask.toJSON() : <any>undefined;
+        data["userName"] = this.userName;
+        data["userName2"] = this.userName2;
+        data["severityName"] = this.severityName;
+        data["taskStatusName"] = this.taskStatusName;
+        return data; 
+    }
+}
+
+export interface IGetPaxTaskForViewDto {
+    paxTask: PaxTaskDto;
+    userName: string | undefined;
+    userName2: string | undefined;
+    severityName: string | undefined;
+    taskStatusName: string | undefined;
+}
+
 export class GetProfilePictureOutput implements IGetProfilePictureOutput {
     profilePicture!: string | undefined;
 
@@ -24543,6 +25375,54 @@ export interface IPagedResultDtoOfGetAllSendAttemptsOutput {
     items: GetAllSendAttemptsOutput[] | undefined;
 }
 
+export class PagedResultDtoOfGetPaxTaskForViewDto implements IPagedResultDtoOfGetPaxTaskForViewDto {
+    totalCount!: number;
+    items!: GetPaxTaskForViewDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfGetPaxTaskForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetPaxTaskForViewDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfGetPaxTaskForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfGetPaxTaskForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfGetPaxTaskForViewDto {
+    totalCount: number;
+    items: GetPaxTaskForViewDto[] | undefined;
+}
+
 export class PagedResultDtoOfGetSeverityForViewDto implements IPagedResultDtoOfGetSeverityForViewDto {
     totalCount!: number;
     items!: GetSeverityForViewDto[] | undefined;
@@ -24927,6 +25807,54 @@ export interface IPagedResultDtoOfOrganizationUnitUserListDto {
     items: OrganizationUnitUserListDto[] | undefined;
 }
 
+export class PagedResultDtoOfPaxTaskUserLookupTableDto implements IPagedResultDtoOfPaxTaskUserLookupTableDto {
+    totalCount!: number;
+    items!: PaxTaskUserLookupTableDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfPaxTaskUserLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(PaxTaskUserLookupTableDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfPaxTaskUserLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfPaxTaskUserLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfPaxTaskUserLookupTableDto {
+    totalCount: number;
+    items: PaxTaskUserLookupTableDto[] | undefined;
+}
+
 export class PagedResultDtoOfSubscriptionPaymentListDto implements IPagedResultDtoOfSubscriptionPaymentListDto {
     totalCount!: number;
     items!: SubscriptionPaymentListDto[] | undefined;
@@ -25217,6 +26145,198 @@ export interface IPasswordComplexitySetting {
     requireNonAlphanumeric: boolean;
     requireUppercase: boolean;
     requiredLength: number;
+}
+
+export class PaxTaskDto implements IPaxTaskDto {
+    header!: string | undefined;
+    createdDate!: DateTime;
+    taskType!: TaskType;
+    taskTypePeriod!: TaskTypePeriod;
+    periodInterval!: number | undefined;
+    reporterId!: number;
+    assigneeId!: number | undefined;
+    severityId!: number | undefined;
+    taskStatusId!: number;
+    id!: number;
+
+    constructor(data?: IPaxTaskDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.header = _data["header"];
+            this.createdDate = _data["createdDate"] ? DateTime.fromISO(_data["createdDate"].toString()) : <any>undefined;
+            this.taskType = _data["taskType"];
+            this.taskTypePeriod = _data["taskTypePeriod"];
+            this.periodInterval = _data["periodInterval"];
+            this.reporterId = _data["reporterId"];
+            this.assigneeId = _data["assigneeId"];
+            this.severityId = _data["severityId"];
+            this.taskStatusId = _data["taskStatusId"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): PaxTaskDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaxTaskDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["header"] = this.header;
+        data["createdDate"] = this.createdDate ? this.createdDate.toString() : <any>undefined;
+        data["taskType"] = this.taskType;
+        data["taskTypePeriod"] = this.taskTypePeriod;
+        data["periodInterval"] = this.periodInterval;
+        data["reporterId"] = this.reporterId;
+        data["assigneeId"] = this.assigneeId;
+        data["severityId"] = this.severityId;
+        data["taskStatusId"] = this.taskStatusId;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface IPaxTaskDto {
+    header: string | undefined;
+    createdDate: DateTime;
+    taskType: TaskType;
+    taskTypePeriod: TaskTypePeriod;
+    periodInterval: number | undefined;
+    reporterId: number;
+    assigneeId: number | undefined;
+    severityId: number | undefined;
+    taskStatusId: number;
+    id: number;
+}
+
+export class PaxTaskSeverityLookupTableDto implements IPaxTaskSeverityLookupTableDto {
+    id!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: IPaxTaskSeverityLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): PaxTaskSeverityLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaxTaskSeverityLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface IPaxTaskSeverityLookupTableDto {
+    id: number;
+    displayName: string | undefined;
+}
+
+export class PaxTaskTaskStatusLookupTableDto implements IPaxTaskTaskStatusLookupTableDto {
+    id!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: IPaxTaskTaskStatusLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): PaxTaskTaskStatusLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaxTaskTaskStatusLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface IPaxTaskTaskStatusLookupTableDto {
+    id: number;
+    displayName: string | undefined;
+}
+
+export class PaxTaskUserLookupTableDto implements IPaxTaskUserLookupTableDto {
+    id!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: IPaxTaskUserLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): PaxTaskUserLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaxTaskUserLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface IPaxTaskUserLookupTableDto {
+    id: number;
+    displayName: string | undefined;
 }
 
 export class PaymentGatewayModel implements IPaymentGatewayModel {
@@ -27150,6 +28270,16 @@ export interface ITaskStatusDto {
     name: string | undefined;
     iconUrl: string | undefined;
     id: number;
+}
+
+export enum TaskType {
+    Normal = 1,
+    Repating = 2,
+}
+
+export enum TaskTypePeriod {
+    Weekly = 1,
+    Monthly = 2,
 }
 
 export enum TenantAvailabilityState {

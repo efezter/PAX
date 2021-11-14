@@ -1,0 +1,227 @@
+﻿<div
+    bsModal
+    #createOrEditModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="createOrEditModal"
+    aria-hidden="true"
+    [config]="{ backdrop: 'static' }"
+>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #paxTaskForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="paxTask.id">{{ l('EditPaxTask') }}</span>
+                        <span *ngIf="!paxTask.id">{{ l('CreateNewPaxTask') }}</span>
+                    </h4>
+                    <button type="button" class="close" (click)="close()" aria-label="Close" [disabled]="saving">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div  class="form-group m-form__group">
+                        <label *ngIf="reporterName" for="UserName">{{ l('Reporter') }} : {{reporterName}}</label>
+                        <div class="input-group">
+                            <!-- <input
+                                class="form-control"
+                                id="UserName"
+                                name="userName"
+                                [(ngModel)]="userName"
+                                type="text"
+                                disabled
+                            />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary blue" (click)="openSelectUserModal()" type="button">
+                                    <i class="fa fa-search"></i> {{ l('Pick') }}
+                                </button>
+                            </div>
+                            <div class="input-group-prepend">
+                                <button class="btn btn-danger btn-icon" type="button" (click)="setReporterIdNull()">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div> -->
+                        </div>
+                    </div>
+                    <input
+                        class="form-control"
+                        name="paxTask.reporterId"
+                        [(ngModel)]="paxTask.reporterId"
+                        type="text"
+                        required
+                        hidden
+                    />
+
+                    <div class="form-group m-form__group">
+                        <label for="assigneeName">{{ l('Assignee') }}</label>
+                        <div class="input-group">
+                            <input
+                                class="form-control"
+                                id="assigneeName"
+                                name="assigneeName"
+                                [(ngModel)]="assigneeName"
+                                type="text"
+                                disabled
+                            />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary blue" (click)="openSelectUserModal2()" type="button">
+                                    <i class="fa fa-search"></i> {{ l('Pick') }}
+                                </button>
+                            </div>
+                            <div class="input-group-prepend">
+                                <button class="btn btn-danger btn-icon" type="button" (click)="setAssigneeIdNull()">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <input
+                        class="form-control"
+                        name="paxTask.assigneeId"
+                        [(ngModel)]="paxTask.assigneeId"
+                        type="text"
+                        hidden
+                    />
+
+                    <div class="form-group m-form__group">
+                        <label for="SeverityName">{{ l('Severity') }}</label>
+                        <select name="paxTask.severityId" [(ngModel)]="paxTask.severityId" class="form-control">
+                            <option value="">{{ l('SelectASeverity') }}</option>
+                            <option *ngFor="let item of allSeveritys" value="{{ item.id }}">
+                                {{ item.displayName }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group m-form__group">
+                        <label for="TaskStatusName">{{ l('TaskStatus') }}</label>
+                        <select
+                            name="paxTask.taskStatusId"
+                            [(ngModel)]="paxTask.taskStatusId"
+                            class="form-control"
+                            required
+                        >
+                            <option value="">{{ l('SelectATaskStatus') }}</option>
+                            <option *ngFor="let item of allTaskStatuss" value="{{ item.id }}">
+                                {{ item.displayName }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PaxTask_Header">{{ l('Header') }} *</label>
+                        <input
+                            type="text"
+                            #PaxTask_Header="ngModel"
+                            id="PaxTask_Header"
+                            class="form-control"
+                            [(ngModel)]="paxTask.header"
+                            name="Header"
+                            minlength="3"
+                            maxlength="150"
+                            required
+                        />
+                        <validation-messages [formCtrl]="PaxTask_Header"></validation-messages>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PaxTask_Details">{{ l('Details') }}</label>
+                        <input
+                            type="text"
+                            #PaxTask_Details="ngModel"
+                            id="PaxTask_Details"
+                            class="form-control"
+                            [(ngModel)]="paxTask.details"
+                            name="Details"
+                        />
+                        <validation-messages [formCtrl]="PaxTask_Details"></validation-messages>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }}</label>
+                        <input
+                            required
+                            class="form-control m-input"
+                            #PaxTask_CreatedDate
+                            type="datetime"
+                            bsDatepicker
+                            datePickerLuxonModifier
+                            [(date)]="paxTask.createdDate"
+                            id="PaxTask_CreatedDate"
+                            name="PaxTask_CreatedDate"
+                        />
+                        <validation-messages [formCtrl]="PaxTask_CreatedDate"></validation-messages>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
+                        <select
+                            class="form-control"
+                            #PaxTask_TaskType="ngModel"
+                            name="TaskType"
+                            id="PaxTask_TaskType"
+                            [(ngModel)]="paxTask.taskType"
+                        >
+                            <option value="1">{{ l('Normal') }}</option>
+
+                            <option value="2">{{ l('Repating') }}</option>
+                        </select>
+                        <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PaxTask_TaskTypePeriod">{{ l('TaskTypePeriod') }}</label>
+                        <select
+                            class="form-control"
+                            #PaxTask_TaskTypePeriod="ngModel"
+                            name="TaskTypePeriod"
+                            id="PaxTask_TaskTypePeriod"
+                            [(ngModel)]="paxTask.taskTypePeriod"
+                        >
+                            <option value="1">{{ l('Weekly') }}</option>
+
+                            <option value="2">{{ l('Monthly') }}</option>
+                        </select>
+                        <validation-messages [formCtrl]="PaxTask_TaskTypePeriod"></validation-messages>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PaxTask_PeriodInterval">{{ l('PeriodInterval') }}</label>
+                        <input
+                            type="number"
+                            #PaxTask_PeriodInterval="ngModel"
+                            id="PaxTask_PeriodInterval"
+                            class="form-control"
+                            [(ngModel)]="paxTask.periodInterval"
+                            name="PeriodInterval"
+                        />
+                        <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
+                        {{ l('Cancel') }}
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary blue"
+                        [disabled]="!paxTaskForm.form.valid"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i> <span>{{ l('Save') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <paxTaskUserLookupTableModal
+        #paxTaskUserLookupTableModal
+        (modalSave)="getNewReporterId()"
+    ></paxTaskUserLookupTableModal>
+    <paxTaskUserLookupTableModal
+        #paxTaskUserLookupTableModal2
+        (modalSave)="getNewAssigneeId()"
+    ></paxTaskUserLookupTableModal>
+</div>

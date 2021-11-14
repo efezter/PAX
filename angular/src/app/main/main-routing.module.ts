@@ -9,6 +9,13 @@ import { RouterModule } from '@angular/router';
                 children: [
                     
                     {
+                        path: 'taskManager/paxTasks',
+                        loadChildren: () => import('./taskManager/paxTasks/paxTask.module').then(m => m.PaxTaskModule),
+                        data: { permission: 'Pages.PaxTasks' }
+                    },
+                
+                    
+                    {
                         path: 'taskManager/taskStatuses',
                         loadChildren: () => import('./taskManager/taskStatuses/taskStatus.module').then(m => m.TaskStatusModule),
                         data: { permission: 'Pages.TaskStatuses' }

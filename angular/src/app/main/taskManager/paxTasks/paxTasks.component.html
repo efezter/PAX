@@ -1,0 +1,390 @@
+﻿<div [@routerTransition]>
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'PaxTasks' | localize" [description]="'PaxTasksHeaderInfo' | localize">
+            <div role="actions">
+                <button (click)="exportToExcel()" class="btn btn-outline-success">
+                    <i class="fa fa-file-excel"></i> {{ l('ExportToExcel') }}
+                </button>
+
+                <button
+                    *ngIf="isGranted('Pages.PaxTasks.Create')"
+                    (click)="createPaxTask()"
+                    class="btn btn-primary blue"
+                >
+                    <i class="fa fa-plus"></i> {{ l('CreateNewPaxTask') }}
+                </button>
+            </div>
+        </sub-header>
+
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
+                    <form class="form" autocomplete="off">
+                        <div>
+                            <div class="row align-items-center">
+                                <div class="col-xl-12">
+                                    <div class="form-group m-form__group align-items-center">
+                                        <div class="input-group">
+                                            <input
+                                                [(ngModel)]="filterText"
+                                                name="filterText"
+                                                autoFocus
+                                                class="form-control m-input"
+                                                [placeholder]="l('SearchWithThreeDot')"
+                                                type="text"
+                                            />
+                                            <span class="input-group-btn">
+                                                <button (click)="getPaxTasks()" class="btn btn-primary" type="submit">
+                                                    <i class="flaticon-search-1"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" [hidden]="!advancedFiltersAreShown">
+                                <div class="col-md-12">
+                                    <div class="separator separator-dashed"></div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="HeaderFilter">{{ l('Header') }}</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="HeaderFilter"
+                                            name="headerFilter"
+                                            [(ngModel)]="headerFilter"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="MinCreatedDateFilter">{{ l('CreatedDateRange') }}</label>
+                                        <div class="input-group">
+                                            <input
+                                                class="form-control m-input"
+                                                id="MinCreatedDateFilter"
+                                                name="MinCreatedDateFilter"
+                                                type="datetime"
+                                                bsDatepicker
+                                                placeholder="{{ l('MinValue') }}"
+                                                [(ngModel)]="minCreatedDateFilter"
+                                            />
+                                            <span style="line-height: 40px; padding: 0 15px 0 15px"> &mdash; </span>
+                                            <input
+                                                class="form-control m-input"
+                                                id="MaxCreatedDateFilter"
+                                                name="MaxCreatedDateFilter"
+                                                type="datetime"
+                                                bsDatepicker
+                                                placeholder="{{ l('MaxValue') }}"
+                                                [(ngModel)]="maxCreatedDateFilter"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="TaskTypeFilterSelect">{{ l('TaskType') }}</label>
+                                    <select
+                                        class="form-control"
+                                        name="TaskTypeFilter"
+                                        id="TaskTypeFilterSelect"
+                                        [(ngModel)]="taskTypeFilter"
+                                    >
+                                        <option value="-1">{{ l('All') }}</option>
+                                        <option value="1">{{ l('Normal') }}</option>
+
+                                        <option value="2">{{ l('Repating') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="TaskTypePeriodFilterSelect">{{ l('TaskTypePeriod') }}</label>
+                                    <select
+                                        class="form-control"
+                                        name="TaskTypePeriodFilter"
+                                        id="TaskTypePeriodFilterSelect"
+                                        [(ngModel)]="taskTypePeriodFilter"
+                                    >
+                                        <option value="-1">{{ l('All') }}</option>
+                                        <option value="1">{{ l('Weekly') }}</option>
+
+                                        <option value="2">{{ l('Monthly') }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="MinPeriodIntervalFilter"
+                                            >{{ l('MinMax') }} {{ l('PeriodInterval') }}</label
+                                        >
+                                        <div class="input-group">
+                                            <input
+                                                type="number"
+                                                class="form-control"
+                                                id="MinPeriodIntervalFilter"
+                                                [(ngModel)]="minPeriodIntervalFilter"
+                                                placeholder="{{ l('MinValue') }}"
+                                                name="minPeriodIntervalFilter"
+                                            />
+                                            <input
+                                                type="number"
+                                                class="form-control"
+                                                [(ngModel)]="maxPeriodIntervalFilter"
+                                                placeholder="{{ l('MaxValue') }}"
+                                                name="maxPeriodIntervalFilter"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="UserNameFilter">({{ l('Reporter') }}) {{ l('Name') }}</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="UserNameFilter"
+                                            name="userNameFilter"
+                                            [(ngModel)]="userNameFilter"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="UserName2Filter">({{ l('Assignee') }}) {{ l('Name') }}</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="UserName2Filter"
+                                            name="userName2Filter"
+                                            [(ngModel)]="userName2Filter"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="SeverityNameFilter">({{ l('Severity') }}) {{ l('Name') }}</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="SeverityNameFilter"
+                                            name="severityNameFilter"
+                                            [(ngModel)]="severityNameFilter"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="TaskStatusNameFilter"
+                                            >({{ l('TaskStatus') }}) {{ l('Name') }}</label
+                                        >
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="TaskStatusNameFilter"
+                                            name="taskStatusNameFilter"
+                                            [(ngModel)]="taskStatusNameFilter"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-12">
+                                    <span
+                                        class="clickable-item text-muted"
+                                        *ngIf="!advancedFiltersAreShown"
+                                        (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                        ><i class="fa fa-angle-down"></i> {{ l('ShowAdvancedFilters') }}</span
+                                    >
+                                    <span
+                                        class="clickable-item text-muted"
+                                        *ngIf="advancedFiltersAreShown"
+                                        (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                        ><i class="fa fa-angle-up"></i> {{ l('HideAdvancedFilters') }}</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="row align-items-center">
+                        <!--<Primeng-Datatable-Start>-->
+                        <div class="primeng-datatable-container col-12" [busyIf]="primengTableHelper.isLoading">
+                            <p-table
+                                #dataTable
+                                (onLazyLoad)="getPaxTasks($event)"
+                                [value]="primengTableHelper.records"
+                                rows="{{ primengTableHelper.defaultRecordsCountPerPage }}"
+                                [paginator]="false"
+                                [lazy]="true"
+                                [scrollable]="true"
+                                ScrollWidth="100%"
+                                [responsive]="primengTableHelper.isResponsive"
+                                [resizableColumns]="primengTableHelper.resizableColumns"
+                            >
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th
+                                            style="width: 130px"
+                                            [hidden]="!isGrantedAny('Pages.PaxTasks.Edit', 'Pages.PaxTasks.Delete')"
+                                        >
+                                            {{ l('Actions') }}
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="reporterFk.name">
+                                            {{ l('Reporter') }}
+                                            <p-sortIcon field="userName"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="assigneeFk.name">
+                                            {{ l('Assignee') }}
+                                            <p-sortIcon field="userName2"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="severityFk.name">
+                                            {{ l('Severity') }}
+                                            <p-sortIcon field="severityName"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="taskStatusFk.name">
+                                            {{ l('TaskStatus') }}
+                                            <p-sortIcon field="taskStatusName"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="header">
+                                            {{ l('Header') }}
+                                            <p-sortIcon field="paxTask.header"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="createdDate">
+                                            {{ l('CreatedDate') }}
+                                            <p-sortIcon field="paxTask.createdDate"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="taskType">
+                                            {{ l('TaskType') }}
+                                            <p-sortIcon field="paxTask.taskType"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="taskTypePeriod">
+                                            {{ l('TaskTypePeriod') }}
+                                            <p-sortIcon field="paxTask.taskTypePeriod"></p-sortIcon>
+                                        </th>
+                                        <th style="width: 150px" pSortableColumn="periodInterval">
+                                            {{ l('PeriodInterval') }}
+                                            <p-sortIcon field="paxTask.periodInterval"></p-sortIcon>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-record="$implicit" let-i="rowIndex">
+                                    <tr>
+                                        <td
+                                            style="width: 130px"
+                                            [hidden]="!isGrantedAny('Pages.PaxTasks.Edit', 'Pages.PaxTasks.Delete')"
+                                        >
+                                            <div class="btn-group dropdown" dropdown container="body">
+                                                <button class="dropdown-toggle btn btn-sm btn-primary" dropdownToggle>
+                                                    <i class="fa fa-cog"></i><span class="caret"></span>
+                                                    {{ l('Actions') }}
+                                                </button>
+                                                <ul class="dropdown-menu" *dropdownMenu>
+                                                    <li>
+                                                        <a
+                                                            href="javascript:;"
+                                                            class="dropdown-item"
+                                                            (click)="viewPaxTaskModal.show(record)"
+                                                            >{{ l('View') }}</a
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            href="javascript:;"
+                                                            *ngIf="permission.isGranted('Pages.PaxTasks.Edit')"
+                                                            class="dropdown-item"
+                                                            (click)="createOrEditPaxTaskModal.show(record.paxTask.id)"
+                                                            >{{ l('Edit') }}</a
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            class="dropdown-item"
+                                                            href="javascript:;"
+                                                            *ngIf="permission.isGranted('Pages.PaxTasks.Delete')"
+                                                            (click)="deletePaxTask(record.paxTask)"
+                                                            >{{ l('Delete') }}</a
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        <a
+                                                            href="javascript:;"
+                                                            *ngIf="entityHistoryEnabled"
+                                                            class="dropdown-item"
+                                                            (click)="showHistory(record.paxTask)"
+                                                            >{{ l('History') }}</a
+                                                        >
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('Name') }}</span>
+                                            {{ record.userName }}
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('Name') }}</span>
+                                            {{ record.userName2 }}
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('Name') }}</span>
+                                            {{ record.severityName }}
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('Name') }}</span>
+                                            {{ record.taskStatusName }}
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('Header') }}</span>
+                                            {{ record.paxTask.header }}
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('CreatedDate') }}</span>
+                                            <span *ngIf="record.paxTask.createdDate">
+                                                {{ record.paxTask.createdDate | luxonFormat: 'F' }}
+                                            </span>
+                                            <span *ngIf="!record.paxTask.createdDate">-</span>
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('TaskType') }}</span>
+                                            {{ l(taskType[record.paxTask.taskType]) }}
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('TaskTypePeriod') }}</span>
+                                            {{ l(taskTypePeriod[record.paxTask.taskTypePeriod]) }}
+                                        </td>
+                                        <td style="width: 150px">
+                                            <span class="p-column-title"> {{ l('PeriodInterval') }}</span>
+                                            {{ record.paxTask.periodInterval }}
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                            <div class="primeng-no-data" *ngIf="primengTableHelper.totalRecordsCount == 0">
+                                {{ l('NoData') }}
+                            </div>
+                            <div class="primeng-paging-container">
+                                <p-paginator
+                                    [rows]="primengTableHelper.defaultRecordsCountPerPage"
+                                    #paginator
+                                    (onPageChange)="getPaxTasks($event)"
+                                    [totalRecords]="primengTableHelper.totalRecordsCount"
+                                    [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage"
+                                    [showCurrentPageReport]="true"
+                                    [currentPageReportTemplate]="
+                                        'TotalRecordsCount' | localize: primengTableHelper.totalRecordsCount
+                                    "
+                                >
+                                </p-paginator>
+                            </div>
+                        </div>
+                        <!--<Primeng-Datatable-End>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <createOrEditPaxTaskModal #createOrEditPaxTaskModal (modalSave)="getPaxTasks()"></createOrEditPaxTaskModal>
+        <viewPaxTaskModal #viewPaxTaskModal></viewPaxTaskModal>
+        <entityTypeHistoryModal #entityTypeHistoryModal></entityTypeHistoryModal>
+    </div>
+</div>

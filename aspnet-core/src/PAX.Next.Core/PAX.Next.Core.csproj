@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PAX.Next.Application.Shared\PAX.Next.Application.Shared.csproj" />
     <ProjectReference Include="..\PAX.Next.Core.Shared\PAX.Next.Core.Shared.csproj" />
   </ItemGroup>
 

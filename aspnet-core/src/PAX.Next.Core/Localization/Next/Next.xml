@@ -1,6 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="Tag">Tag</text>
+  <texts>    <text name="PaxTask">Pax task</text>
+    <text name="Assignee">Assignee</text>
+    <text name="Reporter">Reporter</text>
+    <text name="PAX.Next.TaskManager.PaxTask">PaxTask</text>
+    <text name="Header">Header</text>
+    <text name="CreatedDate">Created date</text>
+    <text name="TaskType">Task type</text>
+    <text name="TaskTypePeriod">Task type period</text>
+    <text name="PeriodInterval">Period interval</text>
+    <text name="PaxTasksHeaderInfo">Pax tasks header info</text>
+    <text name="CreateNewPaxTask">Create new pax task</text>
+    <text name="EditPaxTask">Edit pax task</text>
+    <text name="DeletePaxTask">Delete pax task</text>
+    <text name="PaxTasks">Pax tasks</text>
+    <text name="PickUser">Pick user</text>
+    <text name="SeverityName">Severity name</text>
+    <text name="PickSeverity">Pick severity</text>
+    <text name="SelectASeverity">Select a severity</text>
+    <text name="TaskStatusName">Task status name</text>
+    <text name="PickTaskStatus">Pick task status</text>
+    <text name="SelectATaskStatus">Select a task status</text>
+    <text name="CreatedDateRange">Created date range</text>
+    <text name="Tag">Tag</text>
     <text name="CreateNewTag">Create new tag</text>
     <text name="EditTag">Edit tag</text>
     <text name="DeleteTag">Delete tag</text>
