@@ -10226,6 +10226,305 @@ export class SubscriptionServiceProxy {
 }
 
 @Injectable()
+export class TagsServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAll(filter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetTagForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/Tags/GetAll?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfGetTagForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfGetTagForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<PagedResultDtoOfGetTagForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfGetTagForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfGetTagForViewDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getTagForView(id: number | undefined): Observable<GetTagForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/Tags/GetTagForView?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTagForView(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTagForView(<any>response_);
+                } catch (e) {
+                    return <Observable<GetTagForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetTagForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTagForView(response: HttpResponseBase): Observable<GetTagForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTagForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetTagForViewDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getTagForEdit(id: number | undefined): Observable<GetTagForEditOutput> {
+        let url_ = this.baseUrl + "/api/services/app/Tags/GetTagForEdit?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTagForEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTagForEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<GetTagForEditOutput>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetTagForEditOutput>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTagForEdit(response: HttpResponseBase): Observable<GetTagForEditOutput> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTagForEditOutput.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetTagForEditOutput>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createOrEdit(body: CreateOrEditTagDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Tags/CreateOrEdit";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateOrEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateOrEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateOrEdit(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Tags/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+}
+
+@Injectable()
 export class TaskStatusesServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -10367,65 +10666,6 @@ export class TaskStatusesServiceProxy {
         }
         return _observableOf<GetTaskStatusForViewDto>(<any>null);
     }
-
-
-/**
-     * @param body (optional) 
-     * @return Success
-     */
- updateIcon(body: UpdateIconInput | undefined): Observable<void> {
-    let url_ = this.baseUrl + "/api/services/app/TaskStatuses/UpdateIcon";
-    url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(body);
-
-    let options_ : any = {
-        body: content_,
-        observe: "response",
-        responseType: "blob",
-        headers: new HttpHeaders({
-            "Content-Type": "application/json-patch+json",
-        })
-    };
-
-    return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-        return this.processIconPicture(response_);
-    })).pipe(_observableCatch((response_: any) => {
-        if (response_ instanceof HttpResponseBase) {
-            try {
-                return this.processIconPicture(<any>response_);
-            } catch (e) {
-                return <Observable<void>><any>_observableThrow(e);
-            }
-        } else
-            return <Observable<void>><any>_observableThrow(response_);
-    }));
-}
-
-protected processIconPicture(response: HttpResponseBase): Observable<void> {
-    const status = response.status;
-    const responseBlob =
-        response instanceof HttpResponse ? response.body :
-        (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-    let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-    if (status === 200) {
-        return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-        return _observableOf<void>(<any>null);
-        }));
-    } else if (status !== 200 && status !== 204) {
-        return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }));
-    }
-    return _observableOf<void>(<any>null);
-}
-
-
-
-
-
-
 
     /**
      * @param id (optional) 
@@ -10646,6 +10886,58 @@ protected processIconPicture(response: HttpResponseBase): Observable<void> {
             }));
         }
         return _observableOf<FileDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    updateIcon(body: UpdateIconInput | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/TaskStatuses/UpdateIcon";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateIcon(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateIcon(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateIcon(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
     }
 }
 
@@ -16599,8 +16891,45 @@ export interface ICreateOrEditSeverityDto {
     id: number | undefined;
 }
 
+export class CreateOrEditTagDto implements ICreateOrEditTagDto {
+    id!: number | undefined;
+
+    constructor(data?: ICreateOrEditTagDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CreateOrEditTagDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateOrEditTagDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface ICreateOrEditTagDto {
+    id: number | undefined;
+}
+
 export class CreateOrEditTaskStatusDto implements ICreateOrEditTaskStatusDto {
     name!: string;
+    iconUrl!: string | undefined;
     id!: number | undefined;
 
     constructor(data?: ICreateOrEditTaskStatusDto) {
@@ -16615,6 +16944,7 @@ export class CreateOrEditTaskStatusDto implements ICreateOrEditTaskStatusDto {
     init(_data?: any) {
         if (_data) {
             this.name = _data["name"];
+            this.iconUrl = _data["iconUrl"];
             this.id = _data["id"];
         }
     }
@@ -16629,6 +16959,7 @@ export class CreateOrEditTaskStatusDto implements ICreateOrEditTaskStatusDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
+        data["iconUrl"] = this.iconUrl;
         data["id"] = this.id;
         return data; 
     }
@@ -16636,6 +16967,7 @@ export class CreateOrEditTaskStatusDto implements ICreateOrEditTaskStatusDto {
 
 export interface ICreateOrEditTaskStatusDto {
     name: string;
+    iconUrl: string | undefined;
     id: number | undefined;
 }
 
@@ -20836,6 +21168,78 @@ export interface IGetSeverityForViewDto {
     severity: SeverityDto;
 }
 
+export class GetTagForEditOutput implements IGetTagForEditOutput {
+    tag!: CreateOrEditTagDto;
+
+    constructor(data?: IGetTagForEditOutput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tag = _data["tag"] ? CreateOrEditTagDto.fromJS(_data["tag"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetTagForEditOutput {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTagForEditOutput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tag"] = this.tag ? this.tag.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IGetTagForEditOutput {
+    tag: CreateOrEditTagDto;
+}
+
+export class GetTagForViewDto implements IGetTagForViewDto {
+    tag!: TagDto;
+
+    constructor(data?: IGetTagForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tag = _data["tag"] ? TagDto.fromJS(_data["tag"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetTagForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTagForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tag"] = this.tag ? this.tag.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IGetTagForViewDto {
+    tag: TagDto;
+}
+
 export class GetTaskStatusForEditOutput implements IGetTaskStatusForEditOutput {
     taskStatus!: CreateOrEditTaskStatusDto;
 
@@ -24182,15 +24586,16 @@ export class PagedResultDtoOfGetSeverityForViewDto implements IPagedResultDtoOfG
     }
 }
 
-export class UpdateIconInput implements IUpdateIconInput {
-    fileToken!: string | undefined;
-    x!: number;
-    y!: number;
-    width!: number;
-    height!: number;
-    taskStatusId!: number;
+export interface IPagedResultDtoOfGetSeverityForViewDto {
+    totalCount: number;
+    items: GetSeverityForViewDto[] | undefined;
+}
 
-    constructor(data?: IUpdateIconInput) {
+export class PagedResultDtoOfGetTagForViewDto implements IPagedResultDtoOfGetTagForViewDto {
+    totalCount!: number;
+    items!: GetTagForViewDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfGetTagForViewDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -24201,50 +24606,37 @@ export class UpdateIconInput implements IUpdateIconInput {
 
     init(_data?: any) {
         if (_data) {
-            this.fileToken = _data["fileToken"];
-            this.x = _data["x"];
-            this.y = _data["y"];
-            this.width = _data["width"];
-            this.height = _data["height"];
-            this.taskStatusId = _data["taskStatusId"];
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetTagForViewDto.fromJS(item));
+            }
         }
     }
 
-    static fromJS(data: any): UpdateIconInput {
+    static fromJS(data: any): PagedResultDtoOfGetTagForViewDto {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateIconInput();
+        let result = new PagedResultDtoOfGetTagForViewDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["fileToken"] = this.fileToken;
-        data["x"] = this.x;
-        data["y"] = this.y;
-        data["width"] = this.width;
-        data["height"] = this.height;
-        data["taskStatusId"] = this.taskStatusId;
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
         return data; 
     }
 }
 
-export interface IUpdateIconInput {
-    fileToken: string | undefined;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    taskStatusId: number;
-}
-
-
-
-
-
-export interface IPagedResultDtoOfGetSeverityForViewDto {
+export interface IPagedResultDtoOfGetTagForViewDto {
     totalCount: number;
-    items: GetSeverityForViewDto[] | undefined;
+    items: GetTagForViewDto[] | undefined;
 }
 
 export class PagedResultDtoOfGetTaskStatusForViewDto implements IPagedResultDtoOfGetTaskStatusForViewDto {
@@ -26680,6 +27072,42 @@ export interface ISwitchToLinkedAccountOutput {
     tenancyName: string | undefined;
 }
 
+export class TagDto implements ITagDto {
+    id!: number;
+
+    constructor(data?: ITagDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): TagDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TagDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface ITagDto {
+    id: number;
+}
+
 export class TaskStatusDto implements ITaskStatusDto {
     name!: string | undefined;
     iconUrl!: string | undefined;
@@ -26695,7 +27123,6 @@ export class TaskStatusDto implements ITaskStatusDto {
     }
 
     init(_data?: any) {
-      
         if (_data) {
             this.name = _data["name"];
             this.iconUrl = _data["iconUrl"];
@@ -26713,6 +27140,7 @@ export class TaskStatusDto implements ITaskStatusDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
+        data["iconUrl"] = this.iconUrl;
         data["id"] = this.id;
         return data; 
     }
@@ -26720,6 +27148,7 @@ export class TaskStatusDto implements ITaskStatusDto {
 
 export interface ITaskStatusDto {
     name: string | undefined;
+    iconUrl: string | undefined;
     id: number;
 }
 
@@ -28151,6 +28580,62 @@ export class UpdateGoogleAuthenticatorKeyOutput implements IUpdateGoogleAuthenti
 
 export interface IUpdateGoogleAuthenticatorKeyOutput {
     qrCodeSetupImageUrl: string | undefined;
+}
+
+export class UpdateIconInput implements IUpdateIconInput {
+    fileToken!: string | undefined;
+    x!: number;
+    y!: number;
+    width!: number;
+    height!: number;
+    taskStatusId!: number;
+
+    constructor(data?: IUpdateIconInput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fileToken = _data["fileToken"];
+            this.x = _data["x"];
+            this.y = _data["y"];
+            this.width = _data["width"];
+            this.height = _data["height"];
+            this.taskStatusId = _data["taskStatusId"];
+        }
+    }
+
+    static fromJS(data: any): UpdateIconInput {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateIconInput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fileToken"] = this.fileToken;
+        data["x"] = this.x;
+        data["y"] = this.y;
+        data["width"] = this.width;
+        data["height"] = this.height;
+        data["taskStatusId"] = this.taskStatusId;
+        return data; 
+    }
+}
+
+export interface IUpdateIconInput {
+    fileToken: string | undefined;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    taskStatusId: number;
 }
 
 export class UpdateLanguageTextInput implements IUpdateLanguageTextInput {

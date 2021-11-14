@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="TaskStatus">Task status</text>
+  <texts>    <text name="Tag">Tag</text>
+    <text name="CreateNewTag">Create new tag</text>
+    <text name="EditTag">Edit tag</text>
+    <text name="DeleteTag">Delete tag</text>
+    <text name="TaskStatus">Task status</text>
     <text name="PAX.Next.TaskManager.TaskStatus">TaskStatus</text>
     <text name="TaskStatusesHeaderInfo">Task statuses header info</text>
     <text name="CreateNewTaskStatus">Create new task status</text>
