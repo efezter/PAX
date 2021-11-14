@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="PaxTask">Pax task</text>
+  <texts>
+    <text name="PaxTask">Pax task</text>
     <text name="Assignee">Assignee</text>
     <text name="Reporter">Reporter</text>
     <text name="PAX.Next.TaskManager.PaxTask">PaxTask</text>

@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Abp.UI;
 using PAX.Next.Storage;
 using static PAX.Next.TaskManager.Utils.Enums;
+using Abp.Runtime.Session;
 
 namespace PAX.Next.TaskManager
 {
@@ -33,14 +34,16 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly IRepository<Severity, int> _lookup_severityRepository;
         private readonly IRepository<TaskStatus, int> _lookup_taskStatusRepository;
+        private readonly IAbpSession _abpSession;
 
-        public PaxTasksAppService(IRepository<PaxTask> paxTaskRepository, IPaxTasksExcelExporter paxTasksExcelExporter, IRepository<User, long> lookup_userRepository, IRepository<Severity, int> lookup_severityRepository, IRepository<TaskStatus, int> lookup_taskStatusRepository)
+        public PaxTasksAppService(IRepository<PaxTask> paxTaskRepository, IPaxTasksExcelExporter paxTasksExcelExporter, IRepository<User, long> lookup_userRepository, IRepository<Severity, int> lookup_severityRepository, IRepository<TaskStatus, int> lookup_taskStatusRepository, IAbpSession abpSession)
         {
             _paxTaskRepository = paxTaskRepository;
             _paxTasksExcelExporter = paxTasksExcelExporter;
             _lookup_userRepository = lookup_userRepository;
             _lookup_severityRepository = lookup_severityRepository;
             _lookup_taskStatusRepository = lookup_taskStatusRepository;
+            _abpSession = abpSession;
 
         }
 
@@ -181,13 +184,13 @@ namespace PAX.Next.TaskManager
             if (output.PaxTask.ReporterId != null)
             {
                 var _lookupUser = await _lookup_userRepository.FirstOrDefaultAsync((long)output.PaxTask.ReporterId);
-                output.UserName = _lookupUser?.Name?.ToString();
+                output.UserName = _lookupUser?.FullName?.ToString();
             }
 
             if (output.PaxTask.AssigneeId != null)
             {
                 var _lookupUser = await _lookup_userRepository.FirstOrDefaultAsync((long)output.PaxTask.AssigneeId);
-                output.UserName2 = _lookupUser?.Name?.ToString();
+                output.UserName2 = _lookupUser?.FullName?.ToString();
             }
 
             if (output.PaxTask.SeverityId != null)
@@ -221,6 +224,9 @@ namespace PAX.Next.TaskManager
         protected virtual async Task Create(CreateOrEditPaxTaskDto input)
         {
             var paxTask = ObjectMapper.Map<PaxTask>(input);
+
+            paxTask.CreatedDate = DateTime.Now;
+            paxTask.ReporterId = _abpSession.GetUserId();
 
             await _paxTaskRepository.InsertAsync(paxTask);
 
@@ -305,31 +311,39 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
         public async Task<PagedResultDto<PaxTaskUserLookupTableDto>> GetAllUserForLookupTable(GetAllForLookupTableInput input)
         {
-            var query = _lookup_userRepository.GetAll().WhereIf(
-                   !string.IsNullOrWhiteSpace(input.Filter),
-                  e => e.Name != null && e.Name.Contains(input.Filter)
-               );
-
-            var totalCount = await query.CountAsync();
-
-            var userList = await query
-                .PageBy(input)
-                .ToListAsync();
-
-            var lookupTableDtoList = new List<PaxTaskUserLookupTableDto>();
-            foreach (var user in userList)
+            try
             {
-                lookupTableDtoList.Add(new PaxTaskUserLookupTableDto
-                {
-                    Id = user.Id,
-                    DisplayName = user.Name?.ToString()
-                });
-            }
+                var query = _lookup_userRepository.GetAll().WhereIf(
+                           !string.IsNullOrWhiteSpace(input.Filter),
+                          e => (e.Name != null && e.Name.Contains(input.Filter)) || (e.Surname != null && e.Surname.Contains(input.Filter))
+                       ).Select(x => new { x.Id, x.FullName });
 
-            return new PagedResultDto<PaxTaskUserLookupTableDto>(
-                totalCount,
-                lookupTableDtoList
-            );
+                var totalCount = await query.CountAsync();
+
+                var userList = await query
+                    .PageBy(input)
+                    .ToListAsync();
+
+                var lookupTableDtoList = new List<PaxTaskUserLookupTableDto>();
+                foreach (var user in userList)
+                {
+                    lookupTableDtoList.Add(new PaxTaskUserLookupTableDto
+                    {
+                        Id = user.Id,
+                        DisplayName = user.FullName?.ToString()
+                    });
+                }
+
+                return new PagedResultDto<PaxTaskUserLookupTableDto>(
+                    totalCount,
+                    lookupTableDtoList
+                );
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
         public async Task<List<PaxTaskSeverityLookupTableDto>> GetAllSeverityForTableDropdown()

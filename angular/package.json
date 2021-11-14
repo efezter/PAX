@@ -26,6 +26,8 @@
     "@angular/platform-browser-dynamic": "^12.1.0",
     "@angular/platform-server": "^12.1.0",
     "@angular/router": "^12.1.0",
+    "@ckeditor/ckeditor5-angular": "^2.0.2",
+    "@ckeditor/ckeditor5-build-classic": "^31.0.0",
     "@fullcalendar/core": "^5.8.0",
     "@microsoft/signalr": "^5.0.7",
     "@swimlane/ngx-charts": "^18.0.1",

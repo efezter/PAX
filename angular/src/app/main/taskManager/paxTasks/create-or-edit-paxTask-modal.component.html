@@ -23,35 +23,7 @@
                 <div class="modal-body">
                     <div  class="form-group m-form__group">
                         <label *ngIf="reporterName" for="UserName">{{ l('Reporter') }} : {{reporterName}}</label>
-                        <div class="input-group">
-                            <!-- <input
-                                class="form-control"
-                                id="UserName"
-                                name="userName"
-                                [(ngModel)]="userName"
-                                type="text"
-                                disabled
-                            />
-                            <div class="input-group-append">
-                                <button class="btn btn-primary blue" (click)="openSelectUserModal()" type="button">
-                                    <i class="fa fa-search"></i> {{ l('Pick') }}
-                                </button>
-                            </div>
-                            <div class="input-group-prepend">
-                                <button class="btn btn-danger btn-icon" type="button" (click)="setReporterIdNull()">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div> -->
-                        </div>
                     </div>
-                    <input
-                        class="form-control"
-                        name="paxTask.reporterId"
-                        [(ngModel)]="paxTask.reporterId"
-                        type="text"
-                        required
-                        hidden
-                    />
 
                     <div class="form-group m-form__group">
                         <label for="assigneeName">{{ l('Assignee') }}</label>
@@ -84,10 +56,55 @@
                         hidden
                     />
 
+                    <div class="form-group">
+                        <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
+                        <select
+                            class="form-control"
+                            #PaxTask_TaskType="ngModel"
+                            name="TaskType"
+                            id="PaxTask_TaskType"
+                            [(ngModel)]="paxTask.taskType"
+                        >
+                            <option value="1">{{ l('Normal') }}</option>
+
+                            <option value="2">{{ l('Repating') }}</option>
+                        </select>
+                        <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
+                    </div>
+
+                    <div *ngIf="paxTask.taskType == 2" class="form-group">
+                        <label for="PaxTask_TaskTypePeriod">{{ l('TaskTypePeriod') }}</label>
+                        <select
+                            class="form-control"
+                            #PaxTask_TaskTypePeriod="ngModel"
+                            name="TaskTypePeriod"
+                            id="PaxTask_TaskTypePeriod"
+                            [(ngModel)]="paxTask.taskTypePeriod"
+                        >
+                            <option value="1">{{ l('Weekly') }}</option>
+
+                            <option value="2">{{ l('Monthly') }}</option>
+                        </select>
+                        <validation-messages [formCtrl]="PaxTask_TaskTypePeriod"></validation-messages>
+                    </div>
+
+                    <div *ngIf="paxTask.taskType == 2" class="form-group">
+                        <label for="PaxTask_PeriodInterval">{{ l('PeriodInterval') }}</label>
+                        <input
+                            type="number"
+                            #PaxTask_PeriodInterval="ngModel"
+                            id="PaxTask_PeriodInterval"
+                            class="form-control"
+                            [(ngModel)]="paxTask.periodInterval"
+                            name="PeriodInterval"
+                        />
+                        <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
+                    </div>
+
                     <div class="form-group m-form__group">
                         <label for="SeverityName">{{ l('Severity') }}</label>
                         <select name="paxTask.severityId" [(ngModel)]="paxTask.severityId" class="form-control">
-                            <option value="">{{ l('SelectASeverity') }}</option>
+                            <!-- <option value="">{{ l('SelectASeverity') }}</option> -->
                             <option *ngFor="let item of allSeveritys" value="{{ item.id }}">
                                 {{ item.displayName }}
                             </option>
@@ -102,7 +119,7 @@
                             class="form-control"
                             required
                         >
-                            <option value="">{{ l('SelectATaskStatus') }}</option>
+                            <!-- <option value="">{{ l('SelectATaskStatus') }}</option> -->
                             <option *ngFor="let item of allTaskStatuss" value="{{ item.id }}">
                                 {{ item.displayName }}
                             </option>
@@ -127,76 +144,13 @@
 
                     <div class="form-group">
                         <label for="PaxTask_Details">{{ l('Details') }}</label>
-                        <input
-                            type="text"
-                            #PaxTask_Details="ngModel"
-                            id="PaxTask_Details"
-                            class="form-control"
-                            [(ngModel)]="paxTask.details"
-                            name="Details"
-                        />
-                        <validation-messages [formCtrl]="PaxTask_Details"></validation-messages>
+                        <ckeditor #PaxTask_Details="ngModel"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Details" data="{{paxTask.details}}"></ckeditor>
+                        <validation-messages  
+                        id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
                     </div>
 
-                    <div class="form-group">
-                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }}</label>
-                        <input
-                            required
-                            class="form-control m-input"
-                            #PaxTask_CreatedDate
-                            type="datetime"
-                            bsDatepicker
-                            datePickerLuxonModifier
-                            [(date)]="paxTask.createdDate"
-                            id="PaxTask_CreatedDate"
-                            name="PaxTask_CreatedDate"
-                        />
-                        <validation-messages [formCtrl]="PaxTask_CreatedDate"></validation-messages>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
-                        <select
-                            class="form-control"
-                            #PaxTask_TaskType="ngModel"
-                            name="TaskType"
-                            id="PaxTask_TaskType"
-                            [(ngModel)]="paxTask.taskType"
-                        >
-                            <option value="1">{{ l('Normal') }}</option>
-
-                            <option value="2">{{ l('Repating') }}</option>
-                        </select>
-                        <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="PaxTask_TaskTypePeriod">{{ l('TaskTypePeriod') }}</label>
-                        <select
-                            class="form-control"
-                            #PaxTask_TaskTypePeriod="ngModel"
-                            name="TaskTypePeriod"
-                            id="PaxTask_TaskTypePeriod"
-                            [(ngModel)]="paxTask.taskTypePeriod"
-                        >
-                            <option value="1">{{ l('Weekly') }}</option>
-
-                            <option value="2">{{ l('Monthly') }}</option>
-                        </select>
-                        <validation-messages [formCtrl]="PaxTask_TaskTypePeriod"></validation-messages>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="PaxTask_PeriodInterval">{{ l('PeriodInterval') }}</label>
-                        <input
-                            type="number"
-                            #PaxTask_PeriodInterval="ngModel"
-                            id="PaxTask_PeriodInterval"
-                            class="form-control"
-                            [(ngModel)]="paxTask.periodInterval"
-                            name="PeriodInterval"
-                        />
-                        <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
+                    <div *ngIf="paxTask.id" class="form-group">
+                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : {{paxTask.createdDate}}</label>
                     </div>
                 </div>
                 <div class="modal-footer">

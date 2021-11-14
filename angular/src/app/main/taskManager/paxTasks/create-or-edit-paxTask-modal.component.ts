@@ -14,6 +14,8 @@ import { DateTime } from 'luxon';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 @Component({
     selector: 'createOrEditPaxTaskModal',
     templateUrl: './create-or-edit-paxTask-modal.component.html',
@@ -26,6 +28,8 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     paxTaskUserLookupTableModal2: PaxTaskUserLookupTableModalComponent;
 
     @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
+
+    public Editor = ClassicEditor;
 
     active = false;
     saving = false;
@@ -51,9 +55,7 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     show(paxTaskId?: number): void {
         if (!paxTaskId) {
             this.paxTask = new CreateOrEditPaxTaskDto();
-            this.paxTask.reporterId = abp.session.userId;
             this.paxTask.id = paxTaskId;
-            this.paxTask.createdDate = this._dateTimeService.getStartOfDay();
             this.paxTask.taskType = TaskType.Normal;
             this.reporterName = '';
             this.assigneeName = '';

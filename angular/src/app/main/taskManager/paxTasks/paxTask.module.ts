@@ -6,6 +6,7 @@ import { PaxTasksComponent } from './paxTasks.component';
 import { CreateOrEditPaxTaskModalComponent } from './create-or-edit-paxTask-modal.component';
 import { ViewPaxTaskModalComponent } from './view-paxTask-modal.component';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 // import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 
 @NgModule({
@@ -14,9 +15,9 @@ import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-tabl
         CreateOrEditPaxTaskModalComponent,
         ViewPaxTaskModalComponent,
 
-        PaxTaskUserLookupTableModalComponent,
+        PaxTaskUserLookupTableModalComponent
         // PaxTaskUserLookupTableModalComponent,
     ],
-    imports: [AppSharedModule, PaxTaskRoutingModule, AdminSharedModule],
+    imports: [AppSharedModule, PaxTaskRoutingModule, AdminSharedModule,CKEditorModule],
 })
 export class PaxTaskModule {}

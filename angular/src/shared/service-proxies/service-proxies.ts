@@ -17502,11 +17502,11 @@ export interface ICreateInvoiceDto {
 export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
     header!: string;
     details!: string | undefined;
-    createdDate!: DateTime;
+    createdDate!: DateTime | undefined;
     taskType!: TaskType;
     taskTypePeriod!: TaskTypePeriod;
     periodInterval!: number | undefined;
-    reporterId!: number;
+    reporterId!: number | undefined;
     assigneeId!: number | undefined;
     severityId!: number | undefined;
     taskStatusId!: number;
@@ -17564,11 +17564,11 @@ export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
 export interface ICreateOrEditPaxTaskDto {
     header: string;
     details: string | undefined;
-    createdDate: DateTime;
+    createdDate: DateTime | undefined;
     taskType: TaskType;
     taskTypePeriod: TaskTypePeriod;
     periodInterval: number | undefined;
-    reporterId: number;
+    reporterId: number | undefined;
     assigneeId: number | undefined;
     severityId: number | undefined;
     taskStatusId: number;
@@ -26149,11 +26149,11 @@ export interface IPasswordComplexitySetting {
 
 export class PaxTaskDto implements IPaxTaskDto {
     header!: string | undefined;
-    createdDate!: DateTime;
+    createdDate!: DateTime | undefined;
     taskType!: TaskType;
     taskTypePeriod!: TaskTypePeriod;
     periodInterval!: number | undefined;
-    reporterId!: number;
+    reporterId!: number | undefined;
     assigneeId!: number | undefined;
     severityId!: number | undefined;
     taskStatusId!: number;
@@ -26208,11 +26208,11 @@ export class PaxTaskDto implements IPaxTaskDto {
 
 export interface IPaxTaskDto {
     header: string | undefined;
-    createdDate: DateTime;
+    createdDate: DateTime | undefined;
     taskType: TaskType;
     taskTypePeriod: TaskTypePeriod;
     periodInterval: number | undefined;
-    reporterId: number;
+    reporterId: number | undefined;
     assigneeId: number | undefined;
     severityId: number | undefined;
     taskStatusId: number;
