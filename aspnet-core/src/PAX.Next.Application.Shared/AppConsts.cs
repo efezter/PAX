@@ -50,5 +50,12 @@ namespace PAX.Next
         public static TimeSpan RefreshTokenExpiration = TimeSpan.FromDays(365);
 
         public const string DateTimeOffsetFormat = "yyyy-MM-ddTHH:mm:sszzz";
+
+
+
+        //Customs 
+
+        public const int MaxIconBytes = 5242880; //5MB
+        public const int ResizedMaxIconBytesUserFriendlyValue = 1024;
     }
 }

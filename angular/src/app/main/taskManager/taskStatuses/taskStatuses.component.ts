@@ -39,6 +39,7 @@ export class TaskStatusesComponent extends AppComponentBase {
     advancedFiltersAreShown = false;
     filterText = '';
     nameFilter = '';
+    serverUrl = AppConsts.remoteServiceBaseUrl;
 
     _entityTypeFullName = 'PAX.Next.TaskManager.TaskStatus';
     entityHistoryEnabled = false;

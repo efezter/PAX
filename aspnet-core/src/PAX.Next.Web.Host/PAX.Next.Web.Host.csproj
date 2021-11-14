@@ -66,4 +66,10 @@
         <Folder Include="wwwroot\Plugins\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="wwwroot\Common\Images\1.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

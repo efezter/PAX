@@ -10368,6 +10368,65 @@ export class TaskStatusesServiceProxy {
         return _observableOf<GetTaskStatusForViewDto>(<any>null);
     }
 
+
+/**
+     * @param body (optional) 
+     * @return Success
+     */
+ updateIcon(body: UpdateIconInput | undefined): Observable<void> {
+    let url_ = this.baseUrl + "/api/services/app/TaskStatuses/UpdateIcon";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(body);
+
+    let options_ : any = {
+        body: content_,
+        observe: "response",
+        responseType: "blob",
+        headers: new HttpHeaders({
+            "Content-Type": "application/json-patch+json",
+        })
+    };
+
+    return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.processIconPicture(response_);
+    })).pipe(_observableCatch((response_: any) => {
+        if (response_ instanceof HttpResponseBase) {
+            try {
+                return this.processIconPicture(<any>response_);
+            } catch (e) {
+                return <Observable<void>><any>_observableThrow(e);
+            }
+        } else
+            return <Observable<void>><any>_observableThrow(response_);
+    }));
+}
+
+protected processIconPicture(response: HttpResponseBase): Observable<void> {
+    const status = response.status;
+    const responseBlob =
+        response instanceof HttpResponse ? response.body :
+        (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+    let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+    if (status === 200) {
+        return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        return _observableOf<void>(<any>null);
+        }));
+    } else if (status !== 200 && status !== 204) {
+        return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }));
+    }
+    return _observableOf<void>(<any>null);
+}
+
+
+
+
+
+
+
     /**
      * @param id (optional) 
      * @return Success
@@ -24122,6 +24181,66 @@ export class PagedResultDtoOfGetSeverityForViewDto implements IPagedResultDtoOfG
         return data; 
     }
 }
+
+export class UpdateIconInput implements IUpdateIconInput {
+    fileToken!: string | undefined;
+    x!: number;
+    y!: number;
+    width!: number;
+    height!: number;
+    taskStatusId!: number;
+
+    constructor(data?: IUpdateIconInput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fileToken = _data["fileToken"];
+            this.x = _data["x"];
+            this.y = _data["y"];
+            this.width = _data["width"];
+            this.height = _data["height"];
+            this.taskStatusId = _data["taskStatusId"];
+        }
+    }
+
+    static fromJS(data: any): UpdateIconInput {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateIconInput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fileToken"] = this.fileToken;
+        data["x"] = this.x;
+        data["y"] = this.y;
+        data["width"] = this.width;
+        data["height"] = this.height;
+        data["taskStatusId"] = this.taskStatusId;
+        return data; 
+    }
+}
+
+export interface IUpdateIconInput {
+    fileToken: string | undefined;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    taskStatusId: number;
+}
+
+
+
+
 
 export interface IPagedResultDtoOfGetSeverityForViewDto {
     totalCount: number;
