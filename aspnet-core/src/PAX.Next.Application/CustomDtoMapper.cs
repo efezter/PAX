@@ -50,6 +50,8 @@ namespace PAX.Next
     {
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
+            configuration.CreateMap<CreateOrEditWatcherDto, Watcher>().ReverseMap();
+            configuration.CreateMap<WatcherDto, Watcher>().ReverseMap();
             configuration.CreateMap<CreateOrEditPaxTaskDto, PaxTask>().ReverseMap();
             configuration.CreateMap<PaxTaskDto, PaxTask>().ReverseMap();
             configuration.CreateMap<CreateOrEditTagDto, Tag>().ReverseMap();

@@ -3,6 +3,7 @@
 using System;
 using Abp.Application.Services.Dto;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace PAX.Next.TaskManager.Dtos
 {
@@ -30,6 +31,8 @@ namespace PAX.Next.TaskManager.Dtos
         public int? SeverityId { get; set; }
 
         public int TaskStatusId { get; set; }
+
+        public IEnumerable<WatcherUserLookupTableDto> Watchers { get; set; }
 
     }
 }

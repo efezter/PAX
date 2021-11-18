@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>
+  <texts>    <text name="Watcher">Watcher</text>
+    <text name="CreateNewWatcher">Create new watcher</text>
+    <text name="EditWatcher">Edit watcher</text>
+    <text name="DeleteWatcher">Delete watcher</text>
+
     <text name="PaxTask">Pax task</text>
     <text name="Assignee">Assignee</text>
     <text name="Reporter">Reporter</text>

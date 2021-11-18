@@ -30,20 +30,29 @@ namespace PAX.Next.TaskManager
     public class PaxTasksAppService : NextAppServiceBase, IPaxTasksAppService
     {
         private readonly IRepository<PaxTask> _paxTaskRepository;
+        private readonly IWatchersAppService _watcherRepository;
         private readonly IPaxTasksExcelExporter _paxTasksExcelExporter;
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly IRepository<Severity, int> _lookup_severityRepository;
         private readonly IRepository<TaskStatus, int> _lookup_taskStatusRepository;
         private readonly IAbpSession _abpSession;
 
-        public PaxTasksAppService(IRepository<PaxTask> paxTaskRepository, IPaxTasksExcelExporter paxTasksExcelExporter, IRepository<User, long> lookup_userRepository, IRepository<Severity, int> lookup_severityRepository, IRepository<TaskStatus, int> lookup_taskStatusRepository, IAbpSession abpSession)
+        public PaxTasksAppService(
+            IRepository<PaxTask> paxTaskRepository, 
+            IPaxTasksExcelExporter paxTasksExcelExporter, 
+            IRepository<User, long> lookup_userRepository, 
+            IRepository<Severity, int> lookup_severityRepository, 
+            IRepository<TaskStatus, int> lookup_taskStatusRepository, 
+            IAbpSession abpSession,
+            IWatchersAppService watcherRepository
+            )
         {
             _paxTaskRepository = paxTaskRepository;
             _paxTasksExcelExporter = paxTasksExcelExporter;
             _lookup_userRepository = lookup_userRepository;
             _lookup_severityRepository = lookup_severityRepository;
             _lookup_taskStatusRepository = lookup_taskStatusRepository;
-            _abpSession = abpSession;
+            _watcherRepository = watcherRepository;
 
         }
 
@@ -177,9 +186,11 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_PaxTasks_Edit)]
         public async Task<GetPaxTaskForEditOutput> GetPaxTaskForEdit(EntityDto input)
         {
-            var paxTask = await _paxTaskRepository.FirstOrDefaultAsync(input.Id);
+            var paxTask = await _paxTaskRepository.FirstOrDefaultAsync(input.Id);            
 
             var output = new GetPaxTaskForEditOutput { PaxTask = ObjectMapper.Map<CreateOrEditPaxTaskDto>(paxTask) };
+
+            output.PaxTask.Watchers = await _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value);
 
             if (output.PaxTask.ReporterId != null)
             {
@@ -238,6 +249,40 @@ namespace PAX.Next.TaskManager
             var paxTask = await _paxTaskRepository.FirstOrDefaultAsync((int)input.Id);
             ObjectMapper.Map(input, paxTask);
 
+            if (input.Watchers == null)
+            {
+                input.Watchers = new List<WatcherUserLookupTableDto>();
+            }
+
+            await UpdateWatchers(paxTask.Id, input.Watchers.ToList());
+        }
+
+        private async Task UpdateWatchers(int taskId, List<WatcherUserLookupTableDto> updatedWatchers)
+        {
+            var watcherIds =  _watcherRepository.GetByTaskId(taskId).Result.ToList();
+
+            if (watcherIds != null && watcherIds.Count > 0)
+            {
+                List<Task> delTasks = new List<Task>();
+                foreach (var watcherId in watcherIds)
+                {
+                    delTasks.Add(_watcherRepository.Delete(watcherId));
+                }
+
+                Task.WaitAll(delTasks.ToArray());
+            }
+
+            if (updatedWatchers != null  && updatedWatchers.Count > 0)
+            {
+                List<Task> inserTasks = new List<Task>();
+                foreach (var watcher in updatedWatchers)
+                {
+                    CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.Id, PaxTaskId = taskId };
+                    inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
+                }
+
+                Task.WaitAll(inserTasks.ToArray());
+            }
         }
 
         [AbpAuthorize(AppPermissions.Pages_PaxTasks_Delete)]
@@ -311,39 +356,31 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
         public async Task<PagedResultDto<PaxTaskUserLookupTableDto>> GetAllUserForLookupTable(GetAllForLookupTableInput input)
         {
-            try
+            var query = _lookup_userRepository.GetAll().WhereIf(
+                       !string.IsNullOrWhiteSpace(input.Filter),
+                      e => (e.Name != null && e.Name.Contains(input.Filter)) || (e.Surname != null && e.Surname.Contains(input.Filter))
+                   ).Select(x => new { x.Id, x.FullName });
+
+            var totalCount = await query.CountAsync();
+
+            var userList = await query
+                .PageBy(input)
+                .ToListAsync();
+
+            var lookupTableDtoList = new List<PaxTaskUserLookupTableDto>();
+            foreach (var user in userList)
             {
-                var query = _lookup_userRepository.GetAll().WhereIf(
-                           !string.IsNullOrWhiteSpace(input.Filter),
-                          e => (e.Name != null && e.Name.Contains(input.Filter)) || (e.Surname != null && e.Surname.Contains(input.Filter))
-                       ).Select(x => new { x.Id, x.FullName });
-
-                var totalCount = await query.CountAsync();
-
-                var userList = await query
-                    .PageBy(input)
-                    .ToListAsync();
-
-                var lookupTableDtoList = new List<PaxTaskUserLookupTableDto>();
-                foreach (var user in userList)
+                lookupTableDtoList.Add(new PaxTaskUserLookupTableDto
                 {
-                    lookupTableDtoList.Add(new PaxTaskUserLookupTableDto
-                    {
-                        Id = user.Id,
-                        DisplayName = user.FullName?.ToString()
-                    });
-                }
-
-                return new PagedResultDto<PaxTaskUserLookupTableDto>(
-                    totalCount,
-                    lookupTableDtoList
-                );
+                    Id = user.Id,
+                    DisplayName = user.FullName?.ToString()
+                });
             }
-            catch (Exception ex)
-            {
 
-                throw;
-            }
+            return new PagedResultDto<PaxTaskUserLookupTableDto>(
+                totalCount,
+                lookupTableDtoList
+            );
         }
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
         public async Task<List<PaxTaskSeverityLookupTableDto>> GetAllSeverityForTableDropdown()

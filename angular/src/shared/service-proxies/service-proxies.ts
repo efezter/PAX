@@ -15294,6 +15294,464 @@ export class UserLoginServiceProxy {
 }
 
 @Injectable()
+export class WatchersServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param taskId (optional) 
+     * @return Success
+     */
+    getByTaskId(taskId: number | undefined): Observable<number[]> {
+        let url_ = this.baseUrl + "/api/services/app/Watchers/GetByTaskId?";
+        if (taskId === null)
+            throw new Error("The parameter 'taskId' cannot be null.");
+        else if (taskId !== undefined)
+            url_ += "taskId=" + encodeURIComponent("" + taskId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetByTaskId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetByTaskId(<any>response_);
+                } catch (e) {
+                    return <Observable<number[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetByTaskId(response: HttpResponseBase): Observable<number[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number[]>(<any>null);
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param paxTaskHeaderFilter (optional) 
+     * @param userNameFilter (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAll(filter: string | undefined, paxTaskHeaderFilter: string | undefined, userNameFilter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetWatcherForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/Watchers/GetAll?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (paxTaskHeaderFilter === null)
+            throw new Error("The parameter 'paxTaskHeaderFilter' cannot be null.");
+        else if (paxTaskHeaderFilter !== undefined)
+            url_ += "PaxTaskHeaderFilter=" + encodeURIComponent("" + paxTaskHeaderFilter) + "&";
+        if (userNameFilter === null)
+            throw new Error("The parameter 'userNameFilter' cannot be null.");
+        else if (userNameFilter !== undefined)
+            url_ += "UserNameFilter=" + encodeURIComponent("" + userNameFilter) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfGetWatcherForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfGetWatcherForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<PagedResultDtoOfGetWatcherForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfGetWatcherForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfGetWatcherForViewDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getWatcherForEdit(id: number | undefined): Observable<GetWatcherForEditOutput> {
+        let url_ = this.baseUrl + "/api/services/app/Watchers/GetWatcherForEdit?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWatcherForEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWatcherForEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<GetWatcherForEditOutput>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetWatcherForEditOutput>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetWatcherForEdit(response: HttpResponseBase): Observable<GetWatcherForEditOutput> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetWatcherForEditOutput.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetWatcherForEditOutput>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createOrEdit(body: CreateOrEditWatcherDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Watchers/CreateOrEdit";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateOrEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateOrEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateOrEdit(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Watchers/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAllPaxTaskForLookupTable(filter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfWatcherPaxTaskLookupTableDto> {
+        let url_ = this.baseUrl + "/api/services/app/Watchers/GetAllPaxTaskForLookupTable?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllPaxTaskForLookupTable(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllPaxTaskForLookupTable(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfWatcherPaxTaskLookupTableDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfWatcherPaxTaskLookupTableDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllPaxTaskForLookupTable(response: HttpResponseBase): Observable<PagedResultDtoOfWatcherPaxTaskLookupTableDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfWatcherPaxTaskLookupTableDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfWatcherPaxTaskLookupTableDto>(<any>null);
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAllUserForLookupTable(filter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfWatcherUserLookupTableDto> {
+        let url_ = this.baseUrl + "/api/services/app/Watchers/GetAllUserForLookupTable?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllUserForLookupTable(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllUserForLookupTable(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfWatcherUserLookupTableDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfWatcherUserLookupTableDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllUserForLookupTable(response: HttpResponseBase): Observable<PagedResultDtoOfWatcherUserLookupTableDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfWatcherUserLookupTableDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfWatcherUserLookupTableDto>(<any>null);
+    }
+}
+
+@Injectable()
 export class WebhookEventServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -17502,14 +17960,15 @@ export interface ICreateInvoiceDto {
 export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
     header!: string;
     details!: string | undefined;
-    createdDate!: DateTime | undefined;
+    createdDate!: DateTime;
     taskType!: TaskType;
     taskTypePeriod!: TaskTypePeriod;
     periodInterval!: number | undefined;
-    reporterId!: number | undefined;
+    reporterId!: number;
     assigneeId!: number | undefined;
     severityId!: number | undefined;
     taskStatusId!: number;
+    watchers!: WatcherUserLookupTableDto[] | undefined;
     id!: number | undefined;
 
     constructor(data?: ICreateOrEditPaxTaskDto) {
@@ -17533,6 +17992,11 @@ export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
             this.assigneeId = _data["assigneeId"];
             this.severityId = _data["severityId"];
             this.taskStatusId = _data["taskStatusId"];
+            if (Array.isArray(_data["watchers"])) {
+                this.watchers = [] as any;
+                for (let item of _data["watchers"])
+                    this.watchers!.push(item);
+            }
             this.id = _data["id"];
         }
     }
@@ -17556,6 +18020,11 @@ export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
         data["assigneeId"] = this.assigneeId;
         data["severityId"] = this.severityId;
         data["taskStatusId"] = this.taskStatusId;
+        if (Array.isArray(this.watchers)) {
+            data["watchers"] = [];
+            for (let item of this.watchers)
+                data["watchers"].push(item);
+        }
         data["id"] = this.id;
         return data; 
     }
@@ -17564,14 +18033,15 @@ export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
 export interface ICreateOrEditPaxTaskDto {
     header: string;
     details: string | undefined;
-    createdDate: DateTime | undefined;
+    createdDate: DateTime;
     taskType: TaskType;
     taskTypePeriod: TaskTypePeriod;
     periodInterval: number | undefined;
-    reporterId: number | undefined;
+    reporterId: number;
     assigneeId: number | undefined;
     severityId: number | undefined;
     taskStatusId: number;
+    watchers: WatcherUserLookupTableDto[] | undefined;
     id: number | undefined;
 }
 
@@ -17696,6 +18166,50 @@ export class CreateOrEditTaskStatusDto implements ICreateOrEditTaskStatusDto {
 export interface ICreateOrEditTaskStatusDto {
     name: string;
     iconUrl: string | undefined;
+    id: number | undefined;
+}
+
+export class CreateOrEditWatcherDto implements ICreateOrEditWatcherDto {
+    paxTaskId!: number;
+    userId!: number;
+    id!: number | undefined;
+
+    constructor(data?: ICreateOrEditWatcherDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paxTaskId = _data["paxTaskId"];
+            this.userId = _data["userId"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CreateOrEditWatcherDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateOrEditWatcherDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paxTaskId"] = this.paxTaskId;
+        data["userId"] = this.userId;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface ICreateOrEditWatcherDto {
+    paxTaskId: number;
+    userId: number;
     id: number | undefined;
 }
 
@@ -22496,6 +23010,94 @@ export interface IGetUsersInput {
     skipCount: number;
 }
 
+export class GetWatcherForEditOutput implements IGetWatcherForEditOutput {
+    watcher!: CreateOrEditWatcherDto;
+    paxTaskHeader!: string | undefined;
+    userName!: string | undefined;
+
+    constructor(data?: IGetWatcherForEditOutput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.watcher = _data["watcher"] ? CreateOrEditWatcherDto.fromJS(_data["watcher"]) : <any>undefined;
+            this.paxTaskHeader = _data["paxTaskHeader"];
+            this.userName = _data["userName"];
+        }
+    }
+
+    static fromJS(data: any): GetWatcherForEditOutput {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetWatcherForEditOutput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["watcher"] = this.watcher ? this.watcher.toJSON() : <any>undefined;
+        data["paxTaskHeader"] = this.paxTaskHeader;
+        data["userName"] = this.userName;
+        return data; 
+    }
+}
+
+export interface IGetWatcherForEditOutput {
+    watcher: CreateOrEditWatcherDto;
+    paxTaskHeader: string | undefined;
+    userName: string | undefined;
+}
+
+export class GetWatcherForViewDto implements IGetWatcherForViewDto {
+    watcher!: WatcherDto;
+    paxTaskHeader!: string | undefined;
+    userName!: string | undefined;
+
+    constructor(data?: IGetWatcherForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.watcher = _data["watcher"] ? WatcherDto.fromJS(_data["watcher"]) : <any>undefined;
+            this.paxTaskHeader = _data["paxTaskHeader"];
+            this.userName = _data["userName"];
+        }
+    }
+
+    static fromJS(data: any): GetWatcherForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetWatcherForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["watcher"] = this.watcher ? this.watcher.toJSON() : <any>undefined;
+        data["paxTaskHeader"] = this.paxTaskHeader;
+        data["userName"] = this.userName;
+        return data; 
+    }
+}
+
+export interface IGetWatcherForViewDto {
+    watcher: WatcherDto;
+    paxTaskHeader: string | undefined;
+    userName: string | undefined;
+}
+
 export class GoogleExternalLoginProviderSettings implements IGoogleExternalLoginProviderSettings {
     clientId!: string | undefined;
     clientSecret!: string | undefined;
@@ -25567,6 +26169,54 @@ export interface IPagedResultDtoOfGetTaskStatusForViewDto {
     items: GetTaskStatusForViewDto[] | undefined;
 }
 
+export class PagedResultDtoOfGetWatcherForViewDto implements IPagedResultDtoOfGetWatcherForViewDto {
+    totalCount!: number;
+    items!: GetWatcherForViewDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfGetWatcherForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetWatcherForViewDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfGetWatcherForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfGetWatcherForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfGetWatcherForViewDto {
+    totalCount: number;
+    items: GetWatcherForViewDto[] | undefined;
+}
+
 export class PagedResultDtoOfLanguageTextListDto implements IPagedResultDtoOfLanguageTextListDto {
     totalCount!: number;
     items!: LanguageTextListDto[] | undefined;
@@ -26095,6 +26745,102 @@ export interface IPagedResultDtoOfUserLoginAttemptDto {
     items: UserLoginAttemptDto[] | undefined;
 }
 
+export class PagedResultDtoOfWatcherPaxTaskLookupTableDto implements IPagedResultDtoOfWatcherPaxTaskLookupTableDto {
+    totalCount!: number;
+    items!: WatcherPaxTaskLookupTableDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfWatcherPaxTaskLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(WatcherPaxTaskLookupTableDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfWatcherPaxTaskLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfWatcherPaxTaskLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfWatcherPaxTaskLookupTableDto {
+    totalCount: number;
+    items: WatcherPaxTaskLookupTableDto[] | undefined;
+}
+
+export class PagedResultDtoOfWatcherUserLookupTableDto implements IPagedResultDtoOfWatcherUserLookupTableDto {
+    totalCount!: number;
+    items!: WatcherUserLookupTableDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfWatcherUserLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(WatcherUserLookupTableDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfWatcherUserLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfWatcherUserLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfWatcherUserLookupTableDto {
+    totalCount: number;
+    items: WatcherUserLookupTableDto[] | undefined;
+}
+
 export class PasswordComplexitySetting implements IPasswordComplexitySetting {
     requireDigit!: boolean;
     requireLowercase!: boolean;
@@ -26149,11 +26895,11 @@ export interface IPasswordComplexitySetting {
 
 export class PaxTaskDto implements IPaxTaskDto {
     header!: string | undefined;
-    createdDate!: DateTime | undefined;
+    createdDate!: DateTime;
     taskType!: TaskType;
     taskTypePeriod!: TaskTypePeriod;
     periodInterval!: number | undefined;
-    reporterId!: number | undefined;
+    reporterId!: number;
     assigneeId!: number | undefined;
     severityId!: number | undefined;
     taskStatusId!: number;
@@ -26208,11 +26954,11 @@ export class PaxTaskDto implements IPaxTaskDto {
 
 export interface IPaxTaskDto {
     header: string | undefined;
-    createdDate: DateTime | undefined;
+    createdDate: DateTime;
     taskType: TaskType;
     taskTypePeriod: TaskTypePeriod;
     periodInterval: number | undefined;
-    reporterId: number | undefined;
+    reporterId: number;
     assigneeId: number | undefined;
     severityId: number | undefined;
     taskStatusId: number;
@@ -30709,6 +31455,130 @@ export class VerifySmsCodeInputDto implements IVerifySmsCodeInputDto {
 export interface IVerifySmsCodeInputDto {
     code: string | undefined;
     phoneNumber: string | undefined;
+}
+
+export class WatcherDto implements IWatcherDto {
+    paxTaskId!: number;
+    userId!: number;
+    id!: number;
+
+    constructor(data?: IWatcherDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paxTaskId = _data["paxTaskId"];
+            this.userId = _data["userId"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): WatcherDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WatcherDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paxTaskId"] = this.paxTaskId;
+        data["userId"] = this.userId;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface IWatcherDto {
+    paxTaskId: number;
+    userId: number;
+    id: number;
+}
+
+export class WatcherPaxTaskLookupTableDto implements IWatcherPaxTaskLookupTableDto {
+    id!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: IWatcherPaxTaskLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): WatcherPaxTaskLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WatcherPaxTaskLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface IWatcherPaxTaskLookupTableDto {
+    id: number;
+    displayName: string | undefined;
+}
+
+export class WatcherUserLookupTableDto implements IWatcherUserLookupTableDto {
+    id!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: IWatcherUserLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): WatcherUserLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WatcherUserLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface IWatcherUserLookupTableDto {
+    id: number;
+    displayName: string | undefined;
 }
 
 export class WebhookEvent implements IWebhookEvent {

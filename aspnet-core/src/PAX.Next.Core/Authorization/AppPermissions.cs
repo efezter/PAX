@@ -6,6 +6,11 @@
     /// </summary>
     public static class AppPermissions
     {
+        public const string Pages_Watchers = "Pages.Watchers";
+        public const string Pages_Watchers_Create = "Pages.Watchers.Create";
+        public const string Pages_Watchers_Edit = "Pages.Watchers.Edit";
+        public const string Pages_Watchers_Delete = "Pages.Watchers.Delete";
+
         public const string Pages_PaxTasks = "Pages.PaxTasks";
         public const string Pages_PaxTasks_Create = "Pages.PaxTasks.Create";
         public const string Pages_PaxTasks_Edit = "Pages.PaxTasks.Edit";
