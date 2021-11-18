@@ -1,11 +1,11 @@
 ﻿import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PaxTasksComponent } from './paxTasks.component';
+import { CreateOrEditPaxTaskModalComponent } from './create-or-edit-paxTask.component';
 
 const routes: Routes = [
     {
         path: '',
-        component: PaxTasksComponent,
+        component: CreateOrEditPaxTaskModalComponent,
         pathMatch: 'full',
     }
 ];
@@ -14,4 +14,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class PaxTaskRoutingModule {}
+export class PaxTaskDetailsRoutingModule {}

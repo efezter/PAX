@@ -293,7 +293,7 @@
                                                             href="javascript:;"
                                                             *ngIf="permission.isGranted('Pages.PaxTasks.Edit')"
                                                             class="dropdown-item"
-                                                            (click)="createOrEditPaxTaskModal.show(record.paxTask.id)"
+                                                            (click)="showDetails(record.paxTask.id)"
                                                             >{{ l('Edit') }}</a
                                                         >
                                                     </li>
@@ -383,7 +383,6 @@
                 </div>
             </div>
         </div>
-        <createOrEditPaxTaskModal #createOrEditPaxTaskModal (modalSave)="getPaxTasks()"></createOrEditPaxTaskModal>
         <viewPaxTaskModal #viewPaxTaskModal></viewPaxTaskModal>
         <entityTypeHistoryModal #entityTypeHistoryModal></entityTypeHistoryModal>
     </div>

@@ -5,7 +5,6 @@ import { PaxTasksServiceProxy, PaxTaskDto, TaskType, TaskTypePeriod } from '@sha
 import { NotifyService } from 'abp-ng2-module';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { TokenAuthServiceProxy } from '@shared/service-proxies/service-proxies';
-import { CreateOrEditPaxTaskModalComponent } from './create-or-edit-paxTask-modal.component';
 
 import { ViewPaxTaskModalComponent } from './view-paxTask-modal.component';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
@@ -26,8 +25,6 @@ import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 })
 export class PaxTasksComponent extends AppComponentBase {
     @ViewChild('entityTypeHistoryModal', { static: true }) entityTypeHistoryModal: EntityTypeHistoryModalComponent;
-    @ViewChild('createOrEditPaxTaskModal', { static: true })
-    createOrEditPaxTaskModal: CreateOrEditPaxTaskModalComponent;
     @ViewChild('viewPaxTaskModalComponent', { static: true }) viewPaxTaskModal: ViewPaxTaskModalComponent;
 
     @ViewChild('dataTable', { static: true }) dataTable: Table;
@@ -62,7 +59,8 @@ export class PaxTasksComponent extends AppComponentBase {
         private _tokenAuth: TokenAuthServiceProxy,
         private _activatedRoute: ActivatedRoute,
         private _fileDownloadService: FileDownloadService,
-        private _dateTimeService: DateTimeService
+        private _dateTimeService: DateTimeService,
+        private _router: Router
     ) {
         super(injector);
     }
@@ -126,7 +124,7 @@ export class PaxTasksComponent extends AppComponentBase {
     }
 
     createPaxTask(): void {
-        this.createOrEditPaxTaskModal.show();
+        // this.createOrEditPaxTaskModal.show();
     }
 
     showHistory(paxTask: PaxTaskDto): void {
@@ -171,5 +169,13 @@ export class PaxTasksComponent extends AppComponentBase {
             .subscribe((result) => {
                 this._fileDownloadService.downloadTempFile(result);
             });
+    }
+
+    showDetails(taskId: number): void {
+        this._router.navigate(['app/main/taskManager/paxTasks/details'], {
+            queryParams: {
+                taskId: taskId
+            }
+        });
     }
 }

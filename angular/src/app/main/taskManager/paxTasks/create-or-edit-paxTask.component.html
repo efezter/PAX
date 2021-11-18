@@ -1,0 +1,196 @@
+﻿<div [@routerTransition]>
+    <div class="content d-flex flex-column flex-column-fluid">
+        <sub-header [title]="'PaxTasks' | localize" [description]="'PaxTasksHeaderInfo' | localize">
+            <div role="actions">
+                <button class="btn btn-outline-success">
+                    <i class="fa fa-file-excel"></i> {{ l('ExportToExcel') }}
+                </button>
+
+                <button
+                    class="btn btn-primary blue"
+                >
+                    <i class="fa fa-plus"></i> {{ l('CreateNewPaxTask') }}
+                </button>
+            </div>
+        </sub-header>
+
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <!--<Primeng-Datatable-Start>-->
+                        <div class="primeng-datatable-container col-12" [busyIf]="primengTableHelper.isLoading">
+                            <form *ngIf="active" #paxTaskForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">
+                                        <span *ngIf="paxTask.id">{{ l('EditPaxTask') }}</span>
+                                        <span *ngIf="!paxTask.id">{{ l('CreateNewPaxTask') }}</span>
+                                    </h4>
+                                    <button type="button" class="close" (click)="close()" aria-label="Close" [disabled]="saving">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div  class="form-group m-form__group">
+                                        <label *ngIf="reporterName" for="UserName">{{ l('Reporter') }} : {{reporterName}}</label>
+                                    </div>
+                        
+                                    <div class="form-group m-form__group">
+                                        <label for="assigneeName">{{ l('Assignee') }}</label>
+                                        <div class="input-group">
+                                            <input
+                                                class="form-control"
+                                                id="assigneeName"
+                                                name="assigneeName"
+                                                [(ngModel)]="assigneeName"
+                                                type="text"
+                                                disabled
+                                            />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary blue" (click)="openSelectUserModal2()" type="button">
+                                                    <i class="fa fa-search"></i> {{ l('Pick') }}
+                                                </button>
+                                            </div>
+                                            <div class="input-group-prepend">
+                                                <button class="btn btn-danger btn-icon" type="button" (click)="setAssigneeIdNull()">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input
+                                        class="form-control"
+                                        name="paxTask.assigneeId"
+                                        [(ngModel)]="paxTask.assigneeId"
+                                        type="text"
+                                        hidden
+                                    />
+                        
+                                    <div class="form-group">
+                                        <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
+                                        <select
+                                            class="form-control"
+                                            #PaxTask_TaskType="ngModel"
+                                            name="TaskType"
+                                            id="PaxTask_TaskType"
+                                            [(ngModel)]="paxTask.taskType"
+                                        >
+                                            <option value="1">{{ l('Normal') }}</option>
+                        
+                                            <option value="2">{{ l('Repating') }}</option>
+                                        </select>
+                                        <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
+                                    </div>
+                        
+                                    <div *ngIf="paxTask.taskType == 2" class="form-group">
+                                        <label for="PaxTask_TaskTypePeriod">{{ l('TaskTypePeriod') }}</label>
+                                        <select
+                                            class="form-control"
+                                            #PaxTask_TaskTypePeriod="ngModel"
+                                            name="TaskTypePeriod"
+                                            id="PaxTask_TaskTypePeriod"
+                                            [(ngModel)]="paxTask.taskTypePeriod"
+                                        >
+                                            <option value="1">{{ l('Weekly') }}</option>
+                        
+                                            <option value="2">{{ l('Monthly') }}</option>
+                                        </select>
+                                        <validation-messages [formCtrl]="PaxTask_TaskTypePeriod"></validation-messages>
+                                    </div>
+                        
+                                    <div *ngIf="paxTask.taskType == 2" class="form-group">
+                                        <label for="PaxTask_PeriodInterval">{{ l('PeriodInterval') }}</label>
+                                        <input
+                                            type="number"
+                                            #PaxTask_PeriodInterval="ngModel"
+                                            id="PaxTask_PeriodInterval"
+                                            class="form-control"
+                                            [(ngModel)]="paxTask.periodInterval"
+                                            name="PeriodInterval"
+                                        />
+                                        <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
+                                    </div>
+                        
+                                    <div class="form-group m-form__group">
+                                        <label for="SeverityName">{{ l('Severity') }}</label>
+                                        <select name="paxTask.severityId" [(ngModel)]="paxTask.severityId" class="form-control">
+                                            <!-- <option value="">{{ l('SelectASeverity') }}</option> -->
+                                            <option *ngFor="let item of allSeveritys" value="{{ item.id }}">
+                                                {{ item.displayName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                        
+                                    <div class="form-group m-form__group">
+                                        <label for="TaskStatusName">{{ l('TaskStatus') }}</label>
+                                        <select
+                                            name="paxTask.taskStatusId"
+                                            [(ngModel)]="paxTask.taskStatusId"
+                                            class="form-control"
+                                            required
+                                        >
+                                            <!-- <option value="">{{ l('SelectATaskStatus') }}</option> -->
+                                            <option *ngFor="let item of allTaskStatuss" value="{{ item.id }}">
+                                                {{ item.displayName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="PaxTask_Header">{{ l('Header') }} *</label>
+                                        <input
+                                            type="text"
+                                            #PaxTask_Header="ngModel"
+                                            id="PaxTask_Header"
+                                            class="form-control"
+                                            [(ngModel)]="paxTask.header"
+                                            name="Header"
+                                            minlength="3"
+                                            maxlength="150"
+                                            required
+                                        />
+                                        <validation-messages [formCtrl]="PaxTask_Header"></validation-messages>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="PaxTask_Details">{{ l('Details') }}</label>
+                                        <ckeditor #PaxTask_Details="ngModel"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Details" data="{{paxTask.details}}"></ckeditor>
+                                        <validation-messages  
+                                        id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
+                                    </div>
+                        
+                                    <div *ngIf="paxTask.id" class="form-group">
+                                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : {{paxTask.createdDate}}</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
+                                        {{ l('Cancel') }}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary blue"
+                                        [disabled]="!paxTaskForm.form.valid"
+                                        [buttonBusy]="saving"
+                                        [busyText]="l('SavingWithThreeDot')"
+                                    >
+                                        <i class="fa fa-save"></i> <span>{{ l('Save') }}</span>
+                                    </button>
+                                </div>
+                            </form>
+                            <paxTaskUserLookupTableModal
+                                #paxTaskUserLookupTableModal
+                                (modalSave)="getNewReporterId()"
+                            ></paxTaskUserLookupTableModal>
+                            <paxTaskUserLookupTableModal
+                                #paxTaskUserLookupTableModal2
+                                (modalSave)="getNewAssigneeId()"
+                            ></paxTaskUserLookupTableModal>
+                        </div>
+                        <!--<Primeng-Datatable-End>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

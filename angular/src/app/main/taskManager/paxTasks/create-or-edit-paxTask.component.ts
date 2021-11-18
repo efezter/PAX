@@ -1,5 +1,4 @@
 ﻿import { Component, ViewChild, Injector, Output, EventEmitter, OnInit } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap/modal';
 import { finalize } from 'rxjs/operators';
 import {
     PaxTasksServiceProxy,
@@ -13,21 +12,19 @@ import { DateTime } from 'luxon';
 
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
     selector: 'createOrEditPaxTaskModal',
-    templateUrl: './create-or-edit-paxTask-modal.component.html',
+    templateUrl: './create-or-edit-paxTask.component.html',
 })
 export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implements OnInit {
-    @ViewChild('createOrEditModal', { static: true }) modal: ModalDirective;
     @ViewChild('paxTaskUserLookupTableModal', { static: true })
     paxTaskUserLookupTableModal: PaxTaskUserLookupTableModalComponent;
     @ViewChild('paxTaskUserLookupTableModal2', { static: true })
     paxTaskUserLookupTableModal2: PaxTaskUserLookupTableModalComponent;
-
-    @Output() modalSave: EventEmitter<any> = new EventEmitter<any>();
 
     public Editor = ClassicEditor;
 
@@ -47,42 +44,11 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     constructor(
         injector: Injector,
         private _paxTasksServiceProxy: PaxTasksServiceProxy,
-        private _dateTimeService: DateTimeService
+        private _dateTimeService: DateTimeService,
+        private _activatedRoute: ActivatedRoute,
+        private _router: Router
     ) {
         super(injector);
-    }
-
-    show(paxTaskId?: number): void {
-        if (!paxTaskId) {
-            this.paxTask = new CreateOrEditPaxTaskDto();
-            this.paxTask.id = paxTaskId;
-            this.paxTask.taskType = TaskType.Normal;
-            this.reporterName = '';
-            this.assigneeName = '';
-            this.severityName = '';
-            this.taskStatusName = '';
-
-            this.active = true;
-            this.modal.show();
-        } else {
-            this._paxTasksServiceProxy.getPaxTaskForEdit(paxTaskId).subscribe((result) => {
-                this.paxTask = result.paxTask;
-
-                this.reporterName = result.userName;
-                this.assigneeName = result.userName2;
-                this.severityName = result.severityName;
-                this.taskStatusName = result.taskStatusName;
-
-                this.active = true;
-                this.modal.show();
-            });
-        }
-        this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
-            this.allSeveritys = result;
-        });
-        this._paxTasksServiceProxy.getAllTaskStatusForTableDropdown().subscribe((result) => {
-            this.allTaskStatuss = result;
-        });
     }
 
     save(): void {
@@ -98,7 +64,6 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
             .subscribe(() => {
                 this.notify.info(this.l('SavedSuccessfully'));
                 this.close();
-                this.modalSave.emit(null);
             });
     }
 
@@ -133,8 +98,39 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
 
     close(): void {
         this.active = false;
-        this.modal.hide();
+        this._router.navigate(['app/main/taskManager/paxTasks']);
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+
+        let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
+        if (!paxTaskId) {
+            this.paxTask = new CreateOrEditPaxTaskDto();
+            this.paxTask.id = paxTaskId;
+            this.paxTask.taskType = TaskType.Normal;
+            this.reporterName = '';
+            this.assigneeName = '';
+            this.severityName = '';
+            this.taskStatusName = '';
+
+            this.active = true;
+        } else {
+            this._paxTasksServiceProxy.getPaxTaskForEdit(paxTaskId).subscribe((result) => {
+                this.paxTask = result.paxTask;
+
+                this.reporterName = result.userName;
+                this.assigneeName = result.userName2;
+                this.severityName = result.severityName;
+                this.taskStatusName = result.taskStatusName;
+
+                this.active = true;
+            });
+        }
+        this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
+            this.allSeveritys = result;
+        });
+        this._paxTasksServiceProxy.getAllTaskStatusForTableDropdown().subscribe((result) => {
+            this.allTaskStatuss = result;
+        });
+    }
 }

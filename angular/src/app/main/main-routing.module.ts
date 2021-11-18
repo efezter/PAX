@@ -13,7 +13,12 @@ import { RouterModule } from '@angular/router';
                         loadChildren: () => import('./taskManager/paxTasks/paxTask.module').then(m => m.PaxTaskModule),
                         data: { permission: 'Pages.PaxTasks' }
                     },
-                
+
+                    {
+                        path: 'taskManager/paxTasks/details',
+                        loadChildren: () => import('./taskManager/paxTasks/create-or-edit-paxTask.module').then(m => m.PaxTaskDetailsModule),
+                        data: { permission: 'Pages.PaxTasks.Create' }
+                    }, 
                     
                     {
                         path: 'taskManager/taskStatuses',
