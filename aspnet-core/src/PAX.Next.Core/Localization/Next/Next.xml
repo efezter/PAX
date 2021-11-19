@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="Watcher">Watcher</text>
+  <texts>    <text name="Comment">Comment</text>
+    <text name="CreateNewComment">Create new comment</text>
+    <text name="EditComment">Edit comment</text>
+    <text name="DeleteComment">Delete comment</text>
+    <text name="Watcher">Watcher</text>
     <text name="CreateNewWatcher">Create new watcher</text>
     <text name="EditWatcher">Edit watcher</text>
     <text name="DeleteWatcher">Delete watcher</text>

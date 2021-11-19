@@ -1,17 +1,6 @@
 ﻿<div [@routerTransition]>
     <div class="content d-flex flex-column flex-column-fluid">
         <sub-header [title]="'PaxTasks' | localize" [description]="'PaxTasksHeaderInfo' | localize">
-            <div role="actions">
-                <button class="btn btn-outline-success">
-                    <i class="fa fa-file-excel"></i> {{ l('ExportToExcel') }}
-                </button>
-
-                <button
-                    class="btn btn-primary blue"
-                >
-                    <i class="fa fa-plus"></i> {{ l('CreateNewPaxTask') }}
-                </button>
-            </div>
         </sub-header>
 
         <div [class]="containerClass">
@@ -20,19 +9,34 @@
                     <div class="row align-items-center">
                         <!--<Primeng-Datatable-Start>-->
                         <div class="primeng-datatable-container col-12" [busyIf]="primengTableHelper.isLoading">
-                            <form *ngIf="active" #paxTaskForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                            <form *ngIf="active" id="ngForm" #paxTaskForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
                                 <div class="modal-header">
                                     <h4 class="modal-title">
                                         <span *ngIf="paxTask.id">{{ l('EditPaxTask') }}</span>
                                         <span *ngIf="!paxTask.id">{{ l('CreateNewPaxTask') }}</span>
                                     </h4>
-                                    <button type="button" class="close" (click)="close()" aria-label="Close" [disabled]="saving">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
+                                    <div role="actions">
+                                        <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
+                                            {{ l('Cancel') }}
+                                        </button>
+                                        <button
+                                            form="ngForm"
+                                            class="btn btn-primary blue"
+                                            [disabled]="!paxTaskForm.form.valid"
+                                            [buttonBusy]="saving"
+                                            [busyText]="l('SavingWithThreeDot')"
+                                        >
+                                            <i class="fa fa-save"></i> <span>{{ l('Save') }}</span>
+                                        </button> 
+                                    </div>
                                 </div>
                                 <div class="modal-body">
                                     <div  class="form-group m-form__group">
                                         <label *ngIf="reporterName" for="UserName">{{ l('Reporter') }} : {{reporterName}}</label>
+                                    </div>
+
+                                    <div *ngIf="paxTask.id" class="form-group">
+                                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : {{paxTask.createdDate}}</label>
                                     </div>
                         
                                     <div class="form-group m-form__group">
@@ -83,35 +87,6 @@
                                             </p-autoComplete>
                                         </div>
                                     </div>
-
-                                    <!-- <div class="form-group m-form__group">
-                                        <label for="watchers">{{ l('Watchers') }}</label>
-                                        <div class="input-group">
-                                          
-                                            <p-autoComplete [(ngModel)]="countries"
-                                            [suggestions]="filteredCountries"
-                                            (completeMethod)="filterCountries($event)"
-                                            field="name"
-                                            placeholder="Countries"
-                                            [minLength]="1"
-                                            name="MultiSelectInput"
-                                            id="MultiSelectInput"
-                                            [multiple]="true"
-                                            inputStyleClass="form-control"
-                                            inputStyle="width: 100%;"
-                                            style="width: 100%;">
-                                        </p-autoComplete>
-
-                                        </div>
-                                    </div> -->
-                                    <!-- <input
-                                        class="form-control"
-                                        name="paxTask.assigneeId"
-                                        [(ngModel)]="paxTask.assigneeId"
-                                        type="text"
-                                        hidden
-                                    /> -->
-                        
                                     <div class="form-group">
                                         <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
                                         <select
@@ -200,30 +175,90 @@
                         
                                     <div class="form-group">
                                         <label for="PaxTask_Details">{{ l('Details') }}</label>
-                                        <ckeditor #PaxTask_Details="ngModel"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Details" data="{{paxTask.details}}"></ckeditor>
+                                        <ckeditor #PaxTask_Details="ngModel"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask.details}}"></ckeditor>
                                         <validation-messages  
                                         id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
                                     </div>
-                        
-                                    <div *ngIf="paxTask.id" class="form-group">
-                                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : {{paxTask.createdDate}}</label>
-                                    </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
-                                        {{ l('Cancel') }}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        class="btn btn-primary blue"
-                                        [disabled]="!paxTaskForm.form.valid"
-                                        [buttonBusy]="saving"
-                                        [busyText]="l('SavingWithThreeDot')"
-                                    >
-                                        <i class="fa fa-save"></i> <span>{{ l('Save') }}</span>
-                                    </button>
-                                </div>
+                                
                             </form>
+                            
+                            <tabset>
+
+                                <tab heading=" {{'Comments' | localize}}">
+                                    <div class="row m-3">
+                                        <div class="col-xl-6">
+                                            <p>{{"CachesHeaderInfo" | localize}}</p>
+                                        </div>
+                                        <div class="col-xl-6 text-right">
+                                            <button 
+                                            (click)="toggleCommentCreate()"
+                                            class="btn btn-primary"
+                                                *ngIf="isGranted('Pages.Comments.Create')"
+                                            >
+                                            <i  class="fa fa-plus"></i>
+                                                {{"CreateNewComment" | localize}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-12">
+                                            <div [hidden]="!showCommentCreate" class="form-group">
+                                                <label for="Comment_Text">{{ l('Details') }}</label>
+                                                <ckeditor #Comment_Text="ngModel"  [(ngModel)]="comment.commentText" [editor]="Editor" name="Details" data="{{comment.commentText}}"></ckeditor>
+                                                <div class="modal-footer">
+                            
+                                                    <button
+                                                            class="btn btn-primary font-weight-bold save-button"
+                                                            [disabled]="!comment.commentText || comment.commentText.length == 0"
+                                                            [buttonBusy]="saving"
+                                                            (click)="saveComment()"
+                                                            [busyText]="l('ProcessingWithThreeDot')">
+                                                        <i class="fa fa-arrow-circle-right"></i>
+                                                        <span>{{ l('Save') }}</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+
+                                            <table *ngIf="commentViews"  class="table table-striped table-hover table-bordered">
+                                                <tbody>
+                                                    <tr *ngFor="let commentView of commentViews">
+                                                        <td>
+                                                            <span>{{commentView.comment.commentText}}</span>
+                                                            <button class="btn btn-primary btn-sm pull-right" >
+                                                                {{"Clear" | localize}}
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </tab>
+
+
+                                <tab heading="{{'History' | localize}}">
+                                    <div class="row m-3">
+                                        <div class="col-xl-6">
+                                            <p>{{"WebSiteLogsHeaderInfo" | localize}}</p>
+                                        </div>
+                                        <div class="col-xl-6 text-right">
+                                            <button class="btn btn-secondary"><i
+                                                    class="fa fa-download"></i> {{"DownloadAll" | localize}}</button>
+                                            <button class="btn btn-primary"><i class="fa fa-sync"></i>
+                                                {{"Refresh" | localize}}</button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xl-12">
+                                            <div class="web-log-view full-height">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tab>
+                            </tabset>
+
                             <paxTaskUserLookupTableModal
                                 #paxTaskUserLookupTableModal
                                 (modalSave)="getNewReporterId()"

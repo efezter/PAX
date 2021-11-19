@@ -1,28 +1,20 @@
-﻿using PAX.Next.Authorization.Users;
+﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Domain.Repositories;
+using Abp.Linq.Extensions;
+using Abp.Runtime.Session;
+using Microsoft.EntityFrameworkCore;
+using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
-using PAX.Next.TaskManager;
-
-using PAX.Next.TaskManager.Utils;
-
+using PAX.Next.Dto;
+using PAX.Next.TaskManager.Dtos;
+using PAX.Next.TaskManager.Exporting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using Abp.Linq.Extensions;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Abp.Domain.Repositories;
-using PAX.Next.TaskManager.Exporting;
-using PAX.Next.TaskManager.Dtos;
-using PAX.Next.Dto;
-using Abp.Application.Services.Dto;
-using PAX.Next.Authorization;
-using Abp.Extensions;
-using Abp.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Abp.UI;
-using PAX.Next.Storage;
 using static PAX.Next.TaskManager.Utils.Enums;
-using Abp.Runtime.Session;
 
 namespace PAX.Next.TaskManager
 {
@@ -35,7 +27,6 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly IRepository<Severity, int> _lookup_severityRepository;
         private readonly IRepository<TaskStatus, int> _lookup_taskStatusRepository;
-        private readonly IAbpSession _abpSession;
 
         public PaxTasksAppService(
             IRepository<PaxTask> paxTaskRepository, 
@@ -43,7 +34,6 @@ namespace PAX.Next.TaskManager
             IRepository<User, long> lookup_userRepository, 
             IRepository<Severity, int> lookup_severityRepository, 
             IRepository<TaskStatus, int> lookup_taskStatusRepository, 
-            IAbpSession abpSession,
             IWatchersAppService watcherRepository
             )
         {
@@ -237,9 +227,22 @@ namespace PAX.Next.TaskManager
             var paxTask = ObjectMapper.Map<PaxTask>(input);
 
             paxTask.CreatedDate = DateTime.Now;
-            paxTask.ReporterId = _abpSession.GetUserId();
+            paxTask.ReporterId = AbpSession.GetUserId();
 
             await _paxTaskRepository.InsertAsync(paxTask);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            if (input.Watchers != null && input.Watchers.Count() > 0)
+            {
+                List<Task> inserTasks = new List<Task>();
+                foreach (var watcher in input.Watchers)
+                {
+                    CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.Id, PaxTaskId = paxTask.Id };
+                    inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
+                }
+
+                Task.WaitAll(inserTasks.ToArray());
+            }
 
         }
 
@@ -356,7 +359,9 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
         public async Task<PagedResultDto<PaxTaskUserLookupTableDto>> GetAllUserForLookupTable(GetAllForLookupTableInput input)
         {
-            var query = _lookup_userRepository.GetAll().WhereIf(
+            var query = _lookup_userRepository.GetAll()
+                .WhereIf(input.OmitUserIds != null, x => !input.OmitUserIds.Contains(x.Id))
+                .WhereIf(
                        !string.IsNullOrWhiteSpace(input.Filter),
                       e => (e.Name != null && e.Name.Contains(input.Filter)) || (e.Surname != null && e.Surname.Contains(input.Filter))
                    ).Select(x => new { x.Id, x.FullName });

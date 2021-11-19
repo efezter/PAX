@@ -47,12 +47,16 @@ export class PaxTaskUserLookupTableModalComponent extends AppComponentBase {
 
         this.primengTableHelper.showLoadingIndicator();
 
+        let omitUserIds:number[] = [this.id];
+        
         this._paxTasksServiceProxy
             .getAllUserForLookupTable(
                 this.filterText,
                 this.primengTableHelper.getSorting(this.dataTable),
                 this.primengTableHelper.getSkipCount(this.paginator, event),
-                this.primengTableHelper.getMaxResultCount(this.paginator, event)
+                this.primengTableHelper.getMaxResultCount(this.paginator, event),
+                omitUserIds
+                
             )
             .subscribe((result) => {
                 this.primengTableHelper.totalRecordsCount = result.totalCount;

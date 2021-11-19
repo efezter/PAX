@@ -124,7 +124,7 @@ export class PaxTasksComponent extends AppComponentBase {
     }
 
     createPaxTask(): void {
-        // this.createOrEditPaxTaskModal.show();
+        this._router.navigate(['app/main/taskManager/paxTasks/details']);
     }
 
     showHistory(paxTask: PaxTaskDto): void {

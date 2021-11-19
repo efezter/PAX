@@ -30,6 +30,11 @@ namespace PAX.Next.Authorization
 
             var pages = context.GetPermissionOrNull(AppPermissions.Pages) ?? context.CreatePermission(AppPermissions.Pages, L("Pages"));
 
+            var comments = pages.CreateChildPermission(AppPermissions.Pages_Comments, L("Comments"));
+            comments.CreateChildPermission(AppPermissions.Pages_Comments_Create, L("CreateNewComment"));
+            comments.CreateChildPermission(AppPermissions.Pages_Comments_Edit, L("EditComment"));
+            comments.CreateChildPermission(AppPermissions.Pages_Comments_Delete, L("DeleteComment"));
+
             var watchers = pages.CreateChildPermission(AppPermissions.Pages_Watchers, L("Watchers"));
             watchers.CreateChildPermission(AppPermissions.Pages_Watchers_Create, L("CreateNewWatcher"));
             watchers.CreateChildPermission(AppPermissions.Pages_Watchers_Edit, L("EditWatcher"));

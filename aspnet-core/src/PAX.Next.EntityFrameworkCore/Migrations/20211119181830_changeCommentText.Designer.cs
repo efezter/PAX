@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PAX.Next.EntityFrameworkCore;
 
 namespace PAX.Next.Migrations
 {
     [DbContext(typeof(NextDbContext))]
-    partial class NextDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211119181830_changeCommentText")]
+    partial class changeCommentText
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2011,6 +2013,9 @@ namespace PAX.Next.Migrations
                     b.Property<string>("CommentText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -2024,6 +2029,9 @@ namespace PAX.Next.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsModified")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
