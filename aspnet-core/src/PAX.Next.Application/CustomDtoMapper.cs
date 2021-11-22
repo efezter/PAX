@@ -51,6 +51,7 @@ namespace PAX.Next
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
             configuration.CreateMap<CreateOrEditCommentDto, Comment>().ReverseMap();
+            configuration.CreateMap<Comment, GetCommentForViewDto>().ReverseMap();
             configuration.CreateMap<CommentDto, Comment>().ReverseMap();
             configuration.CreateMap<CreateOrEditWatcherDto, Watcher>().ReverseMap();
             configuration.CreateMap<WatcherDto, Watcher>().ReverseMap();

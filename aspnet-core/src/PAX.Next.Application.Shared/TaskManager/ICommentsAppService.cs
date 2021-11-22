@@ -13,13 +13,9 @@ namespace PAX.Next.TaskManager
 
         Task<GetCommentForEditOutput> GetCommentForEdit(EntityDto input);
 
-        Task CreateOrEdit(CreateOrEditCommentDto input);
+        Task<CommentDto> CreateOrEdit(CreateOrEditCommentDto input);
 
         Task Delete(EntityDto input);
-
-        Task<PagedResultDto<CommentPaxTaskLookupTableDto>> GetAllPaxTaskForLookupTable(GetAllForLookupTableInput input);
-
-        Task<PagedResultDto<CommentUserLookupTableDto>> GetAllUserForLookupTable(GetAllForLookupTableInput input);
 
     }
 }

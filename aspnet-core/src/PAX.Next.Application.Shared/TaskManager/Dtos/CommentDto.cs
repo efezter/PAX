@@ -5,7 +5,7 @@ namespace PAX.Next.TaskManager.Dtos
 {
     public class CommentDto : EntityDto
     {
-        public int CommentText { get; set; }
+        public string CommentText { get; set; }
 
         public int PaxTaskId { get; set; }
 

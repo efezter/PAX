@@ -82,7 +82,6 @@ export class ChangeIconModalComponent extends AppComponentBase {
     }
 
     updateProfilePicture(fileToken: string): void {
-        debugger;
         const input = new UpdateIconInput();
         input.fileToken = fileToken;
         input.x = 0;

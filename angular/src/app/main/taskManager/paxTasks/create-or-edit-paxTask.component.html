@@ -205,12 +205,12 @@
                                         <div class="col-xl-12">
                                             <div [hidden]="!showCommentCreate" class="form-group">
                                                 <label for="Comment_Text">{{ l('Details') }}</label>
-                                                <ckeditor #Comment_Text="ngModel"  [(ngModel)]="comment.commentText" [editor]="Editor" name="Details" data="{{comment.commentText}}"></ckeditor>
+                                                <ckeditor #Comment_Text="ngModel"  [(ngModel)]="commentToCreate.commentText" [editor]="Editorr" name="Text" data="{{commentToCreate.commentText}}"></ckeditor>
                                                 <div class="modal-footer">
                             
                                                     <button
                                                             class="btn btn-primary font-weight-bold save-button"
-                                                            [disabled]="!comment.commentText || comment.commentText.length == 0"
+                                                            [disabled]="!commentToCreate.commentText || commentToCreate.commentText.length == 0"
                                                             [buttonBusy]="saving"
                                                             (click)="saveComment()"
                                                             [busyText]="l('ProcessingWithThreeDot')">
@@ -219,20 +219,35 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            
 
-                                            <table *ngIf="commentViews"  class="table table-striped table-hover table-bordered">
+                                            <ul  *ngIf="commentViews && commentViews.length > 0">
+                                                <li *ngFor="let commentView of commentViews"> 
+                                                  <ckeditor id="comment_{{commentView.comment.id}}" [editor]="Editorrr" (ready)="onReady($event)" name="CommentText" data="{{commentView.comment.commentText}}"></ckeditor>
+
+                                                  <button *ngIf="commentView.comment.userId == cuRuserId" class="btn btn-primary btn-sm pull-right" >
+                                                        {{"Edit" | localize}}
+                                                   </button>
+
+                                                </li>
+                                              </ul>
+                                            
+                                            <!-- <div *ngFor="let commentView of commentViews">
+                                                
+                                                <ckeditor [(ngModel)]="commentView.comment" [editor]="Editorrr" data="{{commentView.comment.commentText}}"></ckeditor>
+                                            </div> -->
+                                                
+<!-- 
                                                 <tbody>
                                                     <tr *ngFor="let commentView of commentViews">
                                                         <td>
-                                                            <span>{{commentView.comment.commentText}}</span>
+                                                            <span [innerHTML]="commentView.comment.commentText"></span>
                                                             <button class="btn btn-primary btn-sm pull-right" >
-                                                                {{"Clear" | localize}}
+                                                                {{"Edit" | localize}}
                                                             </button>
                                                         </td>
                                                     </tr>
                                                 </tbody>
-                                            </table>
+                                            </table> --> 
                                         </div>
                                     </div>
                                 </tab>

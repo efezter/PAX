@@ -55,14 +55,16 @@ namespace PAX.Next.TaskManager
                            {
 
                                Id = o.Id,
-                               COmmentText = o.CommentText,
+                               CreatorUserId = o.CreatorUserId,
+                               CreationDate = o.CreationTime,
+                               CommentText = o.CommentText,
                                PaxTaskHeader = s1 == null || s1.Header == null ? "" : s1.Header.ToString(),
                                UserName = s2 == null || s2.Name == null ? "" : s2.Name.ToString()
                            };
 
             var totalCount = await filteredComments.CountAsync();
 
-            var dbList = await comments.ToListAsync();
+            var dbList = await comments.OrderByDescending(e => e.CreationDate).ToListAsync();
             var results = new List<GetCommentForViewDto>();
 
             foreach (var o in dbList)
@@ -71,8 +73,9 @@ namespace PAX.Next.TaskManager
                 {
                     Comment = new CommentDto
                     {
-
                         Id = o.Id,
+                        CommentText = o.CommentText,
+                        UserId = o.CreatorUserId.Value
                     },
                     PaxTaskHeader = o.PaxTaskHeader,
                     UserName = o.UserName
@@ -110,100 +113,51 @@ namespace PAX.Next.TaskManager
             return output;
         }
 
-        public async Task CreateOrEdit(CreateOrEditCommentDto input)
+        public async Task<CommentDto> CreateOrEdit(CreateOrEditCommentDto input)
         {
             if (input.Id == null)
             {
-                await Create(input);
+               return await Create(input);
             }
             else
             {
-                await Update(input);
+                return await Update(input);
             }
         }
 
         [AbpAuthorize(AppPermissions.Pages_Comments_Create)]
-        protected virtual async Task Create(CreateOrEditCommentDto input)
+        protected virtual async Task<CommentDto> Create(CreateOrEditCommentDto input)
         {
-            input.UserId = AbpSession.GetUserId();
-            var comment = ObjectMapper.Map<Comment>(input);
+            try
+            {
+                input.UserId = AbpSession.GetUserId();
+                var comment = ObjectMapper.Map<Comment>(input);
 
-            await _commentRepository.InsertAsync(comment);
+                await _commentRepository.InsertAsync(comment);
 
+                await CurrentUnitOfWork.SaveChangesAsync();
+
+                return ObjectMapper.Map<CommentDto>(comment);
+            }
+            catch (System.Exception ex)
+            {
+
+                throw;
+            }
         }
 
         [AbpAuthorize(AppPermissions.Pages_Comments_Edit)]
-        protected virtual async Task Update(CreateOrEditCommentDto input)
+        protected virtual async Task<CommentDto> Update(CreateOrEditCommentDto input)
         {
             var comment = await _commentRepository.FirstOrDefaultAsync((int)input.Id);
             ObjectMapper.Map(input, comment);
-
+            return ObjectMapper.Map<CommentDto>(comment);
         }
 
         [AbpAuthorize(AppPermissions.Pages_Comments_Delete)]
         public async Task Delete(EntityDto input)
         {
             await _commentRepository.DeleteAsync(input.Id);
-        }
-
-        [AbpAuthorize(AppPermissions.Pages_Comments)]
-        public async Task<PagedResultDto<CommentPaxTaskLookupTableDto>> GetAllPaxTaskForLookupTable(GetAllForLookupTableInput input)
-        {
-            var query = _lookup_paxTaskRepository.GetAll().WhereIf(
-                   !string.IsNullOrWhiteSpace(input.Filter),
-                  e => e.Header != null && e.Header.Contains(input.Filter)
-               );
-
-            var totalCount = await query.CountAsync();
-
-            var paxTaskList = await query
-                .PageBy(input)
-                .ToListAsync();
-
-            var lookupTableDtoList = new List<CommentPaxTaskLookupTableDto>();
-            foreach (var paxTask in paxTaskList)
-            {
-                lookupTableDtoList.Add(new CommentPaxTaskLookupTableDto
-                {
-                    Id = paxTask.Id,
-                    DisplayName = paxTask.Header?.ToString()
-                });
-            }
-
-            return new PagedResultDto<CommentPaxTaskLookupTableDto>(
-                totalCount,
-                lookupTableDtoList
-            );
-        }
-
-        [AbpAuthorize(AppPermissions.Pages_Comments)]
-        public async Task<PagedResultDto<CommentUserLookupTableDto>> GetAllUserForLookupTable(GetAllForLookupTableInput input)
-        {
-            var query = _lookup_userRepository.GetAll().WhereIf(
-                   !string.IsNullOrWhiteSpace(input.Filter),
-                  e => e.Name != null && e.Name.Contains(input.Filter)
-               );
-
-            var totalCount = await query.CountAsync();
-
-            var userList = await query
-                .PageBy(input)
-                .ToListAsync();
-
-            var lookupTableDtoList = new List<CommentUserLookupTableDto>();
-            foreach (var user in userList)
-            {
-                lookupTableDtoList.Add(new CommentUserLookupTableDto
-                {
-                    Id = user.Id,
-                    DisplayName = user.Name?.ToString()
-                });
-            }
-
-            return new PagedResultDto<CommentUserLookupTableDto>(
-                totalCount,
-                lookupTableDtoList
-            );
         }
 
     }

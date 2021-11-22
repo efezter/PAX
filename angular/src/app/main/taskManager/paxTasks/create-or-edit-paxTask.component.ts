@@ -9,18 +9,22 @@ import {
     TaskType,
     CreateOrEditCommentDto,
     GetCommentForViewDto,
-    WatcherUserLookupTableDto
+    WatcherUserLookupTableDto,
+    CommentDto
 } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DateTime } from 'luxon';
-
+import { AbpSessionService } from 'abp-ng2-module';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DemoUiComponentsServiceProxy, NameValueOfString } from '@shared/service-proxies/service-proxies';
 import { LazyLoadEvent } from 'primeng/api';
+import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
+
 
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { add } from 'lodash';
 
 @Component({
     selector: 'createOrEditPaxTaskModal',
@@ -33,11 +37,13 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     paxTaskUserLookupTableModal2: PaxTaskUserLookupTableModalComponent;
 
     public Editor = ClassicEditor;
+    public Editorr = ClassicEditor;
+    public Editorrr = ClassicEditor;
 
     filteredCountries: WatcherUserLookupTableDto[];
     countries: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
 
-    comment:CreateOrEditCommentDto = new CreateOrEditCommentDto();
+    commentToCreate:CreateOrEditCommentDto = new CreateOrEditCommentDto();
 
     active = false;
     saving = false;
@@ -46,6 +52,7 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     commentViews: GetCommentForViewDto[];
     showCommentCreate:boolean = false;
 
+    cuRuserId = -1;
     reporterName = '';
     assigneeName = '';
     severityName = '';
@@ -61,8 +68,21 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
         private _dateTimeService: DateTimeService,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
+        private _abpSessionService: AbpSessionService,
     ) {
         super(injector);
+    }
+
+    public onChange( { editor }: ChangeEvent ) {
+
+        // const data = editor.getData();
+        editor.ui.view.toolbar.element.style.display = 'none';
+        // console.log( data );
+    }
+
+    public onReady( editor ) {
+        editor.ui.view.toolbar.element.style.display = 'none';
+        editor.isReadOnly = true;
     }
 
     getUsers(event) {
@@ -134,7 +154,7 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     }
 
     ngOnInit(): void {
-
+        this.cuRuserId = this._abpSessionService.userId;
         let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
         if (!paxTaskId) {
             this.paxTask = new CreateOrEditPaxTaskDto();
@@ -199,17 +219,29 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
         
         this.saving = true;
 
-        this.comment.paxTaskId = this.paxTask.id;
+        this.commentToCreate.paxTaskId = this.paxTask.id;
 
         this._commentsServiceProxy
-            .createOrEdit(this.comment)
+            .createOrEdit(this.commentToCreate)
             .pipe(
                 finalize(() => {
                     this.saving = false;
                 })
             )
-            .subscribe(() => {
-                this.comment = new CreateOrEditCommentDto();
+            .subscribe((res) => {               
+                
+                let added = new GetCommentForViewDto();
+
+                added.creationTime = DateTime.now();
+                added.comment = new CommentDto();
+                added.comment.id = res.id;
+                added.comment.commentText = res.commentText;
+
+                this.commentViews.unshift(added)
+
+                this.showCommentCreate = false;
+                this.commentToCreate = new CreateOrEditCommentDto();
+                this.commentToCreate.commentText = "";
                 this.notify.info(this.l('SavedSuccessfully'));
             });
     }

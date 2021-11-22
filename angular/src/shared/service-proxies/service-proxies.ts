@@ -1625,7 +1625,6 @@ export class CommentsServiceProxy {
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        debugger;
         let options_ : any = {
             observe: "response",
             responseType: "blob",
@@ -1730,7 +1729,7 @@ export class CommentsServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    createOrEdit(body: CreateOrEditCommentDto | undefined): Observable<void> {
+    createOrEdit(body: CreateOrEditCommentDto | undefined): Observable<CommentDto> {
         let url_ = this.baseUrl + "/api/services/app/Comments/CreateOrEdit";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1752,14 +1751,14 @@ export class CommentsServiceProxy {
                 try {
                     return this.processCreateOrEdit(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<CommentDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<CommentDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreateOrEdit(response: HttpResponseBase): Observable<void> {
+    protected processCreateOrEdit(response: HttpResponseBase): Observable<CommentDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1768,14 +1767,17 @@ export class CommentsServiceProxy {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CommentDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<CommentDto>(<any>null);
     }
 
     /**
@@ -21861,6 +21863,7 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
     comment!: CommentDto;
     paxTaskHeader!: string | undefined;
     userName!: string | undefined;
+    creationTime!: DateTime | undefined;
 
     constructor(data?: IGetCommentForViewDto) {
         if (data) {
@@ -21876,6 +21879,7 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
             this.comment = _data["comment"] ? CommentDto.fromJS(_data["comment"]) : <any>undefined;
             this.paxTaskHeader = _data["paxTaskHeader"];
             this.userName = _data["userName"];
+            this.creationTime = _data["creationTime"];
         }
     }
 
@@ -21891,6 +21895,7 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
         data["comment"] = this.comment ? this.comment.toJSON() : <any>undefined;
         data["paxTaskHeader"] = this.paxTaskHeader;
         data["userName"] = this.userName;
+        data["creationTime"] = this.creationTime;
         return data; 
     }
 }
@@ -21899,6 +21904,7 @@ export interface IGetCommentForViewDto {
     comment: CommentDto;
     paxTaskHeader: string | undefined;
     userName: string | undefined;
+    creationTime: DateTime | undefined;
 }
 
 export class GetCurrentLoginInformationsOutput implements IGetCurrentLoginInformationsOutput {
