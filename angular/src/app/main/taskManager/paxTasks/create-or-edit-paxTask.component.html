@@ -36,7 +36,7 @@
                                     </div>
 
                                     <div *ngIf="paxTask.id" class="form-group">
-                                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : {{paxTask.createdDate}}</label>
+                                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : {{ paxTask.createdDate | luxonFormat: 'F' }}</label>
                                     </div>
                         
                                     <div class="form-group m-form__group">
@@ -71,7 +71,7 @@
                                     />
 
                                     <div class="form-group row">
-                                        <label for="MultiSelectInput" class="col-lg-12">Multi select</label>
+                                        <label for="MultiSelectInput" class="col-lg-12">{{ l('Watcher') }}</label>
                                         <div class="col-12">
                                             <p-autoComplete [(ngModel)]="countries"
                                                             [suggestions]="filteredCountries"
@@ -182,98 +182,6 @@
                                 </div>
                                 
                             </form>
-                            
-                            <tabset>
-
-                                <tab heading=" {{'Comments' | localize}}">
-                                    <div class="row m-3">
-                                        <div class="col-xl-6">
-                                            <p>{{"CachesHeaderInfo" | localize}}</p>
-                                        </div>
-                                        <div class="col-xl-6 text-right">
-                                            <button 
-                                            (click)="toggleCommentCreate()"
-                                            class="btn btn-primary"
-                                                *ngIf="isGranted('Pages.Comments.Create')"
-                                            >
-                                            <i  class="fa fa-plus"></i>
-                                                {{"CreateNewComment" | localize}}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xl-12">
-                                            <div [hidden]="!showCommentCreate" class="form-group">
-                                                <label for="Comment_Text">{{ l('Details') }}</label>
-                                                <ckeditor #Comment_Text="ngModel"  [(ngModel)]="commentToCreate.commentText" [editor]="Editorr" name="Text" data="{{commentToCreate.commentText}}"></ckeditor>
-                                                <div class="modal-footer">
-                            
-                                                    <button
-                                                            class="btn btn-primary font-weight-bold save-button"
-                                                            [disabled]="!commentToCreate.commentText || commentToCreate.commentText.length == 0"
-                                                            [buttonBusy]="saving"
-                                                            (click)="saveComment()"
-                                                            [busyText]="l('ProcessingWithThreeDot')">
-                                                        <i class="fa fa-arrow-circle-right"></i>
-                                                        <span>{{ l('Save') }}</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <ul  *ngIf="commentViews && commentViews.length > 0">
-                                                <li *ngFor="let commentView of commentViews"> 
-                                                  <ckeditor id="comment_{{commentView.comment.id}}" [editor]="Editorrr" (ready)="onReady($event)" name="CommentText" data="{{commentView.comment.commentText}}"></ckeditor>
-
-                                                  <button *ngIf="commentView.comment.userId == cuRuserId" class="btn btn-primary btn-sm pull-right" >
-                                                        {{"Edit" | localize}}
-                                                   </button>
-
-                                                </li>
-                                              </ul>
-                                            
-                                            <!-- <div *ngFor="let commentView of commentViews">
-                                                
-                                                <ckeditor [(ngModel)]="commentView.comment" [editor]="Editorrr" data="{{commentView.comment.commentText}}"></ckeditor>
-                                            </div> -->
-                                                
-<!-- 
-                                                <tbody>
-                                                    <tr *ngFor="let commentView of commentViews">
-                                                        <td>
-                                                            <span [innerHTML]="commentView.comment.commentText"></span>
-                                                            <button class="btn btn-primary btn-sm pull-right" >
-                                                                {{"Edit" | localize}}
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table> --> 
-                                        </div>
-                                    </div>
-                                </tab>
-
-
-                                <tab heading="{{'History' | localize}}">
-                                    <div class="row m-3">
-                                        <div class="col-xl-6">
-                                            <p>{{"WebSiteLogsHeaderInfo" | localize}}</p>
-                                        </div>
-                                        <div class="col-xl-6 text-right">
-                                            <button class="btn btn-secondary"><i
-                                                    class="fa fa-download"></i> {{"DownloadAll" | localize}}</button>
-                                            <button class="btn btn-primary"><i class="fa fa-sync"></i>
-                                                {{"Refresh" | localize}}</button>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-xl-12">
-                                            <div class="web-log-view full-height">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </tab>
-                            </tabset>
-
                             <paxTaskUserLookupTableModal
                                 #paxTaskUserLookupTableModal
                                 (modalSave)="getNewReporterId()"
@@ -287,6 +195,115 @@
                     </div>
                 </div>
             </div>
+
+
+
+
+
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
+                    <tabset>
+                        <tab heading=" {{'Comments' | localize}}">
+                            <div class="row m-3">
+                                <div class="col-xl-6">
+                                    <p>{{"CachesHeaderInfo" | localize}}</p>
+                                </div>
+                                <div class="col-xl-6 text-right">
+                                    <button 
+                                    (click)="toggleCommentCreate()"
+                                    class="btn btn-primary"
+                                        *ngIf="isGranted('Pages.Comments.Create')"
+                                    >
+                                    <i  class="fa fa-plus"></i>
+                                        {{"CreateNewComment" | localize}}
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div [hidden]="!showCommentCreate" class="form-group">
+                                        <label for="Comment_Text">{{ l('Details') }}</label>
+                                        <ckeditor #Comment_Text="ngModel"  [(ngModel)]="commentToCreate.commentText" [editor]="Editorr" name="Text" data="{{commentToCreate.commentText}}"></ckeditor>
+                                        <div class="modal-footer">
+                    
+                                            <button
+                                                    class="btn btn-primary font-weight-bold save-button"
+                                                    [disabled]="!commentToCreate.commentText || commentToCreate.commentText.length == 0"
+                                                    [buttonBusy]="saving"
+                                                    (click)="saveComment(0)"
+                                                    [busyText]="l('ProcessingWithThreeDot')">
+                                                <i class="fa fa-arrow-circle-right"></i>
+                                                <span>{{ l('Save') }}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    
+
+                                    <div *ngIf="commentViews && commentViews.length > 0">
+
+                                        <div class="form-group" *ngFor="let commentView of commentViews">
+                                            <label for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
+                                            <ckeditor
+                                            [editor]="Editorrr" 
+                                            (ready)="onReady($event, commentView.comment.id)" 
+                                            name="CommentText" 
+                                            data="{{commentView.comment.commentText}}">
+                                        </ckeditor>
+
+                                            <button *ngIf="commentView.comment.userId == cuRuserId" class="btn btn-primary btn-sm pull-right" (click)="prepareForEdit(commentView.comment.id)" >
+                                                    {{"Edit" | localize}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tab>
+
+
+                        <tab heading="{{'History' | localize}}">
+                            <div class="row m-3">
+                                <div class="col-xl-6">
+                                    <p>{{"WebSiteLogsHeaderInfo" | localize}}</p>
+                                </div>
+                                <div class="col-xl-6 text-right">
+                                    <button class="btn btn-secondary"><i
+                                            class="fa fa-download"></i> {{"DownloadAll" | localize}}</button>
+                                    <button class="btn btn-primary"><i class="fa fa-sync"></i>
+                                        {{"Refresh" | localize}}</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="web-log-view full-height">
+                                    </div>
+                                </div>
+                            </div>
+                        </tab>
+                        <tab heading="{{'Attachments' | localize}}">
+                            <div class="row m-3">
+                                <div class="col-xl-6">
+                                    <p>{{"WebSiteLogsHeaderInfo" | localize}}</p>
+                                </div>
+                                <div class="col-xl-6 text-right">
+                                    <button class="btn btn-secondary"><i
+                                            class="fa fa-download"></i> {{"DownloadAll" | localize}}</button>
+                                    <button class="btn btn-primary"><i class="fa fa-sync"></i>
+                                        {{"Refresh" | localize}}</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="web-log-view full-height">
+                                    </div>
+                                </div>
+                            </div>
+                        </tab>
+                    </tabset>
+                </div>
+            </div>     
+
+
         </div>
     </div>
 </div>

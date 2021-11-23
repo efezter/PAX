@@ -11,5 +11,7 @@ namespace PAX.Next.TaskManager.Dtos
         public DateTime CreationTime { get; set; }
 
         public string UserName { get; set; }
+
+        public DateTime? LastModificationTime { get; set; }
     }
 }

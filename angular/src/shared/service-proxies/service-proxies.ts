@@ -21863,7 +21863,8 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
     comment!: CommentDto;
     paxTaskHeader!: string | undefined;
     userName!: string | undefined;
-    creationTime!: DateTime | undefined;
+    creationTime!: DateTime;
+    LastModificationTime!: DateTime | undefined;
 
     constructor(data?: IGetCommentForViewDto) {
         if (data) {
@@ -21879,7 +21880,8 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
             this.comment = _data["comment"] ? CommentDto.fromJS(_data["comment"]) : <any>undefined;
             this.paxTaskHeader = _data["paxTaskHeader"];
             this.userName = _data["userName"];
-            this.creationTime = _data["creationTime"];
+            this.LastModificationTime = _data["LastModificationTime"];
+            this.creationTime = _data["creationTime"] ? DateTime.fromISO(_data["creationTime"].toString()) : <any>undefined;
         }
     }
 
@@ -21895,7 +21897,8 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
         data["comment"] = this.comment ? this.comment.toJSON() : <any>undefined;
         data["paxTaskHeader"] = this.paxTaskHeader;
         data["userName"] = this.userName;
-        data["creationTime"] = this.creationTime;
+        data["LastModificationTime"] = this.LastModificationTime;
+        data["creationTime"] = this.creationTime ? this.creationTime.toString() : <any>undefined;
         return data; 
     }
 }
@@ -21905,6 +21908,7 @@ export interface IGetCommentForViewDto {
     paxTaskHeader: string | undefined;
     userName: string | undefined;
     creationTime: DateTime | undefined;
+    LastModificationTime: DateTime | undefined;
 }
 
 export class GetCurrentLoginInformationsOutput implements IGetCurrentLoginInformationsOutput {

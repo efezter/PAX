@@ -7,9 +7,15 @@ namespace PAX.Next.TaskManager.Dtos
     {
         public string CommentText { get; set; }
 
+        public string UserName { get; set; }
+
         public int PaxTaskId { get; set; }
 
         public long UserId { get; set; }
+
+        public DateTime CreationTime { get; set; }
+
+        public DateTime? LastModificationTime { get; set; }
 
     }
 }

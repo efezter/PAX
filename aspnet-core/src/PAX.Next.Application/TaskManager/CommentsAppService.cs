@@ -53,18 +53,17 @@ namespace PAX.Next.TaskManager
 
                            select new
                            {
-
                                Id = o.Id,
                                CreatorUserId = o.CreatorUserId,
-                               CreationDate = o.CreationTime,
+                               CreationTime = o.CreationTime,
+                               LastModificationTime = o.LastModificationTime,
                                CommentText = o.CommentText,
-                               PaxTaskHeader = s1 == null || s1.Header == null ? "" : s1.Header.ToString(),
-                               UserName = s2 == null || s2.Name == null ? "" : s2.Name.ToString()
+                               UserName = s2 == null || s2.FullName == null ? "" : s2.FullName.ToString()
                            };
 
             var totalCount = await filteredComments.CountAsync();
 
-            var dbList = await comments.OrderByDescending(e => e.CreationDate).ToListAsync();
+            var dbList = await comments.OrderByDescending(e => e.CreationTime).ToListAsync();
             var results = new List<GetCommentForViewDto>();
 
             foreach (var o in dbList)
@@ -74,10 +73,11 @@ namespace PAX.Next.TaskManager
                     Comment = new CommentDto
                     {
                         Id = o.Id,
-                        CommentText = o.CommentText,
+                        CommentText = o.CommentText,                        
                         UserId = o.CreatorUserId.Value
                     },
-                    PaxTaskHeader = o.PaxTaskHeader,
+                    LastModificationTime = o.LastModificationTime,
+                    CreationTime = o.CreationTime,
                     UserName = o.UserName
                 };
 

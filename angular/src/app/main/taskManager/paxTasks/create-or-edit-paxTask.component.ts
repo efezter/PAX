@@ -18,7 +18,6 @@ import { AbpSessionService } from 'abp-ng2-module';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DemoUiComponentsServiceProxy, NameValueOfString } from '@shared/service-proxies/service-proxies';
 import { LazyLoadEvent } from 'primeng/api';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 
@@ -39,6 +38,7 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     public Editor = ClassicEditor;
     public Editorr = ClassicEditor;
     public Editorrr = ClassicEditor;
+    public commentEditors : any[] = new Array<{commentId:number , editor :any}>();
 
     filteredCountries: WatcherUserLookupTableDto[];
     countries: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
@@ -73,16 +73,23 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
         super(injector);
     }
 
-    public onChange( { editor }: ChangeEvent ) {
+    // public onChange( { editor }: ChangeEvent ) {
 
-        // const data = editor.getData();
-        editor.ui.view.toolbar.element.style.display = 'none';
-        // console.log( data );
+    //     // const data = editor.getData();
+    //     editor.ui.view.toolbar.element.style.display = 'none';
+    //     // console.log( data );
+    // }
+
+    public onReady( ckEditor, commentId ) {
+        ckEditor.ui.view.toolbar.element.style.display = 'none';
+        ckEditor.isReadOnly = true;
+        this.commentEditors.push({commentId: commentId, editor:ckEditor});
     }
 
-    public onReady( editor ) {
-        editor.ui.view.toolbar.element.style.display = 'none';
-        editor.isReadOnly = true;
+    public prepareForEdit( commentId: number ) {
+        let editor = this.commentEditors.find(e => e.commentId == commentId).editor;
+        editor.ui.view.toolbar.element.style.display = 'flex';
+        editor.isReadOnly = false;
     }
 
     getUsers(event) {
@@ -215,34 +222,38 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
            this.showCommentCreate = !this.showCommentCreate; 
     }
 
-    saveComment(): void {
+    saveComment(commentId): void {
         
         this.saving = true;
 
-        this.commentToCreate.paxTaskId = this.paxTask.id;
+        if (commentId != 0) {
+            
+        }else{
+            this.commentToCreate.paxTaskId = this.paxTask.id;
 
-        this._commentsServiceProxy
-            .createOrEdit(this.commentToCreate)
-            .pipe(
-                finalize(() => {
-                    this.saving = false;
-                })
-            )
-            .subscribe((res) => {               
-                
-                let added = new GetCommentForViewDto();
-
-                added.creationTime = DateTime.now();
-                added.comment = new CommentDto();
-                added.comment.id = res.id;
-                added.comment.commentText = res.commentText;
-
-                this.commentViews.unshift(added)
-
-                this.showCommentCreate = false;
-                this.commentToCreate = new CreateOrEditCommentDto();
-                this.commentToCreate.commentText = "";
-                this.notify.info(this.l('SavedSuccessfully'));
-            });
+            this._commentsServiceProxy
+                .createOrEdit(this.commentToCreate)
+                .pipe(
+                    finalize(() => {
+                        this.saving = false;
+                    })
+                )
+                .subscribe((res) => {               
+                    
+                    let added = new GetCommentForViewDto();
+    
+                    added.creationTime = DateTime.now();
+                    added.comment = new CommentDto();
+                    added.comment.id = res.id;
+                    added.comment.commentText = res.commentText;
+    
+                    this.commentViews.unshift(added)
+    
+                    this.showCommentCreate = false;
+                    this.commentToCreate = new CreateOrEditCommentDto();
+                    this.commentToCreate.commentText = "";
+                    this.notify.info(this.l('SavedSuccessfully'));
+                });
+        }
     }
 }
