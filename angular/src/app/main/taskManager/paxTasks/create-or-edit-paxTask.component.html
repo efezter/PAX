@@ -51,7 +51,7 @@
                                                 disabled
                                             />
                                             <div class="input-group-append">
-                                                <button class="btn btn-primary blue" (click)="openSelectUserModal2()" type="button">
+                                                <button class="btn btn-primary blue" (click)="openSelectUserModal()" type="button">
                                                     <i class="fa fa-search"></i> {{ l('Pick') }}
                                                 </button>
                                             </div>
@@ -175,7 +175,7 @@
                         
                                     <div class="form-group">
                                         <label for="PaxTask_Details">{{ l('Details') }}</label>
-                                        <ckeditor #PaxTask_Details="ngModel"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask.details}}"></ckeditor>
+                                        <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask.details}}"></ckeditor>
                                         <validation-messages  
                                         id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
                                     </div>
@@ -184,10 +184,6 @@
                             </form>
                             <paxTaskUserLookupTableModal
                                 #paxTaskUserLookupTableModal
-                                (modalSave)="getNewReporterId()"
-                            ></paxTaskUserLookupTableModal>
-                            <paxTaskUserLookupTableModal
-                                #paxTaskUserLookupTableModal2
                                 (modalSave)="getNewAssigneeId()"
                             ></paxTaskUserLookupTableModal>
                         </div>
@@ -223,14 +219,15 @@
                                 <div class="col-xl-12">
                                     <div [hidden]="!showCommentCreate" class="form-group">
                                         <label for="Comment_Text">{{ l('Details') }}</label>
-                                        <ckeditor #Comment_Text="ngModel"  [(ngModel)]="commentToCreate.commentText" [editor]="Editorr" name="Text" data="{{commentToCreate.commentText}}"></ckeditor>
+                                        <ckeditor #Comment_Text="ngModel" [(ngModel)]="commentToCreateOrEdit.commentText" (ready)="onReady($event,0)" [editor]="Editorr" name="Text" data="{{commentToCreateOrEdit.commentText}}"></ckeditor>
                                         <div class="modal-footer">
                     
                                             <button
                                                     class="btn btn-primary font-weight-bold save-button"
-                                                    [disabled]="!commentToCreate.commentText || commentToCreate.commentText.length == 0"
+                                                    [disabled]="!commentToCreateOrEdit.commentText || commentToCreateOrEdit.commentText.length == 0"
+
                                                     [buttonBusy]="saving"
-                                                    (click)="saveComment(0)"
+                                                    (click)="saveComment(undefined)"
                                                     [busyText]="l('ProcessingWithThreeDot')">
                                                 <i class="fa fa-arrow-circle-right"></i>
                                                 <span>{{ l('Save') }}</span>
@@ -242,19 +239,35 @@
 
                                     <div *ngIf="commentViews && commentViews.length > 0">
 
-                                        <div class="form-group" *ngFor="let commentView of commentViews">
+                                        <!-- <div class="form-group" *ngFor="let commentView of commentViews">
                                             <label for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
                                             <ckeditor
-                                            [editor]="Editorrr" 
-                                            (ready)="onReady($event, commentView.comment.id)" 
-                                            name="CommentText" 
-                                            data="{{commentView.comment.commentText}}">
-                                        </ckeditor>
-
-                                            <button *ngIf="commentView.comment.userId == cuRuserId" class="btn btn-primary btn-sm pull-right" (click)="prepareForEdit(commentView.comment.id)" >
+                                                [editor]="Editorrr" 
+                                                (ready)="onReady($event, commentView.comment.id)" 
+                                                name="CommentText" 
+                                                [(ngModel)]="commentView.comment.commentText"
+                                                data="{{commentView.comment.commentText}}">
+                                            </ckeditor>
+                                            <div *ngIf="commentView.comment.userId == cuRuserId" class="col-xl-6">
+                                                <button 
+                                                [hidden]="isCommentEditing"
+                                                class="btn btn-primary btn-sm pull-right"  
+                                                (click)="prepareForEdit(commentView.comment.id, true)" >
                                                     {{"Edit" | localize}}
-                                            </button>
-                                        </div>
+                                                </button>                                               
+                                                <button [hidden]="isCommentEditing" class="btn btn-danger btn-sm pull-right" (click)="deleteComment(commentView.comment.id)" >
+                                                    {{"Delete" | localize}}
+                                                </button>
+                                                <button [hidden]="!isCommentEditing" class="btn btn-success btn-sm pull-right" (click)="saveComment(commentView.comment)" >
+                                                    {{"Save" | localize}}
+                                                </button>
+                                                <button [hidden]="!isCommentEditing" class="btn btn-secondary btn-sm pull-right" (click)="prepareForEdit(commentView.comment.id,false)" >
+                                                    {{"Cancel" | localize}}
+                                                </button>
+                                            </div>                                            
+
+
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>

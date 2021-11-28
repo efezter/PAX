@@ -128,8 +128,6 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_Comments_Create)]
         protected virtual async Task<CommentDto> Create(CreateOrEditCommentDto input)
         {
-            try
-            {
                 input.UserId = AbpSession.GetUserId();
                 var comment = ObjectMapper.Map<Comment>(input);
 
@@ -138,19 +136,16 @@ namespace PAX.Next.TaskManager
                 await CurrentUnitOfWork.SaveChangesAsync();
 
                 return ObjectMapper.Map<CommentDto>(comment);
-            }
-            catch (System.Exception ex)
-            {
-
-                throw;
-            }
         }
 
         [AbpAuthorize(AppPermissions.Pages_Comments_Edit)]
         protected virtual async Task<CommentDto> Update(CreateOrEditCommentDto input)
         {
             var comment = await _commentRepository.FirstOrDefaultAsync((int)input.Id);
-            ObjectMapper.Map(input, comment);
+            //ObjectMapper.Map(input, comment);
+
+            comment.CommentText = input.CommentText;
+
             return ObjectMapper.Map<CommentDto>(comment);
         }
 

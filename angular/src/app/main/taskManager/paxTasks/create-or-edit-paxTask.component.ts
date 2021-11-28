@@ -18,12 +18,13 @@ import { AbpSessionService } from 'abp-ng2-module';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LazyLoadEvent } from 'primeng/api';
-import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
+// import { LazyLoadEvent } from 'primeng/api';
+// import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
+// import Mention from '@ckeditor/ckeditor5-mention/src/mention';
+// import { add } from 'lodash';
 
+import * as CustomCK from 'shared/customCK/build/ckeditor';
 
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { add } from 'lodash';
 
 @Component({
     selector: 'createOrEditPaxTaskModal',
@@ -32,25 +33,40 @@ import { add } from 'lodash';
 export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implements OnInit {
     @ViewChild('paxTaskUserLookupTableModal', { static: true })
     paxTaskUserLookupTableModal: PaxTaskUserLookupTableModalComponent;
-    @ViewChild('paxTaskUserLookupTableModal2', { static: true })
-    paxTaskUserLookupTableModal2: PaxTaskUserLookupTableModalComponent;
 
-    public Editor = ClassicEditor;
-    public Editorr = ClassicEditor;
-    public Editorrr = ClassicEditor;
-    public commentEditors : any[] = new Array<{commentId:number , editor :any}>();
+    public Editor = CustomCK;
+    public Editorr = CustomCK;
+    public Editorrr = CustomCK;
+    public commentEditors: any[] = new Array<{ commentId: number, editor: any }>();
 
     filteredCountries: WatcherUserLookupTableDto[];
+    
     countries: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
+    commentToCreateOrEdit: CreateOrEditCommentDto = new CreateOrEditCommentDto();
+    isCommentEditing: boolean = false;
 
-    commentToCreate:CreateOrEditCommentDto = new CreateOrEditCommentDto();
+    
+
+       // Create a configuration object
+editorConfiguration = {
+    mention: {
+        feeds: [
+            {
+                marker: '@',
+                feed: this.getFeedItems,
+                itemRenderer: this.customItemRenderer,
+                minimumCharacters: 1
+            }
+        ]
+    }
+};
 
     active = false;
     saving = false;
 
     paxTask: CreateOrEditPaxTaskDto = new CreateOrEditPaxTaskDto();
     commentViews: GetCommentForViewDto[];
-    showCommentCreate:boolean = false;
+    showCommentCreate: boolean = false;
 
     cuRuserId = -1;
     reporterName = '';
@@ -73,23 +89,92 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
         super(injector);
     }
 
+    customItemRenderer( item ) {
+        const itemElement = document.createElement( 'span' );
+    
+        // itemElement.classList.add( 'custom-item' );
+        itemElement.id = `mention-list-item-id-${ item.userId }`;
+        itemElement.textContent = `${ item.id } `;
+    
+        // const usernameElement = document.createElement( 'span' );
+    
+        // usernameElement.classList.add( 'custom-item-username' );
+        // usernameElement.textContent = item.id;
+    
+        // itemElement.appendChild( usernameElement );
+    
+        return itemElement;
+    }
+
+    getFeedItems( queryText ) {        
+       return this._paxTasksServiceProxy
+        .getUsersForMention(
+            queryText
+        );       
+    }
+
     // public onChange( { editor }: ChangeEvent ) {
 
     //     // const data = editor.getData();
     //     editor.ui.view.toolbar.element.style.display = 'none';
     //     // console.log( data );
     // }
+    
 
-    public onReady( ckEditor, commentId ) {
-        ckEditor.ui.view.toolbar.element.style.display = 'none';
-        ckEditor.isReadOnly = true;
-        this.commentEditors.push({commentId: commentId, editor:ckEditor});
+    ngOnInit(): void {
+        // ClassicEditor.builtinPlugins = [ Mention ];
+        this.cuRuserId = this._abpSessionService.userId;
+        let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
+        if (!paxTaskId) {
+            this.paxTask = new CreateOrEditPaxTaskDto();
+            this.paxTask.id = paxTaskId;
+            this.paxTask.taskType = TaskType.Normal;
+            this.reporterName = '';
+            this.assigneeName = '';
+            this.severityName = '';
+            this.taskStatusName = '';
+
+            this.active = true;
+        } else {
+            this.getTaskDetails(paxTaskId);
+        }
+        this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
+            this.allSeveritys = result;
+        });
+        this._paxTasksServiceProxy.getAllTaskStatusForTableDropdown().subscribe((result) => {
+            this.allTaskStatuss = result;
+        });
     }
 
-    public prepareForEdit( commentId: number ) {
+    
+
+    public onReady(ckEditor, commentId) {
+
+        ckEditor._paxTasksServiceProxy = this._paxTasksServiceProxy;
+        
+        if (commentId != 0) {//Edit editors
+            ckEditor.ui.view.toolbar.element.style.display = 'none';
+            ckEditor.isReadOnly = true;
+            this.commentEditors.push({ commentId: commentId, editor: ckEditor });
+        }        
+    }
+
+    public prepareForEdit(commentId: number, toggle: boolean) {
+
         let editor = this.commentEditors.find(e => e.commentId == commentId).editor;
-        editor.ui.view.toolbar.element.style.display = 'flex';
-        editor.isReadOnly = false;
+
+        if (!toggle) {
+            editor.ui.view.toolbar.element.style.display = 'none';
+            editor.isReadOnly = true;
+            this.isCommentEditing = false;
+        } else {
+            editor.ui.view.toolbar.element.style.display = 'flex';
+            editor.isReadOnly = false;
+            this.isCommentEditing = true;
+            if (this.showCommentCreate == true) {
+                this.showCommentCreate = false;
+            }
+        }
     }
 
     getUsers(event) {
@@ -103,12 +188,12 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
                 this.countries.map(a => a.id)
             )
             .subscribe((result) => {
-              this.filteredCountries = result.items;
+                this.filteredCountries = result.items;
             });
     }
 
     save(): void {
-        
+
         this.saving = true;
 
         this.paxTask.watchers = this.countries;
@@ -127,32 +212,19 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     }
 
     openSelectUserModal() {
-        this.paxTaskUserLookupTableModal.id = this.paxTask.reporterId;
-        this.paxTaskUserLookupTableModal.displayName = this.reporterName;
+        this.paxTaskUserLookupTableModal.id = this.paxTask.assigneeId;
+        this.paxTaskUserLookupTableModal.displayName = this.assigneeName;
         this.paxTaskUserLookupTableModal.show();
     }
-    openSelectUserModal2() {
-        this.paxTaskUserLookupTableModal2.id = this.paxTask.assigneeId;
-        this.paxTaskUserLookupTableModal2.displayName = this.reporterName;
-        this.paxTaskUserLookupTableModal2.show();
-    }
 
-    setReporterIdNull() {
-        this.paxTask.reporterId = null;
-        this.reporterName = '';
-    }
     setAssigneeIdNull() {
         this.paxTask.assigneeId = null;
         this.assigneeName = '';
     }
 
-    getNewReporterId() {
-        this.paxTask.reporterId = this.paxTaskUserLookupTableModal.id;
-        this.reporterName = this.paxTaskUserLookupTableModal.displayName;
-    }
     getNewAssigneeId() {
-        this.paxTask.assigneeId = this.paxTaskUserLookupTableModal2.id;
-        this.assigneeName = this.paxTaskUserLookupTableModal2.displayName;
+        this.paxTask.assigneeId = this.paxTaskUserLookupTableModal.id;
+        this.assigneeName = this.paxTaskUserLookupTableModal.displayName;
     }
 
     close(): void {
@@ -160,31 +232,7 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
         this._router.navigate(['app/main/taskManager/paxTasks']);
     }
 
-    ngOnInit(): void {
-        this.cuRuserId = this._abpSessionService.userId;
-        let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
-        if (!paxTaskId) {
-            this.paxTask = new CreateOrEditPaxTaskDto();
-            this.paxTask.id = paxTaskId;
-            this.paxTask.taskType = TaskType.Normal;
-            this.reporterName = '';
-            this.assigneeName = '';
-            this.severityName = '';
-            this.taskStatusName = '';
-
-            this.active = true;
-        } else {
-           this.getTaskDetails(paxTaskId);
-        }
-        this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
-            this.allSeveritys = result;
-        });
-        this._paxTasksServiceProxy.getAllTaskStatusForTableDropdown().subscribe((result) => {
-            this.allTaskStatuss = result;
-        });
-    }
-
-    getTaskDetails(paxTaskId:number): void {
+    getTaskDetails(paxTaskId: number): void {
 
         this._paxTasksServiceProxy.getPaxTaskForEdit(paxTaskId).subscribe((result) => {
             this.paxTask = result.paxTask;
@@ -217,43 +265,81 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
         });
     }
 
-    toggleCommentCreate(): void
-    {
-           this.showCommentCreate = !this.showCommentCreate; 
+    toggleCommentCreate(): void {
+        this.showCommentCreate = !this.showCommentCreate;
     }
 
-    saveComment(commentId): void {
-        
+    saveComment(comment: CommentDto): void {
+
         this.saving = true;
 
-        if (commentId != 0) {
-            
-        }else{
-            this.commentToCreate.paxTaskId = this.paxTask.id;
+        if (!comment) {
+            this.commentToCreateOrEdit.paxTaskId = this.paxTask.id;
+        }
+        else {
+            this.commentToCreateOrEdit.paxTaskId = this.paxTask.id;
+            this.commentToCreateOrEdit.id = comment.id;
+            this.commentToCreateOrEdit.commentText = comment.commentText;
+        }
 
-            this._commentsServiceProxy
-                .createOrEdit(this.commentToCreate)
-                .pipe(
-                    finalize(() => {
-                        this.saving = false;
-                    })
-                )
-                .subscribe((res) => {               
-                    
+        this._commentsServiceProxy
+            .createOrEdit(this.commentToCreateOrEdit)
+            .pipe(
+                finalize(() => {
+                    this.saving = false;
+                })
+            )
+            .subscribe((res) => {
+
+                if (!comment) {
+
                     let added = new GetCommentForViewDto();
-    
+
                     added.creationTime = DateTime.now();
                     added.comment = new CommentDto();
                     added.comment.id = res.id;
                     added.comment.commentText = res.commentText;
-    
+                    added.comment.userId = this._abpSessionService.userId;
                     this.commentViews.unshift(added)
-    
+
                     this.showCommentCreate = false;
-                    this.commentToCreate = new CreateOrEditCommentDto();
-                    this.commentToCreate.commentText = "";
-                    this.notify.info(this.l('SavedSuccessfully'));
-                });
-        }
+                    this.commentToCreateOrEdit = new CreateOrEditCommentDto();
+                    this.commentToCreateOrEdit.commentText = "";
+
+                } else {
+                    this.prepareForEdit(comment.id, false);
+                }
+
+                this.notify.info(this.l('SavedSuccessfully'));
+            });
+    }
+
+    deleteComment(commentId: number): void {
+
+        this.message.confirm(
+            this.l('DeleteCommentMessage'),
+            this.l('AreYouSure'),
+            isConfirmed => {
+                if (isConfirmed) {
+                    this.saving = true;
+
+                    this._commentsServiceProxy
+                        .delete(commentId)
+                        .pipe(
+                            finalize(() => {
+                                this.saving = false;
+                            })
+                        )
+                        .subscribe((res) => {
+
+                            let deletedItem = this.commentViews.find(e => e.comment.id = commentId);
+
+                            this.commentViews.splice(this.commentViews.indexOf(deletedItem), 1)
+
+                            this.notify.info(this.l('SavedSuccessfully'));
+                        });
+                }
+            }
+        );
     }
 }

@@ -387,6 +387,39 @@ namespace PAX.Next.TaskManager
                 lookupTableDtoList
             );
         }
+
+        [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
+        public async Task<PagedResultDto<GetUsersForMention>> getUsersForMention(GetAllForLookupTableInput input)
+        {
+            var query = _lookup_userRepository.GetAll()
+                .WhereIf(
+                       !string.IsNullOrWhiteSpace(input.Filter),
+                      e => (e.Name != null && e.Name.Contains(input.Filter)) || (e.Surname != null && e.Surname.Contains(input.Filter))
+                   ).Select(x => new { x.Id, x.FullName });
+
+            var totalCount = await query.CountAsync();
+
+            var userList = await query
+                .PageBy(input)
+                .ToListAsync();
+
+            var lookupTableDtoList = new List<GetUsersForMention>();
+            foreach (var user in userList)
+            {
+                lookupTableDtoList.Add(new GetUsersForMention
+                {
+                    Id = "@" + user.FullName?.ToString(),
+                    UserId = user.Id,
+                    DisplayName = user.FullName?.ToString()
+                });
+            }
+
+            return new PagedResultDto<GetUsersForMention>(
+                totalCount,
+                lookupTableDtoList
+            );
+        }
+
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
         public async Task<List<PaxTaskSeverityLookupTableDto>> GetAllSeverityForTableDropdown()
         {

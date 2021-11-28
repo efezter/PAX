@@ -8212,6 +8212,27 @@ export class PaxTasksServiceProxy {
         return _observableOf<FileDto>(<any>null);
     }
 
+    getUsersForMention(filter: string) {
+        const promise = new Promise((resolve, reject) => {
+          let apiURL = this.baseUrl + "/api/services/app/PaxTasks/getUsersForMention?";
+          apiURL += "Filter=" + encodeURIComponent("" + filter);
+          var data:any[];
+          this.http
+            .get(apiURL)
+            .toPromise()
+            .then((res: any) => {
+              // Success
+            resolve(res.result.items);
+            },
+              err => {
+                // Error
+                reject(err);
+              }
+            );
+        });
+        return promise;
+      }
+
     /**
      * @param filter (optional) 
      * @param sorting (optional) 
@@ -8220,6 +8241,7 @@ export class PaxTasksServiceProxy {
      * @return Success
      */
     getAllUserForLookupTable(filter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined, omitUserIds: number[] | undefined): Observable<PagedResultDtoOfPaxTaskUserLookupTableDto> {
+       debugger;
         let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAllUserForLookupTable?";
         if (filter === null)
             throw new Error("The parameter 'filter' cannot be null.");
