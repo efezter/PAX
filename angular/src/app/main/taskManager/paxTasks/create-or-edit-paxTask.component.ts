@@ -29,6 +29,7 @@ import * as CustomCK from 'shared/customCK/build/ckeditor';
 @Component({
     selector: 'createOrEditPaxTaskModal',
     templateUrl: './create-or-edit-paxTask.component.html',
+    styleUrls: ['./create-or-edit-paxTask.component.less'],
 })
 export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implements OnInit {
     @ViewChild('paxTaskUserLookupTableModal', { static: true })
@@ -90,19 +91,12 @@ editorConfiguration = {
     }
 
     customItemRenderer( item ) {
-        const itemElement = document.createElement( 'span' );
+        const itemElement = document.createElement( 'div' );
     
-        // itemElement.classList.add( 'custom-item' );
+        itemElement.classList.add( 'mention-item' );
         itemElement.id = `mention-list-item-id-${ item.userId }`;
         itemElement.textContent = `${ item.id } `;
-    
-        // const usernameElement = document.createElement( 'span' );
-    
-        // usernameElement.classList.add( 'custom-item-username' );
-        // usernameElement.textContent = item.id;
-    
-        // itemElement.appendChild( usernameElement );
-    
+
         return itemElement;
     }
 

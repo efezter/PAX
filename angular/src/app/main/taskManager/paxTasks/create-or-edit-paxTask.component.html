@@ -157,7 +157,7 @@
                                         </select>
                                     </div>
                         
-                                    <div class="form-group">
+                                    <div class="form-group aaa">
                                         <label for="PaxTask_Header">{{ l('Header') }} *</label>
                                         <input
                                             type="text"
@@ -173,7 +173,7 @@
                                         <validation-messages [formCtrl]="PaxTask_Header"></validation-messages>
                                     </div>
                         
-                                    <div class="form-group">
+                                    <div class="form-group ck-content">
                                         <label for="PaxTask_Details">{{ l('Details') }}</label>
                                         <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask.details}}"></ckeditor>
                                         <validation-messages  
@@ -217,9 +217,9 @@
                             </div>
                             <div class="row">
                                 <div class="col-xl-12">
-                                    <div [hidden]="!showCommentCreate" class="form-group">
+                                    <!-- <div [hidden]="!showCommentCreate" class="form-group">
                                         <label for="Comment_Text">{{ l('Details') }}</label>
-                                        <ckeditor #Comment_Text="ngModel" [(ngModel)]="commentToCreateOrEdit.commentText" (ready)="onReady($event,0)" [editor]="Editorr" name="Text" data="{{commentToCreateOrEdit.commentText}}"></ckeditor>
+                                        <ckeditor #Comment_Text="ngModel" [config]="editorConfiguration" [(ngModel)]="commentToCreateOrEdit.commentText" (ready)="onReady($event,0)" [editor]="Editorr" name="Text" data="{{commentToCreateOrEdit.commentText}}"></ckeditor>
                                         <div class="modal-footer">
                     
                                             <button
@@ -233,7 +233,7 @@
                                                 <span>{{ l('Save') }}</span>
                                             </button>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     
 
@@ -243,6 +243,7 @@
                                             <label for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
                                             <ckeditor
                                                 [editor]="Editorrr" 
+                                                [config]="editorConfiguration"
                                                 (ready)="onReady($event, commentView.comment.id)" 
                                                 name="CommentText" 
                                                 [(ngModel)]="commentView.comment.commentText"
@@ -264,9 +265,7 @@
                                                 <button [hidden]="!isCommentEditing" class="btn btn-secondary btn-sm pull-right" (click)="prepareForEdit(commentView.comment.id,false)" >
                                                     {{"Cancel" | localize}}
                                                 </button>
-                                            </div>                                            
-
-
+                                            </div> 
                                         </div> -->
                                     </div>
                                 </div>

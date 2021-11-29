@@ -6,6 +6,8 @@ namespace PAX.Next.TaskManager.Dtos
     {
         public string Id { get; set; }
 
+        public string Link { get; set; }
+
         public long UserId { get; set; }
 
         public string DisplayName { get; set; }

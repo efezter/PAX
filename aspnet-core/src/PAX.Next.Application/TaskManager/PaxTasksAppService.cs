@@ -395,7 +395,7 @@ namespace PAX.Next.TaskManager
                 .WhereIf(
                        !string.IsNullOrWhiteSpace(input.Filter),
                       e => (e.Name != null && e.Name.Contains(input.Filter)) || (e.Surname != null && e.Surname.Contains(input.Filter))
-                   ).Select(x => new { x.Id, x.FullName });
+                   ).Select(x => new { x.Id, x.FullName, x.EmailAddress });
 
             var totalCount = await query.CountAsync();
 
@@ -410,6 +410,7 @@ namespace PAX.Next.TaskManager
                 {
                     Id = "@" + user.FullName?.ToString(),
                     UserId = user.Id,
+                    Link = "mailto:" + user.EmailAddress,
                     DisplayName = user.FullName?.ToString()
                 });
             }
