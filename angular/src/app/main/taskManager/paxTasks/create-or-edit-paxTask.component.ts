@@ -18,6 +18,7 @@ import { AbpSessionService } from 'abp-ng2-module';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AppConsts } from '@shared/AppConsts';
 // import { LazyLoadEvent } from 'primeng/api';
 // import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 // import Mention from '@ckeditor/ckeditor5-mention/src/mention';
@@ -75,6 +76,9 @@ editorConfiguration = {
     severityName = '';
     taskStatusName = '';
 
+    uploadUrl: string;
+    uploadedFiles: any[] = [];
+
     allSeveritys: PaxTaskSeverityLookupTableDto[];
     allTaskStatuss: PaxTaskTaskStatusLookupTableDto[];
 
@@ -117,6 +121,8 @@ editorConfiguration = {
 
     ngOnInit(): void {
         // ClassicEditor.builtinPlugins = [ Mention ];
+        this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/PaxTask/UploadFiles';
+
         this.cuRuserId = this._abpSessionService.userId;
         let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
         if (!paxTaskId) {
@@ -335,5 +341,16 @@ editorConfiguration = {
                 }
             }
         );
+    }
+
+      // upload completed event
+      onUpload(event): void {
+        for (const file of event.files) {
+            this.uploadedFiles.push(file);
+        }
+    }
+
+    onBeforeSend(event): void {
+        event.xhr.setRequestHeader('Authorization', 'Bearer ' + abp.auth.getToken());
     }
 }

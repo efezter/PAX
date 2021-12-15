@@ -307,6 +307,24 @@
                             <div class="row">
                                 <div class="col-xl-12">
                                     <div class="web-log-view full-height">
+
+                                        <label for="DefaultFileUploadFileInput">Default file uploader</label>
+                                        <p-fileUpload multiple="multiple"
+                                                    id="DefaultFileUploadFileInput"
+                                                    name="DefaultFileUploadFileInput[]"
+                                                    [url]="uploadUrl"
+                                                    accept="image/*"
+                                                    maxFileSize="1000000"
+                                                    (onUpload)="onUpload($event)"
+                                                    (onBeforeSend)="onBeforeSend($event)">
+
+                                            <ng-template pTemplate="content">
+                                                <ul *ngIf="uploadedFiles.length">
+                                                    <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+                                                </ul>
+                                            </ng-template>
+                                        </p-fileUpload>
+
                                     </div>
                                 </div>
                             </div>
