@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="Comment">Comment</text>
+  <texts>    <text name="PaxTaskAttachment">Pax task attachment</text>
+    <text name="CreateNewPaxTaskAttachment">Create new pax task attachment</text>
+    <text name="EditPaxTaskAttachment">Edit pax task attachment</text>
+    <text name="DeletePaxTaskAttachment">Delete pax task attachment</text>
+    <text name="Comment">Comment</text>
     <text name="CreateNewComment">Create new comment</text>
     <text name="EditComment">Edit comment</text>
     <text name="DeleteComment">Delete comment</text>

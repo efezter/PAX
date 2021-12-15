@@ -30,6 +30,11 @@ namespace PAX.Next.Authorization
 
             var pages = context.GetPermissionOrNull(AppPermissions.Pages) ?? context.CreatePermission(AppPermissions.Pages, L("Pages"));
 
+            var paxTaskAttachments = pages.CreateChildPermission(AppPermissions.Pages_PaxTaskAttachments, L("PaxTaskAttachments"));
+            paxTaskAttachments.CreateChildPermission(AppPermissions.Pages_PaxTaskAttachments_Create, L("CreateNewPaxTaskAttachment"));
+            paxTaskAttachments.CreateChildPermission(AppPermissions.Pages_PaxTaskAttachments_Edit, L("EditPaxTaskAttachment"));
+            paxTaskAttachments.CreateChildPermission(AppPermissions.Pages_PaxTaskAttachments_Delete, L("DeletePaxTaskAttachment"));
+
             var comments = pages.CreateChildPermission(AppPermissions.Pages_Comments, L("Comments"));
             comments.CreateChildPermission(AppPermissions.Pages_Comments_Create, L("CreateNewComment"));
             comments.CreateChildPermission(AppPermissions.Pages_Comments_Edit, L("EditComment"));

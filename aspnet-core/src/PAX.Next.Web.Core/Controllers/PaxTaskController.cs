@@ -1,28 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Abp.AspNetCore.Mvc.Authorization;
 using Abp.IO.Extensions;
 using Abp.UI;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using PAX.Next.DemoUiComponents.Dto;
 using PAX.Next.Storage;
+using PAX.Next.TaskManager;
+using System.IO;
+using PAX.Next.TaskManager.Dtos;
 
 namespace PAX.Next.Web.Controllers
 {
     [AbpMvcAuthorize]
     public class PaxTaskController : NextControllerBase
     {
-        private readonly IBinaryObjectManager _binaryObjectManager;
+        private readonly PaxTaskAttachmentsAppService _paxTaskAttachmentsAppService;
+        private readonly IHostEnvironment _env;
 
-        public PaxTaskController(IBinaryObjectManager binaryObjectManager)
+        public PaxTaskController(PaxTaskAttachmentsAppService paxTaskAttachmentsAppService, IHostEnvironment env)
         {
-            _binaryObjectManager = binaryObjectManager;
+            _env = env;
+            _paxTaskAttachmentsAppService = paxTaskAttachmentsAppService;
         }
 
         [HttpPost]
-        public async Task<JsonResult> UploadFiles()
+        public async Task<JsonResult> UploadFiles([FromQuery(Name = "taskId")] string taskId)
         {
             try
             {
@@ -34,7 +41,7 @@ namespace PAX.Next.Web.Controllers
                     throw new UserFriendlyException(L("File_Empty_Error"));
                 }
 
-                List<UploadFileOutput> filesOutput = new List<UploadFileOutput>();
+                List<PaxTaskAttachmentDto> filesOutput = new List<PaxTaskAttachmentDto>();
 
                 foreach (var file in files)
                 {
@@ -49,12 +56,28 @@ namespace PAX.Next.Web.Controllers
                         fileBytes = stream.GetAllBytes();
                     }
 
-                    var fileObject = new BinaryObject(AbpSession.TenantId, fileBytes, $"Demo ui, uploaded file {DateTime.UtcNow}");
-                    await _binaryObjectManager.SaveAsync(fileObject);
 
-                    filesOutput.Add(new UploadFileOutput
+
+                    var attchUrl = "wwwroot/" + AbpSession.TenantId + "/Tasks/"+ taskId + "/Attachments";
+
+                    var dir = Path.Combine(_env.ContentRootPath, attchUrl);
+                    if (!Directory.Exists(dir))
                     {
-                        Id = fileObject.Id,
+                        Directory.CreateDirectory(dir);
+                    }
+                    var filePath = Path.Combine(dir, file.FileName);
+
+                    System.IO.File.WriteAllBytes(filePath, fileBytes);
+
+                    CreateOrEditPaxTaskAttachmentDto attchDto = new CreateOrEditPaxTaskAttachmentDto();
+                    attchDto.PaxTaskId = int.Parse(taskId);
+                    attchDto.FileName = filePath;
+
+                   int insertedId = await _paxTaskAttachmentsAppService.CreateOrEdit(attchDto);
+
+                    filesOutput.Add(new PaxTaskAttachmentDto
+                    {
+                        Id = insertedId,
                         FileName = file.FileName
                     });
                 }

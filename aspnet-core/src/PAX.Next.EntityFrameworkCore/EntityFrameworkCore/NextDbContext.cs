@@ -17,6 +17,8 @@ namespace PAX.Next.EntityFrameworkCore
 {
     public class NextDbContext : AbpZeroDbContext<Tenant, Role, User, NextDbContext>, IAbpPersistedGrantDbContext
     {
+        public virtual DbSet<PaxTaskAttachment> PaxTaskAttachments { get; set; }
+
         public virtual DbSet<Comment> Comments { get; set; }
 
         public virtual DbSet<Watcher> Watchers { get; set; }

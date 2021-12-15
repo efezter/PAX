@@ -96,8 +96,6 @@ export class ChangeIconModalComponent extends AppComponentBase {
                 this.saving = false;
             }))
             .subscribe(() => {
-                // abp.setting.values['App.UserManagement.UseGravatarProfilePicture'] = this.useGravatarProfilePicture.toString();
-                // abp.event.trigger('profilePictureChanged');
                 this.item.taskStatus.iconUrl = "/Common/Images/" + this._sessionService.tenantId + "/Task/TaskStatusIcons/" + this.item.taskStatus.id + ".png" + '?random+\=' + Math.random();
                 this.close();
             });

@@ -121,7 +121,7 @@ editorConfiguration = {
 
     ngOnInit(): void {
         // ClassicEditor.builtinPlugins = [ Mention ];
-        this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/PaxTask/UploadFiles';
+        
 
         this.cuRuserId = this._abpSessionService.userId;
         let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
@@ -136,6 +136,7 @@ editorConfiguration = {
 
             this.active = true;
         } else {
+            this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/PaxTask/UploadFiles?taskId=' + paxTaskId;
             this.getTaskDetails(paxTaskId);
         }
         this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
@@ -345,6 +346,8 @@ editorConfiguration = {
 
       // upload completed event
       onUpload(event): void {
+          debugger;
+        //   event.originalEvent.body.result
         for (const file of event.files) {
             this.uploadedFiles.push(file);
         }

@@ -98,13 +98,13 @@ namespace PAX.Next.TaskManager
 
             var output = new GetCommentForEditOutput { Comment = ObjectMapper.Map<CreateOrEditCommentDto>(comment) };
 
-            if (output.Comment.PaxTaskId != null)
+            if (output.Comment.PaxTaskId != 0)
             {
                 var _lookupPaxTask = await _lookup_paxTaskRepository.FirstOrDefaultAsync((int)output.Comment.PaxTaskId);
                 output.PaxTaskHeader = _lookupPaxTask?.Header?.ToString();
             }
 
-            if (output.Comment.UserId != null)
+            if (output.Comment.UserId != 0)
             {
                 var _lookupUser = await _lookup_userRepository.FirstOrDefaultAsync((long)output.Comment.UserId);
                 output.UserName = _lookupUser?.Name?.ToString();

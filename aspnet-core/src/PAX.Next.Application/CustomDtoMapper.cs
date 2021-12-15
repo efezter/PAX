@@ -50,6 +50,8 @@ namespace PAX.Next
     {
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
+            configuration.CreateMap<CreateOrEditPaxTaskAttachmentDto, PaxTaskAttachment>().ReverseMap();
+            configuration.CreateMap<PaxTaskAttachmentDto, PaxTaskAttachment>().ReverseMap();
             configuration.CreateMap<CreateOrEditCommentDto, Comment>().ReverseMap();
             configuration.CreateMap<Comment, GetCommentForViewDto>().ReverseMap();
             configuration.CreateMap<CommentDto, Comment>().ReverseMap();
