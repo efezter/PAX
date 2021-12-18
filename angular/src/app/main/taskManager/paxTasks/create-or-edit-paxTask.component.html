@@ -217,7 +217,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-xl-12">
-                                    <!-- <div [hidden]="!showCommentCreate" class="form-group">
+                                    <div [hidden]="!showCommentCreate" class="form-group">
                                         <label for="Comment_Text">{{ l('Details') }}</label>
                                         <ckeditor #Comment_Text="ngModel" [config]="editorConfiguration" [(ngModel)]="commentToCreateOrEdit.commentText" (ready)="onReady($event,0)" [editor]="Editorr" name="Text" data="{{commentToCreateOrEdit.commentText}}"></ckeditor>
                                         <div class="modal-footer">
@@ -233,13 +233,13 @@
                                                 <span>{{ l('Save') }}</span>
                                             </button>
                                         </div>
-                                    </div> -->
+                                    </div>
 
                                     
 
                                     <div *ngIf="commentViews && commentViews.length > 0">
 
-                                        <!-- <div class="form-group" *ngFor="let commentView of commentViews">
+                                        <div class="form-group" *ngFor="let commentView of commentViews">
                                             <label for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
                                             <ckeditor
                                                 [editor]="Editorrr" 
@@ -266,7 +266,8 @@
                                                     {{"Cancel" | localize}}
                                                 </button>
                                             </div> 
-                                        </div> -->
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -313,14 +314,26 @@
                                                     id="DefaultFileUploadFileInput"
                                                     name="DefaultFileUploadFileInput[]"
                                                     [url]="uploadUrl"
-                                                    accept="image/*"
+                                                    accept="application/pdf,
+                                                            application/vnd.ms-excel,
+                                                            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                                                            application/msword,
+                                                            application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+                                                            application/vnd.oasis.opendocument.text,
+                                                            application/vnd.oasis.opendocument.spreadsheet,
+                                                            image/*"
                                                     maxFileSize="1000000"
                                                     (onUpload)="onUpload($event)"
                                                     (onBeforeSend)="onBeforeSend($event)">
 
                                             <ng-template pTemplate="content">
                                                 <ul *ngIf="uploadedFiles.length">
-                                                    <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+                                                    <li *ngFor="let file of uploadedFiles">
+                                                        <a target="_blank" href="{{this.serverUrl + '/' + file.fileUrl}}">{{file.fileName}} - {{file.userName}} - {{ file.creationTime | luxonFormat: 'F' }}</a> 
+                                                        <a (click)="deleteAttachment(file.id)" >
+                                                            [X]
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </ng-template>
                                         </p-fileUpload>

@@ -10,7 +10,9 @@ import {
     CreateOrEditCommentDto,
     GetCommentForViewDto,
     WatcherUserLookupTableDto,
-    CommentDto
+    CommentDto,
+    PaxTaskAttachmentsServiceProxy,
+    PaxTaskAttachmentDto
 } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DateTime } from 'luxon';
@@ -75,9 +77,10 @@ editorConfiguration = {
     assigneeName = '';
     severityName = '';
     taskStatusName = '';
+    serverUrl='';
 
     uploadUrl: string;
-    uploadedFiles: any[] = [];
+    uploadedFiles: PaxTaskAttachmentDto[] = [];
 
     allSeveritys: PaxTaskSeverityLookupTableDto[];
     allTaskStatuss: PaxTaskTaskStatusLookupTableDto[];
@@ -85,6 +88,7 @@ editorConfiguration = {
     constructor(
         injector: Injector,
         private _paxTasksServiceProxy: PaxTasksServiceProxy,
+        private _paxTaskAttachmentsServiceProxy: PaxTaskAttachmentsServiceProxy,
         private _commentsServiceProxy: CommentsServiceProxy,
         private _dateTimeService: DateTimeService,
         private _activatedRoute: ActivatedRoute,
@@ -104,10 +108,15 @@ editorConfiguration = {
         return itemElement;
     }
 
-    getFeedItems( queryText ) {        
+    getFeedItems( queryText ) {  
+        debugger;      
        return this._paxTasksServiceProxy
         .getUsersForMention(
-            queryText
+            queryText,
+            undefined,
+            undefined,
+            undefined,
+            undefined
         );       
     }
 
@@ -120,10 +129,9 @@ editorConfiguration = {
     
 
     ngOnInit(): void {
-        // ClassicEditor.builtinPlugins = [ Mention ];
-        
 
         this.cuRuserId = this._abpSessionService.userId;
+        this.serverUrl = AppConsts.remoteServiceBaseUrl;
         let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
         if (!paxTaskId) {
             this.paxTask = new CreateOrEditPaxTaskDto();
@@ -133,15 +141,17 @@ editorConfiguration = {
             this.assigneeName = '';
             this.severityName = '';
             this.taskStatusName = '';
-
             this.active = true;
         } else {
-            this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/PaxTask/UploadFiles?taskId=' + paxTaskId;
+            this.uploadUrl = this.serverUrl + '/PaxTask/UploadFiles?taskId=' + paxTaskId;
             this.getTaskDetails(paxTaskId);
+            this.getAttachments(paxTaskId);
         }
+
         this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
             this.allSeveritys = result;
         });
+
         this._paxTasksServiceProxy.getAllTaskStatusForTableDropdown().subscribe((result) => {
             this.allTaskStatuss = result;
         });
@@ -183,14 +193,57 @@ editorConfiguration = {
         this._paxTasksServiceProxy
             .getAllUserForLookupTable(
                 event.query,
+                this.countries.map(a => a.id),
                 undefined,
                 undefined,
-                100,
-                this.countries.map(a => a.id)
+                100                
             )
             .subscribe((result) => {
                 this.filteredCountries = result.items;
             });
+    }
+
+    getAttachments(paxTaskId: number) {
+
+        this._paxTaskAttachmentsServiceProxy
+            .getAll(
+                    undefined,
+                    paxTaskId,
+                    undefined,
+                    undefined,
+                    25
+            )
+            .subscribe((result) => {
+                this.uploadedFiles = result.items;
+            });
+    }
+
+    deleteAttachment(attachmenttId: number): void {
+
+        this.message.confirm(
+            this.l('DeleteAttachmentMessage'),
+            this.l('AreYouSure'),
+            isConfirmed => {
+                if (isConfirmed) {
+                    this.saving = true;
+
+                    this._paxTaskAttachmentsServiceProxy
+                        .delete(attachmenttId)
+                        .pipe(
+                            finalize(() => {
+                                this.saving = false;
+                            })
+                        )
+                        .subscribe((res) => {
+                            let deletedItem = this.uploadedFiles.find(e => e.id == attachmenttId);
+
+                            this.uploadedFiles.splice(this.uploadedFiles.indexOf(deletedItem), 1)
+
+                            this.notify.info(this.l('SavedSuccessfully'));
+                        });
+                }
+            }
+        );
     }
 
     save(): void {
@@ -294,7 +347,7 @@ editorConfiguration = {
 
                 if (!comment) {
 
-                    let added = new GetCommentForViewDto();
+                    let added:GetCommentForViewDto = new GetCommentForViewDto();
 
                     added.creationTime = DateTime.now();
                     added.comment = new CommentDto();
@@ -333,7 +386,7 @@ editorConfiguration = {
                         )
                         .subscribe((res) => {
 
-                            let deletedItem = this.commentViews.find(e => e.comment.id = commentId);
+                            let deletedItem = this.commentViews.find(e => e.comment.id == commentId);
 
                             this.commentViews.splice(this.commentViews.indexOf(deletedItem), 1)
 
@@ -346,10 +399,16 @@ editorConfiguration = {
 
       // upload completed event
       onUpload(event): void {
-          debugger;
         //   event.originalEvent.body.result
-        for (const file of event.files) {
-            this.uploadedFiles.push(file);
+        for (const file of event.originalEvent.body.result) {
+        
+            var savedAtch:PaxTaskAttachmentDto = new PaxTaskAttachmentDto();
+            savedAtch.fileName = file.fileName;
+            savedAtch.fileUrl = file.fileUrl;
+            savedAtch.id = file.id;
+            savedAtch.creationTime = file.creationTime ? DateTime.fromISO(file.creationTime.toString()) : <any>undefined;
+            savedAtch.userName = file.userName;
+            this.uploadedFiles.push(savedAtch);
         }
     }
 

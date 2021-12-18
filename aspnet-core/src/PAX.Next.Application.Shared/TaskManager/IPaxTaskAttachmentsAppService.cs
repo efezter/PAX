@@ -10,7 +10,7 @@ namespace PAX.Next.TaskManager
 {
     public interface IPaxTaskAttachmentsAppService : IApplicationService
     {
-        Task<PagedResultDto<GetPaxTaskAttachmentForViewDto>> GetAll(GetAllPaxTaskAttachmentsInput input);
+        Task<PagedResultDto<PaxTaskAttachmentDto>> GetAll(GetAllPaxTaskAttachmentsInput input);
 
         Task<GetPaxTaskAttachmentForEditOutput> GetPaxTaskAttachmentForEdit(EntityDto input);
 

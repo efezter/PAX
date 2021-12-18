@@ -1586,6 +1586,7 @@ export class CommentsServiceProxy {
 
     /**
      * @param filter (optional) 
+     * @param taskIdFilter (optional) 
      * @param paxTaskHeaderFilter (optional) 
      * @param userNameFilter (optional) 
      * @param sorting (optional) 
@@ -1599,14 +1600,14 @@ export class CommentsServiceProxy {
             throw new Error("The parameter 'filter' cannot be null.");
         else if (filter !== undefined)
             url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
-        if (paxTaskHeaderFilter === null)
-            throw new Error("The parameter 'paxTaskHeaderFilter' cannot be null.");
-        else if (paxTaskHeaderFilter !== undefined)
-            url_ += "PaxTaskHeaderFilter=" + encodeURIComponent("" + paxTaskHeaderFilter) + "&";
         if (taskIdFilter === null)
             throw new Error("The parameter 'taskIdFilter' cannot be null.");
         else if (taskIdFilter !== undefined)
             url_ += "TaskIdFilter=" + encodeURIComponent("" + taskIdFilter) + "&";
+        if (paxTaskHeaderFilter === null)
+            throw new Error("The parameter 'paxTaskHeaderFilter' cannot be null.");
+        else if (paxTaskHeaderFilter !== undefined)
+            url_ += "PaxTaskHeaderFilter=" + encodeURIComponent("" + paxTaskHeaderFilter) + "&";
         if (userNameFilter === null)
             throw new Error("The parameter 'userNameFilter' cannot be null.");
         else if (userNameFilter !== undefined)
@@ -1741,6 +1742,7 @@ export class CommentsServiceProxy {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
             })
         };
 
@@ -1830,158 +1832,6 @@ export class CommentsServiceProxy {
             }));
         }
         return _observableOf<void>(<any>null);
-    }
-
-    /**
-     * @param filter (optional) 
-     * @param omitUserIds (optional) 
-     * @param sorting (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
-     * @return Success
-     */
-    getAllPaxTaskForLookupTable(filter: string | undefined, omitUserIds: number[] | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfCommentPaxTaskLookupTableDto> {
-        let url_ = this.baseUrl + "/api/services/app/Comments/GetAllPaxTaskForLookupTable?";
-        if (filter === null)
-            throw new Error("The parameter 'filter' cannot be null.");
-        else if (filter !== undefined)
-            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
-        if (omitUserIds === null)
-            throw new Error("The parameter 'omitUserIds' cannot be null.");
-        else if (omitUserIds !== undefined)
-            omitUserIds && omitUserIds.forEach(item => { url_ += "OmitUserIds=" + encodeURIComponent("" + item) + "&"; });
-        if (sorting === null)
-            throw new Error("The parameter 'sorting' cannot be null.");
-        else if (sorting !== undefined)
-            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
-        if (skipCount === null)
-            throw new Error("The parameter 'skipCount' cannot be null.");
-        else if (skipCount !== undefined)
-            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
-        if (maxResultCount === null)
-            throw new Error("The parameter 'maxResultCount' cannot be null.");
-        else if (maxResultCount !== undefined)
-            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAllPaxTaskForLookupTable(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetAllPaxTaskForLookupTable(<any>response_);
-                } catch (e) {
-                    return <Observable<PagedResultDtoOfCommentPaxTaskLookupTableDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<PagedResultDtoOfCommentPaxTaskLookupTableDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetAllPaxTaskForLookupTable(response: HttpResponseBase): Observable<PagedResultDtoOfCommentPaxTaskLookupTableDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PagedResultDtoOfCommentPaxTaskLookupTableDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<PagedResultDtoOfCommentPaxTaskLookupTableDto>(<any>null);
-    }
-
-    /**
-     * @param filter (optional) 
-     * @param omitUserIds (optional) 
-     * @param sorting (optional) 
-     * @param skipCount (optional) 
-     * @param maxResultCount (optional) 
-     * @return Success
-     */
-    getAllUserForLookupTable(filter: string | undefined, omitUserIds: number[] | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfCommentUserLookupTableDto> {
-        let url_ = this.baseUrl + "/api/services/app/Comments/GetAllUserForLookupTable?";
-        if (filter === null)
-            throw new Error("The parameter 'filter' cannot be null.");
-        else if (filter !== undefined)
-            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
-        if (omitUserIds === null)
-            throw new Error("The parameter 'omitUserIds' cannot be null.");
-        else if (omitUserIds !== undefined)
-            omitUserIds && omitUserIds.forEach(item => { url_ += "OmitUserIds=" + encodeURIComponent("" + item) + "&"; });
-        if (sorting === null)
-            throw new Error("The parameter 'sorting' cannot be null.");
-        else if (sorting !== undefined)
-            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
-        if (skipCount === null)
-            throw new Error("The parameter 'skipCount' cannot be null.");
-        else if (skipCount !== undefined)
-            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
-        if (maxResultCount === null)
-            throw new Error("The parameter 'maxResultCount' cannot be null.");
-        else if (maxResultCount !== undefined)
-            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAllUserForLookupTable(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetAllUserForLookupTable(<any>response_);
-                } catch (e) {
-                    return <Observable<PagedResultDtoOfCommentUserLookupTableDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<PagedResultDtoOfCommentUserLookupTableDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetAllUserForLookupTable(response: HttpResponseBase): Observable<PagedResultDtoOfCommentUserLookupTableDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PagedResultDtoOfCommentUserLookupTableDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<PagedResultDtoOfCommentUserLookupTableDto>(<any>null);
     }
 }
 
@@ -7749,6 +7599,259 @@ export class OrganizationUnitServiceProxy {
 }
 
 @Injectable()
+export class PaxTaskAttachmentsServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param taskId (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAll(filter: string | undefined, taskId: number | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskAttachmentForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTaskAttachments/GetAll?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (taskId === null)
+            throw new Error("The parameter 'taskId' cannot be null.");
+        else if (taskId !== undefined)
+            url_ += "taskId=" + encodeURIComponent("" + taskId) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfGetPaxTaskAttachmentForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfGetPaxTaskAttachmentForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<PagedResultDtoOfGetPaxTaskAttachmentForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfGetPaxTaskAttachmentForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfGetPaxTaskAttachmentForViewDto>(<any>null);
+    }
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createOrEdit(body: CreateOrEditPaxTaskAttachmentDto | undefined): Observable<number> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTaskAttachments/CreateOrEdit";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateOrEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateOrEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateOrEdit(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTaskAttachments/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllPaxTaskForTableDropdown(): Observable<PaxTaskAttachmentPaxTaskLookupTableDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTaskAttachments/GetAllPaxTaskForTableDropdown";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllPaxTaskForTableDropdown(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllPaxTaskForTableDropdown(<any>response_);
+                } catch (e) {
+                    return <Observable<PaxTaskAttachmentPaxTaskLookupTableDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PaxTaskAttachmentPaxTaskLookupTableDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllPaxTaskForTableDropdown(response: HttpResponseBase): Observable<PaxTaskAttachmentPaxTaskLookupTableDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PaxTaskAttachmentPaxTaskLookupTableDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PaxTaskAttachmentPaxTaskLookupTableDto[]>(<any>null);
+    }
+}
+
+@Injectable()
 export class PaxTasksServiceProxy {
     private http: HttpClient;
     private baseUrl: string;
@@ -8212,41 +8315,28 @@ export class PaxTasksServiceProxy {
         return _observableOf<FileDto>(<any>null);
     }
 
-    getUsersForMention(filter: string) {
-        const promise = new Promise((resolve, reject) => {
-          let apiURL = this.baseUrl + "/api/services/app/PaxTasks/getUsersForMention?";
-          apiURL += "Filter=" + encodeURIComponent("" + filter);
-          var data:any[];
-          this.http
-            .get(apiURL)
-            .toPromise()
-            .then((res: any) => {
-              // Success
-            resolve(res.result.items);
-            },
-              err => {
-                // Error
-                reject(err);
-              }
-            );
-        });
-        return promise;
-      }
-
     /**
      * @param filter (optional) 
+     * @param omitUserIds (optional) 
      * @param sorting (optional) 
      * @param skipCount (optional) 
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAllUserForLookupTable(filter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined, omitUserIds: number[] | undefined): Observable<PagedResultDtoOfPaxTaskUserLookupTableDto> {
-       debugger;
+    getAllUserForLookupTable(filter: string | undefined, omitUserIds: number[] | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfPaxTaskUserLookupTableDto> {
         let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAllUserForLookupTable?";
         if (filter === null)
             throw new Error("The parameter 'filter' cannot be null.");
         else if (filter !== undefined)
             url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (omitUserIds === null)
+            throw new Error("The parameter 'omitUserIds' cannot be null.");
+        else if (omitUserIds !== undefined)
+            omitUserIds && omitUserIds.forEach(item => { url_ += "OmitUserIds=" + encodeURIComponent("" + item) + "&"; });
+        if (omitUserIds === null) 
+            throw new Error("The parameter 'omitUserIds' cannot be null."); 
+        else if (omitUserIds !== undefined) 
+            omitUserIds && omitUserIds.forEach(item => { url_ += "OmitUserIds=" + encodeURIComponent("" + item) + "&"; }); 
         if (sorting === null)
             throw new Error("The parameter 'sorting' cannot be null.");
         else if (sorting !== undefined)
@@ -8259,12 +8349,6 @@ export class PaxTasksServiceProxy {
             throw new Error("The parameter 'maxResultCount' cannot be null.");
         else if (maxResultCount !== undefined)
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
-
-            if(omitUserIds != undefined && omitUserIds.length > 0){
-                var arrStr = omitUserIds.join('&OmitUserIds=');
-                url_ += 'OmitUserIds=' + arrStr;
-            }
-
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -8309,6 +8393,82 @@ export class PaxTasksServiceProxy {
             }));
         }
         return _observableOf<PagedResultDtoOfPaxTaskUserLookupTableDto>(<any>null);
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param omitUserIds (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getUsersForMention(filter: string | undefined, omitUserIds: number[] | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetUsersForMention> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/getUsersForMention?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (omitUserIds === null)
+            throw new Error("The parameter 'omitUserIds' cannot be null.");
+        else if (omitUserIds !== undefined)
+            omitUserIds && omitUserIds.forEach(item => { url_ += "OmitUserIds=" + encodeURIComponent("" + item) + "&"; });
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUsersForMention(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUsersForMention(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfGetUsersForMention>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfGetUsersForMention>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetUsersForMention(response: HttpResponseBase): Observable<PagedResultDtoOfGetUsersForMention> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfGetUsersForMention.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfGetUsersForMention>(<any>null);
     }
 
     /**
@@ -18290,9 +18450,12 @@ export interface IComboboxItemDto {
 }
 
 export class CommentDto implements ICommentDto {
+    commentText!: string | undefined;
+    userName!: string | undefined;
     paxTaskId!: number;
-    commentText!: string;
     userId!: number;
+    creationTime!: DateTime;
+    lastModificationTime!: DateTime | undefined;
     id!: number;
 
     constructor(data?: ICommentDto) {
@@ -18306,9 +18469,12 @@ export class CommentDto implements ICommentDto {
 
     init(_data?: any) {
         if (_data) {
-            this.paxTaskId = _data["paxTaskId"];
             this.commentText = _data["commentText"];
+            this.userName = _data["userName"];
+            this.paxTaskId = _data["paxTaskId"];
             this.userId = _data["userId"];
+            this.creationTime = _data["creationTime"] ? DateTime.fromISO(_data["creationTime"].toString()) : <any>undefined;
+            this.lastModificationTime = _data["lastModificationTime"] ? DateTime.fromISO(_data["lastModificationTime"].toString()) : <any>undefined;
             this.id = _data["id"];
         }
     }
@@ -18323,97 +18489,24 @@ export class CommentDto implements ICommentDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["commentText"] = this.commentText;
+        data["userName"] = this.userName;
         data["paxTaskId"] = this.paxTaskId;
         data["userId"] = this.userId;
+        data["creationTime"] = this.creationTime ? this.creationTime.toString() : <any>undefined;
+        data["lastModificationTime"] = this.lastModificationTime ? this.lastModificationTime.toString() : <any>undefined;
         data["id"] = this.id;
         return data; 
     }
 }
 
 export interface ICommentDto {
+    commentText: string | undefined;
+    userName: string | undefined;
     paxTaskId: number;
     userId: number;
+    creationTime: DateTime;
+    lastModificationTime: DateTime | undefined;
     id: number;
-}
-
-export class CommentPaxTaskLookupTableDto implements ICommentPaxTaskLookupTableDto {
-    id!: number;
-    displayName!: string | undefined;
-
-    constructor(data?: ICommentPaxTaskLookupTableDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.displayName = _data["displayName"];
-        }
-    }
-
-    static fromJS(data: any): CommentPaxTaskLookupTableDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CommentPaxTaskLookupTableDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["displayName"] = this.displayName;
-        return data; 
-    }
-}
-
-export interface ICommentPaxTaskLookupTableDto {
-    id: number;
-    displayName: string | undefined;
-}
-
-export class CommentUserLookupTableDto implements ICommentUserLookupTableDto {
-    id!: number;
-    displayName!: string | undefined;
-
-    constructor(data?: ICommentUserLookupTableDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.displayName = _data["displayName"];
-        }
-    }
-
-    static fromJS(data: any): CommentUserLookupTableDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CommentUserLookupTableDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["displayName"] = this.displayName;
-        return data; 
-    }
-}
-
-export interface ICommentUserLookupTableDto {
-    id: number;
-    displayName: string | undefined;
 }
 
 export class CreateEditionDto implements ICreateEditionDto {
@@ -18586,8 +18679,8 @@ export interface ICreateInvoiceDto {
 
 export class CreateOrEditCommentDto implements ICreateOrEditCommentDto {
     paxTaskId!: number;
+    commentText!: string | undefined;
     userId!: number;
-    commentText!: string | "";
     id!: number | undefined;
 
     constructor(data?: ICreateOrEditCommentDto) {
@@ -18602,8 +18695,8 @@ export class CreateOrEditCommentDto implements ICreateOrEditCommentDto {
     init(_data?: any) {
         if (_data) {
             this.paxTaskId = _data["paxTaskId"];
-            this.userId = _data["userId"];
             this.commentText = _data["commentText"];
+            this.userId = _data["userId"];
             this.id = _data["id"];
         }
     }
@@ -18618,8 +18711,8 @@ export class CreateOrEditCommentDto implements ICreateOrEditCommentDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["paxTaskId"] = this.paxTaskId;
-        data["userId"] = this.userId;
         data["commentText"] = this.commentText;
+        data["userId"] = this.userId;
         data["id"] = this.id;
         return data; 
     }
@@ -18627,8 +18720,52 @@ export class CreateOrEditCommentDto implements ICreateOrEditCommentDto {
 
 export interface ICreateOrEditCommentDto {
     paxTaskId: number;
-    userId: number;
     commentText: string | undefined;
+    userId: number;
+    id: number | undefined;
+}
+
+export class CreateOrEditPaxTaskAttachmentDto implements ICreateOrEditPaxTaskAttachmentDto {
+    paxTaskId!: number;
+    fileName!: string | undefined;
+    id!: number | undefined;
+
+    constructor(data?: ICreateOrEditPaxTaskAttachmentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paxTaskId = _data["paxTaskId"];
+            this.fileName = _data["fileName"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CreateOrEditPaxTaskAttachmentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateOrEditPaxTaskAttachmentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paxTaskId"] = this.paxTaskId;
+        data["fileName"] = this.fileName;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface ICreateOrEditPaxTaskAttachmentDto {
+    paxTaskId: number;
+    fileName: string | undefined;
     id: number | undefined;
 }
 
@@ -21884,9 +22021,9 @@ export interface IGetCommentForEditOutput {
 export class GetCommentForViewDto implements IGetCommentForViewDto {
     comment!: CommentDto;
     paxTaskHeader!: string | undefined;
-    userName!: string | undefined;
     creationTime!: DateTime;
-    LastModificationTime!: DateTime | undefined;
+    userName!: string | undefined;
+    lastModificationTime!: DateTime | undefined;
 
     constructor(data?: IGetCommentForViewDto) {
         if (data) {
@@ -21901,9 +22038,9 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
         if (_data) {
             this.comment = _data["comment"] ? CommentDto.fromJS(_data["comment"]) : <any>undefined;
             this.paxTaskHeader = _data["paxTaskHeader"];
-            this.userName = _data["userName"];
-            this.LastModificationTime = _data["LastModificationTime"];
             this.creationTime = _data["creationTime"] ? DateTime.fromISO(_data["creationTime"].toString()) : <any>undefined;
+            this.userName = _data["userName"];
+            this.lastModificationTime = _data["lastModificationTime"] ? DateTime.fromISO(_data["lastModificationTime"].toString()) : <any>undefined;
         }
     }
 
@@ -21918,9 +22055,9 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
         data = typeof data === 'object' ? data : {};
         data["comment"] = this.comment ? this.comment.toJSON() : <any>undefined;
         data["paxTaskHeader"] = this.paxTaskHeader;
-        data["userName"] = this.userName;
-        data["LastModificationTime"] = this.LastModificationTime;
         data["creationTime"] = this.creationTime ? this.creationTime.toString() : <any>undefined;
+        data["userName"] = this.userName;
+        data["lastModificationTime"] = this.lastModificationTime ? this.lastModificationTime.toString() : <any>undefined;
         return data; 
     }
 }
@@ -21928,9 +22065,9 @@ export class GetCommentForViewDto implements IGetCommentForViewDto {
 export interface IGetCommentForViewDto {
     comment: CommentDto;
     paxTaskHeader: string | undefined;
+    creationTime: DateTime;
     userName: string | undefined;
-    creationTime: DateTime | undefined;
-    LastModificationTime: DateTime | undefined;
+    lastModificationTime: DateTime | undefined;
 }
 
 export class GetCurrentLoginInformationsOutput implements IGetCurrentLoginInformationsOutput {
@@ -23711,6 +23848,54 @@ export class GetUserPermissionsForEditOutput implements IGetUserPermissionsForEd
 export interface IGetUserPermissionsForEditOutput {
     permissions: FlatPermissionDto[] | undefined;
     grantedPermissionNames: string[] | undefined;
+}
+
+export class GetUsersForMention implements IGetUsersForMention {
+    id!: string | undefined;
+    link!: string | undefined;
+    userId!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: IGetUsersForMention) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.link = _data["link"];
+            this.userId = _data["userId"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): GetUsersForMention {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUsersForMention();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["link"] = this.link;
+        data["userId"] = this.userId;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface IGetUsersForMention {
+    id: string | undefined;
+    link: string | undefined;
+    userId: number;
+    displayName: string | undefined;
 }
 
 export class GetUsersInput implements IGetUsersInput {
@@ -26652,102 +26837,6 @@ export interface IPagedResultDtoOfAuditLogListDto {
     items: AuditLogListDto[] | undefined;
 }
 
-export class PagedResultDtoOfCommentPaxTaskLookupTableDto implements IPagedResultDtoOfCommentPaxTaskLookupTableDto {
-    totalCount!: number;
-    items!: CommentPaxTaskLookupTableDto[] | undefined;
-
-    constructor(data?: IPagedResultDtoOfCommentPaxTaskLookupTableDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.totalCount = _data["totalCount"];
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(CommentPaxTaskLookupTableDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): PagedResultDtoOfCommentPaxTaskLookupTableDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PagedResultDtoOfCommentPaxTaskLookupTableDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["totalCount"] = this.totalCount;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IPagedResultDtoOfCommentPaxTaskLookupTableDto {
-    totalCount: number;
-    items: CommentPaxTaskLookupTableDto[] | undefined;
-}
-
-export class PagedResultDtoOfCommentUserLookupTableDto implements IPagedResultDtoOfCommentUserLookupTableDto {
-    totalCount!: number;
-    items!: CommentUserLookupTableDto[] | undefined;
-
-    constructor(data?: IPagedResultDtoOfCommentUserLookupTableDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.totalCount = _data["totalCount"];
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(CommentUserLookupTableDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): PagedResultDtoOfCommentUserLookupTableDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PagedResultDtoOfCommentUserLookupTableDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["totalCount"] = this.totalCount;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface IPagedResultDtoOfCommentUserLookupTableDto {
-    totalCount: number;
-    items: CommentUserLookupTableDto[] | undefined;
-}
-
 export class PagedResultDtoOfEntityChangeListDto implements IPagedResultDtoOfEntityChangeListDto {
     totalCount!: number;
     items!: EntityChangeListDto[] | undefined;
@@ -26890,6 +26979,54 @@ export class PagedResultDtoOfGetCommentForViewDto implements IPagedResultDtoOfGe
 export interface IPagedResultDtoOfGetCommentForViewDto {
     totalCount: number;
     items: GetCommentForViewDto[] | undefined;
+}
+
+export class PagedResultDtoOfGetPaxTaskAttachmentForViewDto implements IPagedResultDtoOfGetPaxTaskAttachmentForViewDto {
+    totalCount!: number;
+    items!: PaxTaskAttachmentDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfGetPaxTaskAttachmentForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(PaxTaskAttachmentDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfGetPaxTaskAttachmentForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfGetPaxTaskAttachmentForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfGetPaxTaskAttachmentForViewDto {
+    totalCount: number;
+    items: PaxTaskAttachmentDto[] | undefined;
 }
 
 export class PagedResultDtoOfGetPaxTaskForViewDto implements IPagedResultDtoOfGetPaxTaskForViewDto {
@@ -27082,6 +27219,54 @@ export class PagedResultDtoOfGetTaskStatusForViewDto implements IPagedResultDtoO
 export interface IPagedResultDtoOfGetTaskStatusForViewDto {
     totalCount: number;
     items: GetTaskStatusForViewDto[] | undefined;
+}
+
+export class PagedResultDtoOfGetUsersForMention implements IPagedResultDtoOfGetUsersForMention {
+    totalCount!: number;
+    items!: GetUsersForMention[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfGetUsersForMention) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetUsersForMention.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfGetUsersForMention {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfGetUsersForMention();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfGetUsersForMention {
+    totalCount: number;
+    items: GetUsersForMention[] | undefined;
 }
 
 export class PagedResultDtoOfGetWatcherForViewDto implements IPagedResultDtoOfGetWatcherForViewDto {
@@ -27758,6 +27943,102 @@ export interface IPasswordComplexitySetting {
     requireNonAlphanumeric: boolean;
     requireUppercase: boolean;
     requiredLength: number;
+}
+
+export class PaxTaskAttachmentDto implements IPaxTaskAttachmentDto {
+    id!: number;
+    paxTaskId!: number;
+    fileName!: string | undefined;
+    fileUrl!: string | undefined;
+    userName!: string | undefined;
+    creationTime!: DateTime;
+
+    constructor(data?: IPaxTaskAttachmentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.paxTaskId = _data["paxTaskId"];
+            this.fileName = _data["fileName"];
+            this.fileUrl = _data["fileUrl"];
+            this.userName = _data["userName"];
+            this.creationTime = _data["creationTime"] ? DateTime.fromISO(_data["creationTime"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): PaxTaskAttachmentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaxTaskAttachmentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["paxTaskId"] = this.paxTaskId;
+        data["fileName"] = this.fileName;
+        data["fileUrl"] = this.fileUrl;
+        data["userName"] = this.userName;
+        data["creationTime"] = this.creationTime ? this.creationTime.toString() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IPaxTaskAttachmentDto {
+    id: number;
+    paxTaskId: number;
+    fileName: string | undefined;
+    fileUrl: string | undefined;
+    userName: string | undefined;
+    creationTime: DateTime;
+}
+
+export class PaxTaskAttachmentPaxTaskLookupTableDto implements IPaxTaskAttachmentPaxTaskLookupTableDto {
+    id!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: IPaxTaskAttachmentPaxTaskLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): PaxTaskAttachmentPaxTaskLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaxTaskAttachmentPaxTaskLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface IPaxTaskAttachmentPaxTaskLookupTableDto {
+    id: number;
+    displayName: string | undefined;
 }
 
 export class PaxTaskDto implements IPaxTaskDto {

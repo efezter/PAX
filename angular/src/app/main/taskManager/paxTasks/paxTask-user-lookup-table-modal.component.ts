@@ -52,10 +52,10 @@ export class PaxTaskUserLookupTableModalComponent extends AppComponentBase {
         this._paxTasksServiceProxy
             .getAllUserForLookupTable(
                 this.filterText,
+                omitUserIds,
                 this.primengTableHelper.getSorting(this.dataTable),
                 this.primengTableHelper.getSkipCount(this.paginator, event),
-                this.primengTableHelper.getMaxResultCount(this.paginator, event),
-                omitUserIds
+                this.primengTableHelper.getMaxResultCount(this.paginator, event)
                 
             )
             .subscribe((result) => {

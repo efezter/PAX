@@ -11,5 +11,11 @@ namespace PAX.Next.TaskManager.Dtos
 
         public string FileName { get; set; }
 
+        public string FileUrl { get; set; }
+
+        public DateTime CreationTime { get; set; }
+
+        public string UserName { get; set; }
+
     }
 }

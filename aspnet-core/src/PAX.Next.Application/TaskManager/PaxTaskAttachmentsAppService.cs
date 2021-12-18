@@ -1,21 +1,19 @@
-﻿using PAX.Next.TaskManager;
-
+﻿
+using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Domain.Repositories;
+using Abp.Linq.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using PAX.Next.Authorization;
+using PAX.Next.Authorization.Users;
+using PAX.Next.TaskManager.Dtos;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using Abp.Linq.Extensions;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Abp.Domain.Repositories;
-using PAX.Next.TaskManager.Dtos;
-using PAX.Next.Dto;
-using Abp.Application.Services.Dto;
-using PAX.Next.Authorization;
-using Abp.Extensions;
-using Abp.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Abp.UI;
-using PAX.Next.Storage;
 
 namespace PAX.Next.TaskManager
 {
@@ -24,58 +22,61 @@ namespace PAX.Next.TaskManager
     {
         private readonly IRepository<PaxTaskAttachment> _paxTaskAttachmentRepository;
         private readonly IRepository<PaxTask, int> _lookup_paxTaskRepository;
+        private readonly IRepository<User, long> _lookup_userRepository;
+        private readonly IHostEnvironment _env;
 
-        public PaxTaskAttachmentsAppService(IRepository<PaxTaskAttachment> paxTaskAttachmentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository)
+        public PaxTaskAttachmentsAppService(IRepository<PaxTaskAttachment> paxTaskAttachmentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository, IHostEnvironment env)
         {
             _paxTaskAttachmentRepository = paxTaskAttachmentRepository;
             _lookup_paxTaskRepository = lookup_paxTaskRepository;
-
+            _lookup_userRepository = lookup_userRepository;
+            _env = env;
         }
 
-        public async Task<PagedResultDto<GetPaxTaskAttachmentForViewDto>> GetAll(GetAllPaxTaskAttachmentsInput input)
+        public async Task<PagedResultDto<PaxTaskAttachmentDto>> GetAll(GetAllPaxTaskAttachmentsInput input)
         {
 
             var filteredPaxTaskAttachments = _paxTaskAttachmentRepository.GetAll()
                         .Include(e => e.PaxTaskFk)
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.FileName.Contains(input.Filter))
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.PaxTaskHeaderFilter), e => e.PaxTaskFk != null && e.PaxTaskFk.Header == input.PaxTaskHeaderFilter);
+
+                        .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.FileName == input.Filter)
+                        .WhereIf(input.TaskId == 0, e => e.PaxTaskFk != null && e.PaxTaskFk.Id == input.TaskId);
 
             var pagedAndFilteredPaxTaskAttachments = filteredPaxTaskAttachments
                 .OrderBy(input.Sorting ?? "id asc")
                 .PageBy(input);
 
             var paxTaskAttachments = from o in pagedAndFilteredPaxTaskAttachments
-                                     join o1 in _lookup_paxTaskRepository.GetAll() on o.PaxTaskId equals o1.Id into j1
-                                     from s1 in j1.DefaultIfEmpty()
-
+                                     join o2 in _lookup_userRepository.GetAll() on o.CreatorUserId equals o2.Id into j2
+                                     from s2 in j2.DefaultIfEmpty()
                                      select new
                                      {
-
                                          Id = o.Id,
-                                         PaxTaskHeader = s1 == null || s1.Header == null ? "" : s1.Header.ToString()
+                                         FileName = o.FileName,
+                                         CreationTime = o.CreationTime,
+                                         Username = s2.FullName
                                      };
 
             var totalCount = await filteredPaxTaskAttachments.CountAsync();
 
             var dbList = await paxTaskAttachments.ToListAsync();
-            var results = new List<GetPaxTaskAttachmentForViewDto>();
+            var results = new List<PaxTaskAttachmentDto>();
 
             foreach (var o in dbList)
             {
-                var res = new GetPaxTaskAttachmentForViewDto()
+                var res = new PaxTaskAttachmentDto()
                 {
-                    PaxTaskAttachment = new PaxTaskAttachmentDto
-                    {
-
                         Id = o.Id,
-                    },
-                    PaxTaskHeader = o.PaxTaskHeader
+                        FileName = o.FileName,
+                        FileUrl = AbpSession.TenantId + "/Tasks/" + input.TaskId.ToString() + "/Attachments/" + o.FileName,
+                        CreationTime = o.CreationTime,
+                        UserName = o.Username
                 };
 
                 results.Add(res);
             }
 
-            return new PagedResultDto<GetPaxTaskAttachmentForViewDto>(
+            return new PagedResultDto<PaxTaskAttachmentDto>(
                 totalCount,
                 results
             );
@@ -133,6 +134,19 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_PaxTaskAttachments_Delete)]
         public async Task Delete(EntityDto input)
         {
+            var atchRec = _paxTaskAttachmentRepository.Get(input.Id);
+
+            if (atchRec != null)
+            {
+                var path = "wwwroot/" + AbpSession.TenantId + "/Tasks/" + atchRec.PaxTaskId.ToString() + "/Attachments/" + atchRec.FileName;
+                var dir = Path.Combine(_env.ContentRootPath, path);
+
+                if (File.Exists(dir))
+                {
+                    File.Delete(dir);
+                } 
+            }
+
             await _paxTaskAttachmentRepository.DeleteAsync(input.Id);
         }
         [AbpAuthorize(AppPermissions.Pages_PaxTaskAttachments)]
