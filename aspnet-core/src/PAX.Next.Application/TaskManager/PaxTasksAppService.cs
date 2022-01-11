@@ -1,9 +1,12 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityHistory;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
+using PAX.Next.Auditing;
+using PAX.Next.Auditing.Dto;
 using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
 using PAX.Next.Dto;
@@ -15,6 +18,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using static PAX.Next.TaskManager.Utils.Enums;
+using EntityHistoryHelper = PAX.Next.EntityHistory.EntityHistoryHelper;
 
 namespace PAX.Next.TaskManager
 {
@@ -27,6 +31,9 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly IRepository<Severity, int> _lookup_severityRepository;
         private readonly IRepository<TaskStatus, int> _lookup_taskStatusRepository;
+        private readonly IRepository<EntityChange, long> _entityChangeRepository;
+        private readonly IRepository<EntityChangeSet, long> _entityChangeSetRepository;
+        private readonly IRepository<EntityPropertyChange, long> _entityPropertyChangeRepository;
 
         public PaxTasksAppService(
             IRepository<PaxTask> paxTaskRepository, 
@@ -34,7 +41,10 @@ namespace PAX.Next.TaskManager
             IRepository<User, long> lookup_userRepository, 
             IRepository<Severity, int> lookup_severityRepository, 
             IRepository<TaskStatus, int> lookup_taskStatusRepository, 
-            IWatchersAppService watcherRepository
+            IWatchersAppService watcherRepository,
+            IRepository<EntityChange, long> entityChangeRepository,
+            IRepository<EntityChangeSet, long> entityChangeSetRepository,
+            IRepository<EntityPropertyChange, long> entityPropertyChangeRepository
             )
         {
             _paxTaskRepository = paxTaskRepository;
@@ -43,6 +53,9 @@ namespace PAX.Next.TaskManager
             _lookup_severityRepository = lookup_severityRepository;
             _lookup_taskStatusRepository = lookup_taskStatusRepository;
             _watcherRepository = watcherRepository;
+            _entityChangeRepository = entityChangeRepository;
+            _entityChangeSetRepository = entityChangeSetRepository;
+            _entityPropertyChangeRepository = entityPropertyChangeRepository;
 
         }
 
@@ -182,7 +195,7 @@ namespace PAX.Next.TaskManager
 
             output.PaxTask.Watchers = await _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value);
 
-            if (output.PaxTask.ReporterId != null)
+            if (output.PaxTask.ReporterId != 0)
             {
                 var _lookupUser = await _lookup_userRepository.FirstOrDefaultAsync((long)output.PaxTask.ReporterId);
                 output.UserName = _lookupUser?.FullName?.ToString();
@@ -200,7 +213,7 @@ namespace PAX.Next.TaskManager
                 output.SeverityName = _lookupSeverity?.Name?.ToString();
             }
 
-            if (output.PaxTask.TaskStatusId != null)
+            if (output.PaxTask.TaskStatusId != 0)
             {
                 var _lookupTaskStatus = await _lookup_taskStatusRepository.FirstOrDefaultAsync((int)output.PaxTask.TaskStatusId);
                 output.TaskStatusName = _lookupTaskStatus?.Name?.ToString();
@@ -262,25 +275,29 @@ namespace PAX.Next.TaskManager
 
         private async Task UpdateWatchers(int taskId, List<WatcherUserLookupTableDto> updatedWatchers)
         {
-            var watcherIds =  _watcherRepository.GetByTaskId(taskId).Result.ToList();
+            var existingWatchers =  _watcherRepository.GetByTaskId(taskId).Result.ToList();
 
-            if (watcherIds != null && watcherIds.Count > 0)
+            var deletedWatchers = existingWatchers.Where(x => updatedWatchers.Select(w => w.UserId ).Contains(x.UserId) == false).ToList();
+
+            if (deletedWatchers != null && deletedWatchers.Count() > 0)
             {
                 List<Task> delTasks = new List<Task>();
-                foreach (var watcherId in watcherIds)
+                foreach (var watcher in deletedWatchers)
                 {
-                    delTasks.Add(_watcherRepository.Delete(watcherId));
+                    delTasks.Add(_watcherRepository.Delete(watcher.Id));
                 }
 
                 Task.WaitAll(delTasks.ToArray());
             }
 
-            if (updatedWatchers != null  && updatedWatchers.Count > 0)
+            var insertedWatchers = updatedWatchers.Where(x => existingWatchers.Select(w => w.UserId).Contains(x.UserId) == false);
+
+            if (insertedWatchers != null  && insertedWatchers.Count() > 0)
             {
                 List<Task> inserTasks = new List<Task>();
-                foreach (var watcher in updatedWatchers)
+                foreach (var watcher in insertedWatchers)
                 {
-                    CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.Id, PaxTaskId = taskId };
+                    CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.UserId, PaxTaskId = taskId };
                     inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
                 }
 
@@ -377,7 +394,7 @@ namespace PAX.Next.TaskManager
             {
                 lookupTableDtoList.Add(new PaxTaskUserLookupTableDto
                 {
-                    Id = user.Id,
+                    UserId = user.Id,
                     DisplayName = user.FullName?.ToString()
                 });
             }
@@ -442,6 +459,53 @@ namespace PAX.Next.TaskManager
                     DisplayName = taskStatus == null || taskStatus.Name == null ? "" : taskStatus.Name.ToString()
                 }).ToListAsync();
         }
+
+
+        #region Audit
+        [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
+        public async Task<PagedResultDto<HistoryDto>> GetEntityChanges(string taskId)
+        {
+          
+
+            var query = CreateEntityChangesAndUsersQuery(taskId);
+
+            var resultCount = await query.CountAsync();
+            var results = await query
+                //.OrderBy(input.Sorting)
+                //.PageBy(input)
+                .ToListAsync();
+
+            return new PagedResultDto<HistoryDto>(resultCount, results);
+        }
+
+        [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
+        private IQueryable<HistoryDto> CreateEntityChangesAndUsersQuery(string taskId)
+        {
+            var trackedEntityNames = EntityHistoryHelper.TaskManagerTrackedTypes.Select(t => t.FullName).ToList();
+
+            List<string> entityNames = new List<string> { "PAX.Next.TaskManager.PaxTask" };
+
+            //List
+            var query = from entityChangeSet in _entityChangeSetRepository.GetAll()
+                        join entityChange in _entityChangeRepository.GetAll() on entityChangeSet.Id equals entityChange.EntityChangeSetId
+                        join propChange in _entityPropertyChangeRepository.GetAll() on entityChangeSet.Id equals propChange.EntityChangeId
+                        join user in _lookup_userRepository.GetAll() on entityChangeSet.UserId equals user.Id
+                        where entityChange.EntityId == taskId
+                        select new HistoryDto
+                        {
+                            ChangeText = propChange.PropertyName + " " + propChange.NewValue + " olarak değiştirldi.",
+                            UserName = user.FullName
+                        };
+
+            //query = query
+            //    .Where()
+            //    .WhereIf(!string.IsNullOrWhiteSpace(input.UserName), item => item.User.UserName.Contains(input.UserName))
+            //    .WhereIf(!string.IsNullOrWhiteSpace(input.EntityTypeFullName), item => item.EntityChange.EntityTypeFullName.Contains(input.EntityTypeFullName));
+
+            return query;
+        }
+
+        #endregion
 
     }
 }

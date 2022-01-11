@@ -21,6 +21,7 @@ namespace PAX.Next.TaskManager
 
         public virtual string Details { get; set; }
 
+        [DisableAuditing]
         public virtual DateTime CreatedDate { get; set; }
 
         public virtual Enums.TaskType TaskType { get; set; }
@@ -29,6 +30,7 @@ namespace PAX.Next.TaskManager
 
         public virtual int? PeriodInterval { get; set; }
 
+        [DisableAuditing]
         public virtual long ReporterId { get; set; }
 
         [ForeignKey("ReporterId")]

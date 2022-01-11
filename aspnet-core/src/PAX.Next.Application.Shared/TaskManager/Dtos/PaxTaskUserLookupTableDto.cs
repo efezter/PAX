@@ -4,7 +4,7 @@ namespace PAX.Next.TaskManager.Dtos
 {
     public class PaxTaskUserLookupTableDto
     {
-        public long Id { get; set; }
+        public long UserId { get; set; }
 
         public string DisplayName { get; set; }
     }

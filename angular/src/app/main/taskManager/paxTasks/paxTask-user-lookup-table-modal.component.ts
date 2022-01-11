@@ -70,7 +70,7 @@ export class PaxTaskUserLookupTableModalComponent extends AppComponentBase {
     }
 
     setAndSave(user: PaxTaskUserLookupTableDto) {
-        this.id = user.id;
+        this.id = user.userId;
         this.displayName = user.displayName;
         this.active = false;
         this.modal.hide();

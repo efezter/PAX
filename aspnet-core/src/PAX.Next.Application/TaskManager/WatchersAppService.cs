@@ -1,22 +1,15 @@
-﻿using PAX.Next.TaskManager;
+﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Domain.Repositories;
+using Abp.Linq.Extensions;
+using Microsoft.EntityFrameworkCore;
+using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
-
-using System;
+using PAX.Next.TaskManager.Dtos;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using Abp.Linq.Extensions;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Abp.Domain.Repositories;
-using PAX.Next.TaskManager.Dtos;
-using PAX.Next.Dto;
-using Abp.Application.Services.Dto;
-using PAX.Next.Authorization;
-using Abp.Extensions;
-using Abp.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Abp.UI;
-using PAX.Next.Storage;
 
 namespace PAX.Next.TaskManager
 {
@@ -35,13 +28,15 @@ namespace PAX.Next.TaskManager
 
         }
 
-        public async Task<IEnumerable<int>> GetByTaskId(int taskId)
+        public async Task<IEnumerable<WatcherUserLookupTableDto>> GetByTaskId(int taskId)
         {
 
             var filteredWatchers = _watcherRepository.GetAll()
                         .Where(x => x.PaxTaskId == taskId)
-                        .Select(x => x.Id);
-
+                        .Select(x => new WatcherUserLookupTableDto { 
+                            Id =   x.Id,
+                            UserId = x.UserId
+                        });
 
             return filteredWatchers;
         }
@@ -50,13 +45,19 @@ namespace PAX.Next.TaskManager
         public async Task<IEnumerable<WatcherUserLookupTableDto>> GetUserDetailsByTaskId(int taskId)
         {
 
-            var filteredWatchers = _watcherRepository.GetAll()
-                        .Where(x => x.PaxTaskId == taskId)
-                        .Select(x => x.UserId)
-                        .ToList();
-            
+            var filteredWatchers = from w in _watcherRepository.GetAll()
+                                   .Include(e => e.UserFk)
+                                   join o2 in _lookup_userRepository.GetAll() on w.UserId equals o2.Id into j2
+                                   from s2 in j2.DefaultIfEmpty()
+                                   where w.PaxTaskId == taskId
+                                   select new WatcherUserLookupTableDto
+                                   {
+                                       Id = w.Id,
+                                       UserId = w.UserId,
+                                       DisplayName = s2.FullName
+                                   };
 
-            return await GetAllUserForLookupTable(filteredWatchers);
+            return filteredWatchers.ToList();
         }
 
 
@@ -100,10 +101,8 @@ namespace PAX.Next.TaskManager
                 {
                     Watcher = new WatcherDto
                     {
-
                         Id = o.Id,
                     },
-                    PaxTaskHeader = o.PaxTaskHeader,
                     UserName = o.UserName
                 };
 
@@ -204,29 +203,29 @@ namespace PAX.Next.TaskManager
             );
         }
 
-        [AbpAuthorize(AppPermissions.Pages_Watchers)]
-        public async Task<IEnumerable<WatcherUserLookupTableDto>> GetAllUserForLookupTable(List<long> watcherIds)
-        {
-            var query = _lookup_userRepository.GetAll()
-                .Where(e => watcherIds.Contains(e.Id));
+        //[AbpAuthorize(AppPermissions.Pages_Watchers)]
+        //public async Task<IEnumerable<WatcherUserLookupTableDto>> GetAllUserForLookupTable(List<long> watcherIds)
+        //{
+        //    var query = _lookup_userRepository.GetAll()
+        //        .Where(e => watcherIds.Contains(e.Id));
 
-            var totalCount = await query.CountAsync();
+        //    var totalCount = await query.CountAsync();
 
-            var userList = await query
-                .ToListAsync();
+        //    var userList = await query
+        //        .ToListAsync();
 
-            var lookupTableDtoList = new List<WatcherUserLookupTableDto>();
-            foreach (var user in userList)
-            {
-                lookupTableDtoList.Add(new WatcherUserLookupTableDto
-                {
-                    Id = user.Id,
-                    DisplayName = user.FullName?.ToString()
-                });
-            }
+        //    var lookupTableDtoList = new List<WatcherUserLookupTableDto>();
+        //    foreach (var user in userList)
+        //    {
+        //        lookupTableDtoList.Add(new WatcherUserLookupTableDto
+        //        {
+        //            UserId = user.Id,
+        //            DisplayName = user.FullName?.ToString()
+        //        });
+        //    }
 
-            return lookupTableDtoList;
-        }
+        //    return lookupTableDtoList;
+        //}
 
     }
 }

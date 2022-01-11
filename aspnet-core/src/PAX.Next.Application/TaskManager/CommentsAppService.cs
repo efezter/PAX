@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityHistory;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
@@ -113,6 +114,7 @@ namespace PAX.Next.TaskManager
             return output;
         }
 
+        [UseCase(Description = "Assign an issue to a user")]
         public async Task<CommentDto> CreateOrEdit(CreateOrEditCommentDto input)
         {
             if (input.Id == null)

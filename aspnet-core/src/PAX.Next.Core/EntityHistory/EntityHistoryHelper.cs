@@ -21,9 +21,15 @@ namespace PAX.Next.EntityHistory
             typeof(OrganizationUnit), typeof(Role)
         };
 
+        public static readonly Type[] TaskManagerTrackedTypes =
+        {
+            typeof(PaxTask), typeof(PaxTaskAttachment), typeof(Comment), typeof(Watcher)
+        };
+
         public static readonly Type[] TrackedTypes =
             HostSideTrackedTypes
-                .Concat(TenantSideTrackedTypes)
+                //.Concat(TenantSideTrackedTypes)
+                .Concat(TaskManagerTrackedTypes)
                 .GroupBy(type => type.FullName)
                 .Select(types => types.First())
                 .ToArray();

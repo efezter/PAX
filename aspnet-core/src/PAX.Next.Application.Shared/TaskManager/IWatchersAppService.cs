@@ -10,7 +10,7 @@ namespace PAX.Next.TaskManager
 {
     public interface IWatchersAppService : IApplicationService
     {
-        Task<IEnumerable<int>> GetByTaskId(int taskId);
+        Task<IEnumerable<WatcherUserLookupTableDto>> GetByTaskId(int taskId);
 
         Task<IEnumerable<WatcherUserLookupTableDto>> GetUserDetailsByTaskId(int taskId);
 
@@ -23,8 +23,6 @@ namespace PAX.Next.TaskManager
         Task Delete(long id);
 
         Task<PagedResultDto<WatcherPaxTaskLookupTableDto>> GetAllPaxTaskForLookupTable(GetAllForLookupTableInput input);
-
-        Task<IEnumerable<WatcherUserLookupTableDto>> GetAllUserForLookupTable(List<long> watcherIds);
 
     }
 }

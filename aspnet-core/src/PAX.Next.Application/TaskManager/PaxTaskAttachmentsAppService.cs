@@ -40,7 +40,7 @@ namespace PAX.Next.TaskManager
                         .Include(e => e.PaxTaskFk)
 
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.FileName == input.Filter)
-                        .WhereIf(input.TaskId == 0, e => e.PaxTaskFk != null && e.PaxTaskFk.Id == input.TaskId);
+                        .WhereIf(input.TaskId != 0, e => e.PaxTaskFk != null && e.PaxTaskFk.Id == input.TaskId);
 
             var pagedAndFilteredPaxTaskAttachments = filteredPaxTaskAttachments
                 .OrderBy(input.Sorting ?? "id asc")

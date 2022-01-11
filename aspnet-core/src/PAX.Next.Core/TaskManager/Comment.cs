@@ -1,11 +1,7 @@
-﻿using PAX.Next.TaskManager;
-using PAX.Next.Authorization.Users;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Abp.Auditing;
 using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using Abp.Auditing;
+using PAX.Next.Authorization.Users;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PAX.Next.TaskManager
 {
@@ -16,11 +12,13 @@ namespace PAX.Next.TaskManager
 
         public virtual string CommentText { get; set; }
 
+        [DisableAuditing]
         public virtual int PaxTaskId { get; set; }
 
         [ForeignKey("PaxTaskId")]
         public PaxTask PaxTaskFk { get; set; }
 
+        [DisableAuditing]
         public virtual long UserId { get; set; }
 
         [ForeignKey("UserId")]

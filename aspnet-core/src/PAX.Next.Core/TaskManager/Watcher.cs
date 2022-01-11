@@ -13,7 +13,7 @@ namespace PAX.Next.TaskManager
     [Audited]
     public class Watcher : Entity
     {
-
+        [DisableAuditing]
         public virtual int PaxTaskId { get; set; }
 
         [ForeignKey("PaxTaskId")]

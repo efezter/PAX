@@ -12,7 +12,8 @@ import {
     WatcherUserLookupTableDto,
     CommentDto,
     PaxTaskAttachmentsServiceProxy,
-    PaxTaskAttachmentDto
+    PaxTaskAttachmentDto,
+    PaxTaskUserLookupTableDto
 } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DateTime } from 'luxon';
@@ -43,25 +44,20 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     public Editorrr = CustomCK;
     public commentEditors: any[] = new Array<{ commentId: number, editor: any }>();
 
-    filteredCountries: WatcherUserLookupTableDto[];
+    filteredWathers: PaxTaskUserLookupTableDto[];
     
     countries: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
     commentToCreateOrEdit: CreateOrEditCommentDto = new CreateOrEditCommentDto();
     isCommentEditing: boolean = false;
 
+    uploadUrl: string;
+    uploadedFiles: PaxTaskAttachmentDto[] = [];
     
 
        // Create a configuration object
 editorConfiguration = {
     mention: {
-        feeds: [
-            {
-                marker: '@',
-                feed: this.getFeedItems,
-                itemRenderer: this.customItemRenderer,
-                minimumCharacters: 1
-            }
-        ]
+        feeds: []
     }
 };
 
@@ -79,8 +75,7 @@ editorConfiguration = {
     taskStatusName = '';
     serverUrl='';
 
-    uploadUrl: string;
-    uploadedFiles: PaxTaskAttachmentDto[] = [];
+   
 
     allSeveritys: PaxTaskSeverityLookupTableDto[];
     allTaskStatuss: PaxTaskTaskStatusLookupTableDto[];
@@ -108,16 +103,16 @@ editorConfiguration = {
         return itemElement;
     }
 
-    getFeedItems( queryText ) {  
-        debugger;      
+    getFeedUsers( queryText ) {   
        return this._paxTasksServiceProxy
-        .getUsersForMention(
-            queryText,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+        .getUsersForMentionCustom(
+            queryText
         );       
+    }
+
+    getFeedAttachments( queryText ) {
+        
+        return this.uploadedFiles.filter(x => x.fileName.includes(queryText));
     }
 
     // public onChange( { editor }: ChangeEvent ) {
@@ -157,7 +152,22 @@ editorConfiguration = {
         });
     }
 
-    
+    getEntityChanges() {
+
+        // this.primengTableHelperEntityChanges.showLoadingIndicator();
+
+        // this._auditLogService.getEntityChanges(
+        //     this._dateTimeService.getStartOfDayForDate(this.dateRange[0]),
+        //     this._dateTimeService.getEndOfDayForDate(this.dateRange[1]),
+        //     this.usernameEntityChange,
+        //     this.entityTypeFullName,
+        //     this.primengTableHelperEntityChanges.getSorting(this.dataTableEntityChanges),
+        //     this.primengTableHelperEntityChanges.getMaxResultCount(this.paginatorEntityChanges, event),
+        //     this.primengTableHelperEntityChanges.getSkipCount(this.paginatorEntityChanges, event)
+        // ).subscribe((result) => {
+        //  debugger;
+        // });
+    }
 
     public onReady(ckEditor, commentId) {
 
@@ -189,7 +199,6 @@ editorConfiguration = {
     }
 
     getUsers(event) {
-
         this._paxTasksServiceProxy
             .getAllUserForLookupTable(
                 event.query,
@@ -199,7 +208,7 @@ editorConfiguration = {
                 100                
             )
             .subscribe((result) => {
-                this.filteredCountries = result.items;
+                this.filteredWathers = result.items;
             });
     }
 
@@ -215,6 +224,19 @@ editorConfiguration = {
             )
             .subscribe((result) => {
                 this.uploadedFiles = result.items;
+                this.editorConfiguration.mention.feeds.push({
+                    marker: '#',
+                    feed: this.uploadedFiles.map(x => "#" + x.fileName),
+                    itemRenderer: this.customItemRenderer,
+                    minimumCharacters: 1
+                });
+
+                this.editorConfiguration.mention.feeds.push( {
+                    marker: '@',
+                    feed: this.getFeedUsers,
+                    itemRenderer: this.customItemRenderer,
+                    minimumCharacters: 2
+                }  );
             });
     }
 
@@ -290,7 +312,6 @@ editorConfiguration = {
 
         this._paxTasksServiceProxy.getPaxTaskForEdit(paxTaskId).subscribe((result) => {
             this.paxTask = result.paxTask;
-
             this.countries = result.paxTask.watchers;
 
             this.reporterName = result.userName;
