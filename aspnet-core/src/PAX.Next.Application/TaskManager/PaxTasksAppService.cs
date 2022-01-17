@@ -18,7 +18,11 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using static PAX.Next.TaskManager.Utils.Enums;
+using Abp.Localization;
 using EntityHistoryHelper = PAX.Next.EntityHistory.EntityHistoryHelper;
+using Abp.Localization.Sources;
+using System.Text;
+using Abp.Events.Bus.Entities;
 
 namespace PAX.Next.TaskManager
 {
@@ -27,6 +31,7 @@ namespace PAX.Next.TaskManager
     {
         private readonly IRepository<PaxTask> _paxTaskRepository;
         private readonly IWatchersAppService _watcherRepository;
+        private readonly ITaskHistoriesAppService _taskHistoriesAppService;
         private readonly IPaxTasksExcelExporter _paxTasksExcelExporter;
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly IRepository<Severity, int> _lookup_severityRepository;
@@ -34,17 +39,23 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<EntityChange, long> _entityChangeRepository;
         private readonly IRepository<EntityChangeSet, long> _entityChangeSetRepository;
         private readonly IRepository<EntityPropertyChange, long> _entityPropertyChangeRepository;
+        private readonly ILocalizationSource _localizationSource;
+        private readonly IRepository<PaxTaskAttachment> _paxTaskAttachmentRepository;
+
 
         public PaxTasksAppService(
-            IRepository<PaxTask> paxTaskRepository, 
-            IPaxTasksExcelExporter paxTasksExcelExporter, 
-            IRepository<User, long> lookup_userRepository, 
-            IRepository<Severity, int> lookup_severityRepository, 
-            IRepository<TaskStatus, int> lookup_taskStatusRepository, 
+            IRepository<PaxTask> paxTaskRepository,
+            IPaxTasksExcelExporter paxTasksExcelExporter,
+            IRepository<User, long> lookup_userRepository,
+            ITaskHistoriesAppService taskHistoriesAppService,
+            IRepository<Severity, int> lookup_severityRepository,
+            IRepository<TaskStatus, int> lookup_taskStatusRepository,
             IWatchersAppService watcherRepository,
             IRepository<EntityChange, long> entityChangeRepository,
             IRepository<EntityChangeSet, long> entityChangeSetRepository,
-            IRepository<EntityPropertyChange, long> entityPropertyChangeRepository
+            IRepository<EntityPropertyChange, long> entityPropertyChangeRepository,
+            ILocalizationManager localizationManager,
+            IRepository<PaxTaskAttachment> paxTaskAttachmentRepository
             )
         {
             _paxTaskRepository = paxTaskRepository;
@@ -53,10 +64,12 @@ namespace PAX.Next.TaskManager
             _lookup_severityRepository = lookup_severityRepository;
             _lookup_taskStatusRepository = lookup_taskStatusRepository;
             _watcherRepository = watcherRepository;
+            _taskHistoriesAppService = taskHistoriesAppService;
             _entityChangeRepository = entityChangeRepository;
             _entityChangeSetRepository = entityChangeSetRepository;
             _entityPropertyChangeRepository = entityPropertyChangeRepository;
-
+            _paxTaskAttachmentRepository = paxTaskAttachmentRepository;
+            _localizationSource = localizationManager.GetSource(NextConsts.LocalizationSourceName);
         }
 
         public async Task<PagedResultDto<GetPaxTaskForViewDto>> GetAll(GetAllPaxTasksInput input)
@@ -189,11 +202,11 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_PaxTasks_Edit)]
         public async Task<GetPaxTaskForEditOutput> GetPaxTaskForEdit(EntityDto input)
         {
-            var paxTask = await _paxTaskRepository.FirstOrDefaultAsync(input.Id);            
+            var paxTask = await _paxTaskRepository.FirstOrDefaultAsync(input.Id);
 
             var output = new GetPaxTaskForEditOutput { PaxTask = ObjectMapper.Map<CreateOrEditPaxTaskDto>(paxTask) };
 
-            output.PaxTask.Watchers = await _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value);
+            output.PaxTask.Watchers = _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value).Result.ToList();
 
             if (output.PaxTask.ReporterId != 0)
             {
@@ -252,11 +265,13 @@ namespace PAX.Next.TaskManager
                 {
                     CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.Id, PaxTaskId = paxTask.Id };
                     inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = paxTask.Id, FieldName = "Watchers", CreatedUser = paxTask.ReporterId, NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
+                    inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
                 }
 
                 Task.WaitAll(inserTasks.ToArray());
             }
-
         }
 
         [AbpAuthorize(AppPermissions.Pages_PaxTasks_Edit)]
@@ -275,9 +290,11 @@ namespace PAX.Next.TaskManager
 
         private async Task UpdateWatchers(int taskId, List<WatcherUserLookupTableDto> updatedWatchers)
         {
-            var existingWatchers =  _watcherRepository.GetByTaskId(taskId).Result.ToList();
+            var existingWatchers = _watcherRepository.GetByTaskId(taskId).Result.ToList();
 
-            var deletedWatchers = existingWatchers.Where(x => updatedWatchers.Select(w => w.UserId ).Contains(x.UserId) == false).ToList();
+            var deletedWatchers = existingWatchers.Where(x => updatedWatchers.Select(w => w.UserId).Contains(x.UserId) == false).ToList();
+
+            var currentUserId = AbpSession.GetUserId();
 
             if (deletedWatchers != null && deletedWatchers.Count() > 0)
             {
@@ -285,6 +302,9 @@ namespace PAX.Next.TaskManager
                 foreach (var watcher in deletedWatchers)
                 {
                     delTasks.Add(_watcherRepository.Delete(watcher.Id));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Watchers", NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Deleted, CreatedDate = DateTime.Now };
+                    delTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
                 }
 
                 Task.WaitAll(delTasks.ToArray());
@@ -292,13 +312,16 @@ namespace PAX.Next.TaskManager
 
             var insertedWatchers = updatedWatchers.Where(x => existingWatchers.Select(w => w.UserId).Contains(x.UserId) == false);
 
-            if (insertedWatchers != null  && insertedWatchers.Count() > 0)
+            if (insertedWatchers != null && insertedWatchers.Count() > 0)
             {
                 List<Task> inserTasks = new List<Task>();
                 foreach (var watcher in insertedWatchers)
                 {
                     CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.UserId, PaxTaskId = taskId };
                     inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Watchers", NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
+                    inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
                 }
 
                 Task.WaitAll(inserTasks.ToArray());
@@ -406,7 +429,7 @@ namespace PAX.Next.TaskManager
         }
 
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
-        public async Task<PagedResultDto<GetUsersForMention>> getUsersForMention(GetAllForLookupTableInput input)
+        public async Task<PagedResultDto<GetUsersForMention>> GetUsersForMention(GetAllForLookupTableInput input)
         {
             var query = _lookup_userRepository.GetAll()
                 .WhereIf(
@@ -462,47 +485,136 @@ namespace PAX.Next.TaskManager
 
 
         #region Audit
+
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
-        public async Task<PagedResultDto<HistoryDto>> GetEntityChanges(string taskId)
+        public async Task<PagedResultDto<HistoryDto>> GetTaskHistory(int taskId)
         {
-          
+            List<HistoryDto> histories = new List<HistoryDto>();
 
-            var query = CreateEntityChangesAndUsersQuery(taskId);
+            GetAllTaskHistoriesInput input = new GetAllTaskHistoriesInput { PaxTaskIdFilter = taskId };
+            var results = _taskHistoriesAppService.GetAll(input).Result.Items;
 
-            var resultCount = await query.CountAsync();
-            var results = await query
-                //.OrderBy(input.Sorting)
-                //.PageBy(input)
-                .ToListAsync();
+            var watchersIds = results.Where(x => x.TaskHistory.FieldName == "Watchers").Select(x => long.Parse(x.TaskHistory.NewValue)).ToList();
 
-            return new PagedResultDto<HistoryDto>(resultCount, results);
+            var watchers = _lookup_userRepository.GetAll().Where(x => watchersIds.Contains(x.Id)).Select(x => new NameValueDto { Name = x.Id.ToString(), Value = x.FullName }).ToList();
+
+            var attachments = _paxTaskAttachmentRepository.GetAll().Where(x => x.PaxTaskId == taskId).Select(x => new PaxTaskAttachmentDto { Id = x.Id, FileName = x.FileName }).ToList();
+
+            foreach (var result in results)
+            {
+
+                HistoryDto history = new HistoryDto { Id = result.TaskHistory.Id, CreationTime = result.TaskHistory.CreatedTime, ChangeText = GetChangeText(result.TaskHistory.ChangeType, result.UserName, result.TaskHistory.OldValue, result.TaskHistory.NewValue,result.TaskHistory.FieldName,null,null,watchers,attachments) };
+                histories.Add(history);
+            }
+
+            histories.AddRange(CreateEntityChangesAndUsers(taskId));
+
+            histories = histories.OrderByDescending(x => x.CreationTime).ToList();
+
+            var resultCount = histories.Count;
+
+            return new PagedResultDto<HistoryDto>(resultCount, histories);
         }
 
-        [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
-        private IQueryable<HistoryDto> CreateEntityChangesAndUsersQuery(string taskId)
+        private List<HistoryDto> CreateEntityChangesAndUsers(int taskId)
         {
-            var trackedEntityNames = EntityHistoryHelper.TaskManagerTrackedTypes.Select(t => t.FullName).ToList();
+            List<HistoryDto> historyRecs = new List<HistoryDto>();
 
-            List<string> entityNames = new List<string> { "PAX.Next.TaskManager.PaxTask" };
+            List<string> ids = new List<string>();
+
+            ids.Add(taskId.ToString());
+
+            List<string> trackedFieldNames = new List<string> { "UserId", "TaskType", "SeverityId", "TaskStatusId", "Header","Details", "TaskTypePeriod", "PeriodInterval" };
+
+            string text = _localizationSource.GetString("PaxTaskHistoryText");
 
             //List
-            var query = from entityChangeSet in _entityChangeSetRepository.GetAll()
-                        join entityChange in _entityChangeRepository.GetAll() on entityChangeSet.Id equals entityChange.EntityChangeSetId
-                        join propChange in _entityPropertyChangeRepository.GetAll() on entityChangeSet.Id equals propChange.EntityChangeId
-                        join user in _lookup_userRepository.GetAll() on entityChangeSet.UserId equals user.Id
-                        where entityChange.EntityId == taskId
-                        select new HistoryDto
-                        {
-                            ChangeText = propChange.PropertyName + " " + propChange.NewValue + " olarak değiştirldi.",
-                            UserName = user.FullName
-                        };
+            var histories = (from entityChangeSet in _entityChangeSetRepository.GetAll()
+                             join entityChange in _entityChangeRepository.GetAll() on entityChangeSet.Id equals entityChange.EntityChangeSetId
+                             join propChange in _entityPropertyChangeRepository.GetAll() on entityChange.Id equals propChange.EntityChangeId
+                             join user in _lookup_userRepository.GetAll() on entityChangeSet.UserId equals user.Id
+                             where entityChange.EntityId == taskId.ToString() && trackedFieldNames.Contains(propChange.PropertyName)
+                             select new
+                             {
+                                 EntityTypeFullName = entityChange.EntityTypeFullName,
+                                 ChangeType = entityChange.ChangeType,
+                                 FullName = user.FullName,
+                                 OriginalValue = propChange.OriginalValue,
+                                 NewValue = propChange.NewValue,
+                                 ChangeTime = entityChange.ChangeTime,
+                                 FieldName = propChange.PropertyName
+                             }).ToList();
 
-            //query = query
-            //    .Where()
-            //    .WhereIf(!string.IsNullOrWhiteSpace(input.UserName), item => item.User.UserName.Contains(input.UserName))
-            //    .WhereIf(!string.IsNullOrWhiteSpace(input.EntityTypeFullName), item => item.EntityChange.EntityTypeFullName.Contains(input.EntityTypeFullName));
+            if (histories != null)
+            {
+                var severities = _lookup_severityRepository.GetAll().ToList();
+                var taskStatuses = _lookup_taskStatusRepository.GetAll().ToList();
 
-            return query;
+                foreach (var item in histories)
+                {
+                    historyRecs.Add(new HistoryDto { CreationTime = item.ChangeTime, ChangeText = GetChangeText(item.ChangeType, item.FullName, item.OriginalValue, item.NewValue, item.FieldName, severities, taskStatuses) });
+                }
+            }
+
+            return historyRecs;
+        }
+
+        string GetChangeText(EntityChangeType changeType, string userFullName, string oldValue, string newValue, string fieldName, List<Severity> severities = null, List<TaskStatus> taskStatuses = null, List<NameValueDto> watchers = null, List<PaxTaskAttachmentDto> attchs = null)
+        {
+            switch (fieldName)
+            {
+                case "Watchers":
+
+                    string targetUser = watchers.Where(x => x.Name == newValue).Select(x => x.Value).FirstOrDefault();
+
+                    if (changeType == EntityChangeType.Created)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryWatcherAdd").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + targetUser + "</b>");
+                    }
+                    else if (changeType == EntityChangeType.Deleted)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryWatcherDel").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + targetUser + "</b>");
+                    }
+                    break;
+                case "Comments":
+                    if (changeType == EntityChangeType.Created)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryCommentAdd").Replace("{0}", "<b>" + userFullName + "</b>");
+                    }
+                    else if (changeType == EntityChangeType.Updated)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryCommentUpt").Replace("{0}", "<b>" + userFullName + "</b>");
+                    }
+                    else if (changeType == EntityChangeType.Deleted)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryCommentDel").Replace("{0}", "<b>" + userFullName + "</b>");
+                    }
+                    break;
+                case "Attachments":
+                    string fileName = attchs.Where(x => x.Id == int.Parse(newValue)).Select(x => x.FileName).FirstOrDefault();
+                    if (changeType == EntityChangeType.Created)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryAttchAdd").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + fileName + "</b>");
+                    }
+                    else if (changeType == EntityChangeType.Deleted)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryAttchDel").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + fileName + "</b>");
+                    }
+                    break;
+                case "SeverityId":
+                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString("SeverityName") + "</b>").Replace("{2}", "<b>" + severities.Where(x => x.Id.ToString() == newValue).Select(x => x.Name).FirstOrDefault() + "</b>");
+                case "TaskStatusId":
+                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString("TaskStatusName") + "</b>").Replace("{2}", "<b>" + taskStatuses.Where(x => x.Id.ToString() == newValue).Select(x => x.Name).FirstOrDefault() + "</b>");
+                case "TaskType":
+                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString(fieldName) + "</b>").Replace("{2}", "<b>" + newValue == "1" ? "<b>Normal</b>" : "<b>" + _localizationSource.GetString("Repeating") + "</b>");
+                case "TaskTypePeriod":
+                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString(fieldName) + "</b>").Replace("{2}", "<b>" + newValue == "1" ? "<b>" + _localizationSource.GetString("Weekly") + "</b>" : "<b>" + _localizationSource.GetString("Monthly") + "</b>");
+                default:
+                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString(fieldName) + "</b>").Replace("{2}", "<b>" + newValue + "</b>");
+
+            }
+
+            return "";
         }
 
         #endregion

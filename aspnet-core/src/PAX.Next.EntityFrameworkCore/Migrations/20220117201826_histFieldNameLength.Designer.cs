@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PAX.Next.EntityFrameworkCore;
 
 namespace PAX.Next.Migrations
 {
     [DbContext(typeof(NextDbContext))]
-    partial class NextDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220117201826_histFieldNameLength")]
+    partial class histFieldNameLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2204,6 +2206,7 @@ namespace PAX.Next.Migrations
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("NewValue")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OldValue")

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PAX.Next.EntityFrameworkCore;
 
 namespace PAX.Next.Migrations
 {
     [DbContext(typeof(NextDbContext))]
-    partial class NextDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220111203933_wathersfullaud")]
+    partial class wathersfullaud
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2182,45 +2184,6 @@ namespace PAX.Next.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("PAX.Next.TaskManager.TaskHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte>("ChangeType")
-                        .HasColumnType("tinyint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("CreatedUser")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("FieldName")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<string>("NewValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OldValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("PaxTaskId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedUser");
-
-                    b.HasIndex("PaxTaskId");
-
-                    b.ToTable("TaskHistories");
-                });
-
             modelBuilder.Entity("PAX.Next.TaskManager.TaskStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -2637,23 +2600,6 @@ namespace PAX.Next.Migrations
                         .HasForeignKey("PaxTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("PaxTaskFk");
-                });
-
-            modelBuilder.Entity("PAX.Next.TaskManager.TaskHistory", b =>
-                {
-                    b.HasOne("PAX.Next.Authorization.Users.User", "CreatedUserFk")
-                        .WithMany()
-                        .HasForeignKey("CreatedUser")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PAX.Next.TaskManager.PaxTask", "PaxTaskFk")
-                        .WithMany()
-                        .HasForeignKey("PaxTaskId");
-
-                    b.Navigation("CreatedUserFk");
 
                     b.Navigation("PaxTaskFk");
                 });

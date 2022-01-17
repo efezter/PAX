@@ -14,6 +14,8 @@ using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Abp.Runtime.Session;
+using Abp.Events.Bus.Entities;
 
 namespace PAX.Next.TaskManager
 {
@@ -24,12 +26,14 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<PaxTask, int> _lookup_paxTaskRepository;
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly IHostEnvironment _env;
+        private readonly ITaskHistoriesAppService _taskHistoriesAppService;
 
-        public PaxTaskAttachmentsAppService(IRepository<PaxTaskAttachment> paxTaskAttachmentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository, IHostEnvironment env)
+        public PaxTaskAttachmentsAppService(IRepository<PaxTaskAttachment> paxTaskAttachmentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository, IHostEnvironment env, ITaskHistoriesAppService taskHistoriesAppService)
         {
             _paxTaskAttachmentRepository = paxTaskAttachmentRepository;
             _lookup_paxTaskRepository = lookup_paxTaskRepository;
             _lookup_userRepository = lookup_userRepository;
+            _taskHistoriesAppService = taskHistoriesAppService;
             _env = env;
         }
 
@@ -116,8 +120,11 @@ namespace PAX.Next.TaskManager
         {
             var paxTaskAttachment = ObjectMapper.Map<PaxTaskAttachment>(input);
 
-            await _paxTaskAttachmentRepository.InsertAsync(paxTaskAttachment);
-            await CurrentUnitOfWork.SaveChangesAsync();
+            paxTaskAttachment.Id = await _paxTaskAttachmentRepository.InsertAndGetIdAsync(paxTaskAttachment);
+            //await CurrentUnitOfWork.SaveChangesAsync();
+
+            CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = input.PaxTaskId, FieldName = "Attachments", CreatedUser = AbpSession.GetUserId(), ChangeType = EntityChangeType.Created, NewValue = paxTaskAttachment.Id.ToString(), CreatedDate = DateTime.Now };
+            await _taskHistoriesAppService.CreateOrEdit(historyDto);
 
             return paxTaskAttachment.Id;
 
@@ -128,6 +135,7 @@ namespace PAX.Next.TaskManager
         {
             var paxTaskAttachment = await _paxTaskAttachmentRepository.FirstOrDefaultAsync((int)input.Id);
             ObjectMapper.Map(input, paxTaskAttachment);
+
             return input.Id.Value;
         }
 

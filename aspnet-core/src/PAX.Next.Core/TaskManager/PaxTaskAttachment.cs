@@ -11,9 +11,12 @@ namespace PAX.Next.TaskManager
     {
 
         [Required]
+        [DisableAuditing]
         [StringLength(200, MinimumLength = 1)]
         public virtual string FileName { get; set; }
 
+        [Required]
+        [DisableAuditing]
         public virtual int PaxTaskId { get; set; }
 
         [ForeignKey("PaxTaskId")]

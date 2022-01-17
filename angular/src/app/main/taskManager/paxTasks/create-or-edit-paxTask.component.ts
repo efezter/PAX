@@ -13,7 +13,8 @@ import {
     CommentDto,
     PaxTaskAttachmentsServiceProxy,
     PaxTaskAttachmentDto,
-    PaxTaskUserLookupTableDto
+    PaxTaskUserLookupTableDto,
+    HistoryDto
 } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DateTime } from 'luxon';
@@ -22,6 +23,7 @@ import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppConsts } from '@shared/AppConsts';
+import { appModuleAnimation } from '@shared/animations/routerTransition';
 // import { LazyLoadEvent } from 'primeng/api';
 // import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 // import Mention from '@ckeditor/ckeditor5-mention/src/mention';
@@ -34,6 +36,7 @@ import * as CustomCK from 'shared/customCK/build/ckeditor';
     selector: 'createOrEditPaxTaskModal',
     templateUrl: './create-or-edit-paxTask.component.html',
     styleUrls: ['./create-or-edit-paxTask.component.less'],
+    animations: [appModuleAnimation()]
 })
 export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implements OnInit {
     @ViewChild('paxTaskUserLookupTableModal', { static: true })
@@ -46,7 +49,8 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
 
     filteredWathers: PaxTaskUserLookupTableDto[];
     
-    countries: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
+    historyRecs: HistoryDto[] = new Array<HistoryDto>();
+    watchers: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
     commentToCreateOrEdit: CreateOrEditCommentDto = new CreateOrEditCommentDto();
     isCommentEditing: boolean = false;
 
@@ -110,8 +114,7 @@ editorConfiguration = {
         );       
     }
 
-    getFeedAttachments( queryText ) {
-        
+    getFeedAttachments( queryText ) {        
         return this.uploadedFiles.filter(x => x.fileName.includes(queryText));
     }
 
@@ -124,7 +127,6 @@ editorConfiguration = {
     
 
     ngOnInit(): void {
-
         this.cuRuserId = this._abpSessionService.userId;
         this.serverUrl = AppConsts.remoteServiceBaseUrl;
         let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
@@ -139,8 +141,7 @@ editorConfiguration = {
             this.active = true;
         } else {
             this.uploadUrl = this.serverUrl + '/PaxTask/UploadFiles?taskId=' + paxTaskId;
-            this.getTaskDetails(paxTaskId);
-            this.getAttachments(paxTaskId);
+            this.getTaskDetails(paxTaskId);            
         }
 
         this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
@@ -150,23 +151,6 @@ editorConfiguration = {
         this._paxTasksServiceProxy.getAllTaskStatusForTableDropdown().subscribe((result) => {
             this.allTaskStatuss = result;
         });
-    }
-
-    getEntityChanges() {
-
-        // this.primengTableHelperEntityChanges.showLoadingIndicator();
-
-        // this._auditLogService.getEntityChanges(
-        //     this._dateTimeService.getStartOfDayForDate(this.dateRange[0]),
-        //     this._dateTimeService.getEndOfDayForDate(this.dateRange[1]),
-        //     this.usernameEntityChange,
-        //     this.entityTypeFullName,
-        //     this.primengTableHelperEntityChanges.getSorting(this.dataTableEntityChanges),
-        //     this.primengTableHelperEntityChanges.getMaxResultCount(this.paginatorEntityChanges, event),
-        //     this.primengTableHelperEntityChanges.getSkipCount(this.paginatorEntityChanges, event)
-        // ).subscribe((result) => {
-        //  debugger;
-        // });
     }
 
     public onReady(ckEditor, commentId) {
@@ -202,13 +186,21 @@ editorConfiguration = {
         this._paxTasksServiceProxy
             .getAllUserForLookupTable(
                 event.query,
-                this.countries.map(a => a.id),
+                this.watchers.map(a => a.id),
                 undefined,
                 undefined,
                 100                
             )
             .subscribe((result) => {
                 this.filteredWathers = result.items;
+            });
+    }
+
+    getHistory(paxTaskId: number) {
+        this._paxTasksServiceProxy
+            .getTaskHistory(paxTaskId)
+            .subscribe((result) => {
+                this.historyRecs = result.items;
             });
     }
 
@@ -220,10 +212,15 @@ editorConfiguration = {
                     paxTaskId,
                     undefined,
                     undefined,
+                    undefined,
+                    undefined,
                     25
             )
             .subscribe((result) => {
                 this.uploadedFiles = result.items;
+
+                this.getHistory(paxTaskId);
+
                 this.editorConfiguration.mention.feeds.push({
                     marker: '#',
                     feed: this.uploadedFiles.map(x => "#" + x.fileName),
@@ -272,7 +269,7 @@ editorConfiguration = {
 
         this.saving = true;
 
-        this.paxTask.watchers = this.countries;
+        this.paxTask.watchers = this.watchers;
 
         this._paxTasksServiceProxy
             .createOrEdit(this.paxTask)
@@ -312,7 +309,7 @@ editorConfiguration = {
 
         this._paxTasksServiceProxy.getPaxTaskForEdit(paxTaskId).subscribe((result) => {
             this.paxTask = result.paxTask;
-            this.countries = result.paxTask.watchers;
+            this.watchers = result.paxTask.watchers;
 
             this.reporterName = result.userName;
             this.assigneeName = result.userName2;
@@ -337,6 +334,7 @@ editorConfiguration = {
         ).subscribe((result) => {
             this.commentViews = result.items;
             this.active = true;
+            this.getAttachments(this.paxTask.id);            
         });
     }
 
@@ -420,6 +418,7 @@ editorConfiguration = {
 
       // upload completed event
       onUpload(event): void {
+          debugger;
         //   event.originalEvent.body.result
         for (const file of event.originalEvent.body.result) {
         
@@ -434,6 +433,7 @@ editorConfiguration = {
     }
 
     onBeforeSend(event): void {
+        debugger;
         event.xhr.setRequestHeader('Authorization', 'Bearer ' + abp.auth.getToken());
     }
 }

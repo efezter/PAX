@@ -96,7 +96,7 @@ namespace PAX.Next.Web.Controllers
                     attchDto.PaxTaskId = taskId;
                     attchDto.FileName = fileName;
 
-                   int insertedId = await _paxTaskAttachmentsAppService.CreateOrEdit(attchDto);
+                    int insertedId = await _paxTaskAttachmentsAppService.CreateOrEdit(attchDto);
 
                     filesOutput.Add(new PaxTaskAttachmentDto
                     {

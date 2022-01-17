@@ -1,6 +1,84 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="tr">
   <texts>
+    <text name="PaxTaskHistoryText">{0} tarafından {1} {2} olarak değiştirldi.</text>
+    <text name="PaxTaskHistoryWatcherAdd">{0} tarafından {2} izleyicisi eklendi.</text>
+    <text name="PaxTaskHistoryWatcherDel">{0} tarafından {2} izleyicisi silindi.</text>
+    <text name="PaxTaskHistoryCommentAdd">{0} tarafından yeni bir yorum eklendi.</text>
+    <text name="PaxTaskHistoryCommentUpt">{0} yorumunu güncelledi.</text>
+    <text name="PaxTaskHistoryCommentDel">{0} yorumunu Sildi.</text>
+    
+    <text name="PaxTaskHistoryAttchAdd">{0} tarafından {2} isimli dosya eki eklendi.</text>
+    <text name="PaxTaskHistoryAttchDel">{0} tarafından {2} isimli dosya eki silindi.</text>
+
+    <text name="Repeating">Tekrarlayan</text>
+    <text name="SeverityId">Tekrarlayan</text>
+
+    <text name="PaxTaskAttachment">Pax task attachment</text>
+    <text name="CreateNewPaxTaskAttachment">Create new pax task attachment</text>
+    <text name="EditPaxTaskAttachment">Edit pax task attachment</text>
+    <text name="DeletePaxTaskAttachment">Delete pax task attachment</text>
+    <text name="Comment">Comment</text>
+    <text name="CreateNewComment">Create new comment</text>
+    <text name="EditComment">Edit comment</text>
+    <text name="DeleteComment">Delete comment</text>
+    <text name="Watcher">İzleyici</text>
+    <text name="CreateNewWatcher">Create new watcher</text>
+    <text name="EditWatcher">Edit watcher</text>
+    <text name="DeleteWatcher">Delete watcher</text>
+
+    <text name="PaxTask">Pax task</text>
+    <text name="Assignee">Assignee</text>
+    <text name="Reporter">Reporter</text>
+    <text name="PAX.Next.TaskManager.PaxTask">PaxTask</text>
+    <text name="Header">Başlık</text>
+    <text name="CreatedDate">Created date</text>
+    <text name="TaskType">Task type</text>
+    <text name="TaskTypePeriod">Task type period</text>
+    <text name="PeriodInterval">Period interval</text>
+    <text name="PaxTasksHeaderInfo">Pax tasks header info</text>
+    <text name="CreateNewPaxTask">Create new pax task</text>
+    <text name="EditPaxTask">Edit pax task</text>
+    <text name="DeletePaxTask">Delete pax task</text>
+    <text name="PaxTasks">Pax tasks</text>
+    <text name="PickUser">Pick user</text>
+    <text name="SeverityName">Önem Derecesi</text>
+    <text name="PickSeverity">Pick severity</text>
+    <text name="SelectASeverity">Select a severity</text>
+    <text name="TaskStatusName">Görev Durumu</text>
+    <text name="PickTaskStatus">Pick task status</text>
+    <text name="SelectATaskStatus">Select a task status</text>
+    <text name="CreatedDateRange">Created date range</text>
+    <text name="Tag">Tag</text>
+    <text name="CreateNewTag">Create new tag</text>
+    <text name="EditTag">Edit tag</text>
+    <text name="DeleteTag">Delete tag</text>
+    <text name="TaskStatus">Task status</text>
+    <text name="PAX.Next.TaskManager.TaskStatus">TaskStatus</text>
+    <text name="TaskStatusesHeaderInfo">Task statuses header info</text>
+    <text name="CreateNewTaskStatus">Create new task status</text>
+    <text name="EditTaskStatus">Edit task status</text>
+    <text name="DeleteTaskStatus">Delete task status</text>
+    <text name="TaskStatuses">Task statuses</text>
+    <text name="TaskManager">Task manager</text>
+    <text name="PAX.Next.TaskManager.Severity">Severity</text>
+    <text name="Order">Order</text>
+    <text name="InsertedDate">Inserted date</text>
+    <text name="SeveritiesHeaderInfo">Severities header info</text>
+    <text name="CreateNewSeverity">Create new severity</text>
+    <text name="EditSeverity">Edit severity</text>
+    <text name="DeleteSeverity">Delete severity</text>
+    <text name="Severities">Severities</text>
+    <text name="{0}IsRequired">{0} is required.</text>
+    <text name="View">View</text>
+    <text name="Details">Detaylar</text>
+    <text name="Pick">Pick</text>
+    <text name="True">True</text>
+    <text name="False">False</text>
+    <text name="MinValue">Min</text>
+    <text name="MaxValue">Max</text>
+    <text name="InsertedDateRange">Inserted date range</text>
+    
     <text name="HomePage">Ana sayfa</text>
     <text name="AboutUs">Hakkımızda</text>
     <text name="Administration">Yönetim</text>

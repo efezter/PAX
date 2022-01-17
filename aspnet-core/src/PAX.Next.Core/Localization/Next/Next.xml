@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="PaxTaskAttachment">Pax task attachment</text>
+  <texts>    <text name="TaskHistory">Task history</text>
+    <text name="CreateNewTaskHistory">Create new task history</text>
+    <text name="EditTaskHistory">Edit task history</text>
+    <text name="DeleteTaskHistory">Delete task history</text>
+    <text name="PaxTaskHistoryText">      <text name="PaxTaskHistoryText">{1} has been changed to {2} by {0}.</text>  </text>        <text name="PaxTaskAttachment">Pax task attachment</text>
     <text name="CreateNewPaxTaskAttachment">Create new pax task attachment</text>
     <text name="EditPaxTaskAttachment">Edit pax task attachment</text>
     <text name="DeletePaxTaskAttachment">Delete pax task attachment</text>
@@ -285,14 +289,10 @@
     <text name="Apply">Apply</text>
     <text name="CustomRange">Custom range</text>
     <text name="DashboardNoteForMpaVersion">
-      <![CDATA[
-      See Demo for Multi-Page Application version with <strong>ASP.NET MVC</strong> and <strong>jQuery</strong>.
-      ]]>
+      <![CDATA[      See Demo for Multi-Page Application version with <strong>ASP.NET MVC</strong> and <strong>jQuery</strong>.      ]]>
     </text>
     <text name="DashboardNoteForSpaVersion">
-      <![CDATA[
-      Notice: There is also a <strong>Single-Page Application</strong> version built using ASP.NET MVC and <strong>AngularJs</strong>.
-      ]]>
+      <![CDATA[      Notice: There is also a <strong>Single-Page Application</strong> version built using ASP.NET MVC and <strong>AngularJs</strong>.      ]]>
     </text>
     <text name="SeeDemo">See demo</text>
     <text name="Edition">Edition</text>
@@ -467,14 +467,7 @@
     <text name="YouDontHaveAnyFriend">You don't have any friends. Write a username to above input box and click "Add Friend" button.</text>
     <text name="YouDontHaveAnyBlockedFriend">You don't have any blocked users. In order to block a friend, select a friend and select block from actions dropdown.</text>
     <text name="ChatUserSearch_Hint">
-      <![CDATA[
-      Write only username for same tenant users, <br>
-      <strong>[tenancyName]\[userName]</strong> for other tenant's users <br><br>
-      for example: <br>
-      .\admin -> for host admin <br>
-      Test\admin -> for test tenant's admin <br>
-      admin -> for your tenant's admin
-      ]]>
+      <![CDATA[      Write only username for same tenant users, <br>      <strong>[tenancyName]\[userName]</strong> for other tenant's users <br><br>      for example: <br>      .\admin -> for host admin <br>      Test\admin -> for test tenant's admin <br>      admin -> for your tenant's admin      ]]>
     </text>
     <text name="AddFriend">Add friend</text>
     <text name="TypeAMessageHere">Type a message here...</text>

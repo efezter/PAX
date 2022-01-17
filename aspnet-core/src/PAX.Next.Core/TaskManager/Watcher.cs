@@ -1,17 +1,13 @@
-﻿using PAX.Next.TaskManager;
-using PAX.Next.Authorization.Users;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Abp.Auditing;
 using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using Abp.Auditing;
+using PAX.Next.Authorization.Users;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PAX.Next.TaskManager
 {
     [Table("Watchers")]
     [Audited]
-    public class Watcher : Entity
+    public class Watcher : FullAuditedEntity
     {
         [DisableAuditing]
         public virtual int PaxTaskId { get; set; }

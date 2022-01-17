@@ -73,11 +73,11 @@
                                     <div class="form-group row">
                                         <label for="MultiSelectInput" class="col-lg-12">{{ l('Watcher') }}</label>
                                         <div class="col-12">
-                                            <p-autoComplete [(ngModel)]="countries"
+                                            <p-autoComplete [(ngModel)]="watchers"
                                                             [suggestions]="filteredWathers"
                                                             (completeMethod)="getUsers($event)"
                                                             field="displayName"
-                                                            placeholder="Countries"
+                                                            placeholder="Watchers"
                                                             [minLength]="1"
                                                             name="MultiSelectInput"
                                                             id="MultiSelectInput"
@@ -286,9 +286,9 @@
                                         {{"Refresh" | localize}}</button>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="padding-top: 20px;" *ngFor="let history of historyRecs">
                                 <div class="col-xl-12">
-                                    <div class="web-log-view full-height">
+                                    {{ history.creationTime | luxonFormat: 'F' }}<div [innerHTML]="history.changeText" class="web-log-view full-height">                                        
                                     </div>
                                 </div>
                             </div>

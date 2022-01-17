@@ -2,12 +2,14 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityHistory;
+using Abp.Events.Bus.Entities;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
 using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
 using PAX.Next.TaskManager.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -21,13 +23,14 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<Comment> _commentRepository;
         private readonly IRepository<PaxTask, int> _lookup_paxTaskRepository;
         private readonly IRepository<User, long> _lookup_userRepository;
+        private readonly ITaskHistoriesAppService _taskHistoriesAppService;
 
-        public CommentsAppService(IRepository<Comment> commentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository)
+        public CommentsAppService(IRepository<Comment> commentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository,ITaskHistoriesAppService taskHistoriesAppService)
         {
             _commentRepository = commentRepository;
             _lookup_paxTaskRepository = lookup_paxTaskRepository;
             _lookup_userRepository = lookup_userRepository;
-
+            _taskHistoriesAppService = taskHistoriesAppService;
         }
 
         public async Task<PagedResultDto<GetCommentForViewDto>> GetAll(GetAllCommentsInput input)
@@ -135,7 +138,10 @@ namespace PAX.Next.TaskManager
 
                 await _commentRepository.InsertAsync(comment);
 
-                await CurrentUnitOfWork.SaveChangesAsync();
+            CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = input.PaxTaskId, FieldName="Comments", CreatedUser = input.UserId,  ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
+            await _taskHistoriesAppService.CreateOrEdit(historyDto);
+
+            await CurrentUnitOfWork.SaveChangesAsync();
 
                 return ObjectMapper.Map<CommentDto>(comment);
         }
@@ -143,10 +149,14 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_Comments_Edit)]
         protected virtual async Task<CommentDto> Update(CreateOrEditCommentDto input)
         {
+            input.UserId = AbpSession.GetUserId();
             var comment = await _commentRepository.FirstOrDefaultAsync((int)input.Id);
             //ObjectMapper.Map(input, comment);
 
             comment.CommentText = input.CommentText;
+
+            CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = input.PaxTaskId, FieldName = "Comments", CreatedUser = input.UserId, ChangeType = EntityChangeType.Updated, CreatedDate = DateTime.Now };
+            await _taskHistoriesAppService.CreateOrEdit(historyDto);
 
             return ObjectMapper.Map<CommentDto>(comment);
         }
@@ -154,8 +164,12 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_Comments_Delete)]
         public async Task Delete(EntityDto input)
         {
+            var comment = _commentRepository.Get(input.Id);
+
+            CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = comment.PaxTaskId, FieldName = "Comments", CreatedUser = AbpSession.GetUserId(), ChangeType = EntityChangeType.Deleted, CreatedDate = DateTime.Now };
+            await _taskHistoriesAppService.CreateOrEdit(historyDto);
+
             await _commentRepository.DeleteAsync(input.Id);
         }
-
     }
 }

@@ -99,7 +99,6 @@ export class AuditLogsComponent extends AppComponentBase implements AfterViewIni
     getEntityChanges(event?: LazyLoadEvent) {
         this._auditLogService.getEntityHistoryObjectTypes()
             .subscribe((result) => {
-                debugger;
                 this.objectTypes = result;
             });
 

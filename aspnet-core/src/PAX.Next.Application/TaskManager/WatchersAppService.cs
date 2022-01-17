@@ -35,7 +35,7 @@ namespace PAX.Next.TaskManager
                         .Where(x => x.PaxTaskId == taskId)
                         .Select(x => new WatcherUserLookupTableDto { 
                             Id =   x.Id,
-                            UserId = x.UserId
+                            UserId = x.UserId,
                         });
 
             return filteredWatchers;
@@ -57,7 +57,7 @@ namespace PAX.Next.TaskManager
                                        DisplayName = s2.FullName
                                    };
 
-            return filteredWatchers.ToList();
+            return filteredWatchers;
         }
 
 
