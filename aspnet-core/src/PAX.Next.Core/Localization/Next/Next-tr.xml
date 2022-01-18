@@ -11,8 +11,13 @@
     <text name="PaxTaskHistoryAttchAdd">{0} tarafından {2} isimli dosya eki eklendi.</text>
     <text name="PaxTaskHistoryAttchDel">{0} tarafından {2} isimli dosya eki silindi.</text>
 
+    <text name="PaxTaskHistoryLabelAdd">{0} tarafından {2} isimli etiket eklendi.</text>
+    <text name="PaxTaskHistoryLabelDel">{0} tarafından {2} isimli etiket silindi.</text>
+
     <text name="Repeating">Tekrarlayan</text>
     <text name="SeverityId">Tekrarlayan</text>
+    
+    <text name="Labels">Etiketler</text>
 
     <text name="PaxTaskAttachment">Pax task attachment</text>
     <text name="CreateNewPaxTaskAttachment">Create new pax task attachment</text>

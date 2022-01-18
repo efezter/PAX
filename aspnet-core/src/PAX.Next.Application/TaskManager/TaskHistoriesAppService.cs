@@ -45,8 +45,7 @@ namespace PAX.Next.TaskManager
                         .WhereIf(input.UserIdFilter != 0, e => e.CreatedUserFk != null && e.CreatedUserFk.Id == input.UserIdFilter);
 
             var pagedAndFilteredTaskHistories = filteredTaskHistories
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                .OrderBy(input.Sorting ?? "id asc");
 
             var taskHistories = from o in pagedAndFilteredTaskHistories
                                 join o1 in _lookup_paxTaskRepository.GetAll() on o.PaxTaskId equals o1.Id into j1
@@ -66,8 +65,6 @@ namespace PAX.Next.TaskManager
                                     OldValue = o.NewValue,
                                     UserName = s2.FullName
                                 };
-
-            var totalCount = await filteredTaskHistories.CountAsync();
 
             var dbList = await taskHistories.ToListAsync();
             var results = new List<GetTaskHistoryForViewDto>();
@@ -92,7 +89,7 @@ namespace PAX.Next.TaskManager
             }
 
             return new PagedResultDto<GetTaskHistoryForViewDto>(
-                totalCount,
+                dbList.Count,
                 results
             );
 

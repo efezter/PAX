@@ -1,4 +1,4 @@
-﻿import { Component, ViewChild, Injector, Output, EventEmitter, OnInit } from '@angular/core';
+﻿import { Component, ViewChild, Injector, Output, EventEmitter, OnInit, ElementRef } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import {
     PaxTasksServiceProxy,
@@ -14,7 +14,8 @@ import {
     PaxTaskAttachmentsServiceProxy,
     PaxTaskAttachmentDto,
     PaxTaskUserLookupTableDto,
-    HistoryDto
+    HistoryDto,
+    LabelDto
 } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DateTime } from 'luxon';
@@ -47,10 +48,14 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     public Editorrr = CustomCK;
     public commentEditors: any[] = new Array<{ commentId: number, editor: any }>();
 
+    watchers: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
     filteredWathers: PaxTaskUserLookupTableDto[];
+
+    labels:LabelDto[] = new Array<LabelDto>();
+    filteredLabels: LabelDto[];
     
     historyRecs: HistoryDto[] = new Array<HistoryDto>();
-    watchers: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
+    
     commentToCreateOrEdit: CreateOrEditCommentDto = new CreateOrEditCommentDto();
     isCommentEditing: boolean = false;
 
@@ -79,7 +84,32 @@ editorConfiguration = {
     taskStatusName = '';
     serverUrl='';
 
-   
+    selectedBGColors:any[] = [
+    "#3485fd",
+    "#7e36f4",
+    "#8660cb",
+    "#dd5498",
+    "#e25563",
+    "#fd933a",
+    "#ffcb2f",
+    "#4ab563",
+    "#44d2a8",
+    "#61c0cf",
+    "#6681D5",
+    "#638BD1",
+    "#5AA7C5",
+    "#54BABD",
+    "#53BFBB",
+    "#51C3B9",
+    "#A26BB7",
+    "#8476C6",
+    "#757CCE",
+    "#D65276",
+    "#C94E88",
+    "#BD7397",
+    "#D28777",
+    "#E48D5C",
+    "#D76E72"];   
 
     allSeveritys: PaxTaskSeverityLookupTableDto[];
     allTaskStatuss: PaxTaskTaskStatusLookupTableDto[];
@@ -93,9 +123,32 @@ editorConfiguration = {
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
         private _abpSessionService: AbpSessionService,
+        private elem: ElementRef
     ) {
         super(injector);
+        this.commentToCreateOrEdit.commentText = "";
+        this.editorConfiguration.mention.feeds.push( {
+            marker: '@',
+            feed: this.getFeedUsers,
+            itemRenderer: this.customItemRenderer,
+            minimumCharacters: 3
+        });
     }
+
+    onSelect(event: any){
+        setTimeout(() => {this.generateBGColor()}, 50); 
+      }
+
+      generateBGColor()
+      {
+        let elements = this.elem.nativeElement.querySelectorAll('.p-autocomplete-token');
+        elements.forEach(el => {
+            if (!el.getAttribute('colored')) {
+                el.style.backgroundColor = this.selectedBGColors[Math.floor(Math.random() * (24 - 0 + 1) + 0)]; + " !important";
+                el.setAttribute('colored', 'true')
+            }            
+        });
+      }
 
     customItemRenderer( item ) {
         const itemElement = document.createElement( 'div' );
@@ -141,6 +194,7 @@ editorConfiguration = {
             this.active = true;
         } else {
             this.uploadUrl = this.serverUrl + '/PaxTask/UploadFiles?taskId=' + paxTaskId;
+            this.getAttachments(this.paxTask.id); 
             this.getTaskDetails(paxTaskId);            
         }
 
@@ -186,7 +240,7 @@ editorConfiguration = {
         this._paxTasksServiceProxy
             .getAllUserForLookupTable(
                 event.query,
-                this.watchers.map(a => a.id),
+                this.watchers.map(a => a.userId),
                 undefined,
                 undefined,
                 100                
@@ -196,11 +250,26 @@ editorConfiguration = {
             });
     }
 
+    getLabels(event) {
+        this._paxTasksServiceProxy
+            .getTaskLabels(
+                event.query,
+                this.labels.map(a => a.id),
+                undefined,
+                undefined,
+                100                
+            )
+            .subscribe((result) => {
+                this.filteredLabels = result;
+            });
+    }
+
     getHistory(paxTaskId: number) {
         this._paxTasksServiceProxy
             .getTaskHistory(paxTaskId)
             .subscribe((result) => {
                 this.historyRecs = result.items;
+                this.generateBGColor();
             });
     }
 
@@ -227,13 +296,6 @@ editorConfiguration = {
                     itemRenderer: this.customItemRenderer,
                     minimumCharacters: 1
                 });
-
-                this.editorConfiguration.mention.feeds.push( {
-                    marker: '@',
-                    feed: this.getFeedUsers,
-                    itemRenderer: this.customItemRenderer,
-                    minimumCharacters: 2
-                }  );
             });
     }
 
@@ -270,6 +332,7 @@ editorConfiguration = {
         this.saving = true;
 
         this.paxTask.watchers = this.watchers;
+        this.paxTask.labels = this.labels;
 
         this._paxTasksServiceProxy
             .createOrEdit(this.paxTask)
@@ -310,11 +373,12 @@ editorConfiguration = {
         this._paxTasksServiceProxy.getPaxTaskForEdit(paxTaskId).subscribe((result) => {
             this.paxTask = result.paxTask;
             this.watchers = result.paxTask.watchers;
+            this.labels = result.paxTask.labels;
 
             this.reporterName = result.userName;
             this.assigneeName = result.userName2;
             this.severityName = result.severityName;
-            this.taskStatusName = result.taskStatusName;
+            this.taskStatusName = result.taskStatusName;           
 
             this.getTaskComments();
         });
@@ -333,8 +397,7 @@ editorConfiguration = {
             10
         ).subscribe((result) => {
             this.commentViews = result.items;
-            this.active = true;
-            this.getAttachments(this.paxTask.id);            
+            this.active = true;                       
         });
     }
 

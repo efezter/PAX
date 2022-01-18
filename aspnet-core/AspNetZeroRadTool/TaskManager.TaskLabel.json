@@ -1,0 +1,50 @@
+{
+  "IsRegenerate": false,
+  "MenuPosition": null,
+  "RelativeNamespace": "TaskManager",
+  "EntityName": "TaskLabel",
+  "EntityNamePlural": "TaskLabels",
+  "TableName": "TaskLabels",
+  "PrimaryKeyType": "int",
+  "BaseClass": "Entity",
+  "EntityHistory": true,
+  "AutoMigration": false,
+  "UpdateDatabase": false,
+  "CreateUserInterface": false,
+  "CreateViewOnly": false,
+  "CreateExcelExport": false,
+  "IsNonModalCRUDPage": false,
+  "IsMasterDetailPage": false,
+  "PagePermission": {
+    "Host": false,
+    "Tenant": false
+  },
+  "Properties": [],
+  "NavigationProperties": [
+    {
+      "Namespace": "PAX.Next.TaskManager",
+      "ForeignEntityName": "PaxTask",
+      "IdType": "int",
+      "IsNullable": false,
+      "PropertyName": "PaxTaskId",
+      "DisplayPropertyName": "Header",
+      "DuplicationNumber": 0,
+      "RelationType": "single",
+      "ViewType": "Dropdown"
+    },
+    {
+      "Namespace": "PAX.Next.TaskManager",
+      "ForeignEntityName": "Label",
+      "IdType": "int",
+      "IsNullable": false,
+      "PropertyName": "LabelId",
+      "DisplayPropertyName": "Name",
+      "DuplicationNumber": 0,
+      "RelationType": "single",
+      "ViewType": "Dropdown"
+    }
+  ],
+  "NavigationPropertyOneToManyTables": [],
+  "EnumDefinitions": [],
+  "DbContext": null
+}

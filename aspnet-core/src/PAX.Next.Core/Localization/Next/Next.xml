@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="TaskHistory">Task history</text>
+  <texts>    <text name="TaskLabel">Task label</text>
+    <text name="CreateNewTaskLabel">Create new task label</text>
+    <text name="EditTaskLabel">Edit task label</text>
+    <text name="DeleteTaskLabel">Delete task label</text>
+    <text name="Label">Label</text>
+    <text name="CreateNewLabel">Create new label</text>
+    <text name="EditLabel">Edit label</text>
+    <text name="DeleteLabel">Delete label</text>
+    <text name="TaskHistory">Task history</text>
     <text name="CreateNewTaskHistory">Create new task history</text>
     <text name="EditTaskHistory">Edit task history</text>
     <text name="DeleteTaskHistory">Delete task history</text>

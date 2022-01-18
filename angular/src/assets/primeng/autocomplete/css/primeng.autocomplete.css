@@ -4,3 +4,9 @@
 .p-autocomplete-multiple-container {
   width: 100%;
 }
+
+.p-autocomplete-token
+{
+  border-radius: 5px !important;
+  color: whitesmoke !important;
+}

@@ -2,11 +2,12 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityHistory;
+using Abp.Events.Bus.Entities;
 using Abp.Linq.Extensions;
+using Abp.Localization;
+using Abp.Localization.Sources;
 using Abp.Runtime.Session;
 using Microsoft.EntityFrameworkCore;
-using PAX.Next.Auditing;
-using PAX.Next.Auditing.Dto;
 using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
 using PAX.Next.Dto;
@@ -18,11 +19,6 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using static PAX.Next.TaskManager.Utils.Enums;
-using Abp.Localization;
-using EntityHistoryHelper = PAX.Next.EntityHistory.EntityHistoryHelper;
-using Abp.Localization.Sources;
-using System.Text;
-using Abp.Events.Bus.Entities;
 
 namespace PAX.Next.TaskManager
 {
@@ -41,6 +37,9 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<EntityPropertyChange, long> _entityPropertyChangeRepository;
         private readonly ILocalizationSource _localizationSource;
         private readonly IRepository<PaxTaskAttachment> _paxTaskAttachmentRepository;
+        private readonly IRepository<Label> _labelRepository;
+        private readonly ILabelsAppService _labelService;
+        private readonly ITaskLabelsAppService _taskLabelService;
 
 
         public PaxTasksAppService(
@@ -55,7 +54,10 @@ namespace PAX.Next.TaskManager
             IRepository<EntityChangeSet, long> entityChangeSetRepository,
             IRepository<EntityPropertyChange, long> entityPropertyChangeRepository,
             ILocalizationManager localizationManager,
-            IRepository<PaxTaskAttachment> paxTaskAttachmentRepository
+            IRepository<PaxTaskAttachment> paxTaskAttachmentRepository,
+            IRepository<Label> labelRepository,
+            ILabelsAppService labelService,
+            ITaskLabelsAppService taskLabelService
             )
         {
             _paxTaskRepository = paxTaskRepository;
@@ -69,6 +71,10 @@ namespace PAX.Next.TaskManager
             _entityChangeSetRepository = entityChangeSetRepository;
             _entityPropertyChangeRepository = entityPropertyChangeRepository;
             _paxTaskAttachmentRepository = paxTaskAttachmentRepository;
+            _labelRepository = labelRepository;
+            _labelService = labelService;
+            _taskLabelService = taskLabelService;
+
             _localizationSource = localizationManager.GetSource(NextConsts.LocalizationSourceName);
         }
 
@@ -205,8 +211,13 @@ namespace PAX.Next.TaskManager
             var paxTask = await _paxTaskRepository.FirstOrDefaultAsync(input.Id);
 
             var output = new GetPaxTaskForEditOutput { PaxTask = ObjectMapper.Map<CreateOrEditPaxTaskDto>(paxTask) };
-
+            
+            //TODO : Too much unnecessary call to DB.
+            
             output.PaxTask.Watchers = _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value).Result.ToList();
+
+
+           output.PaxTask.Labels = _labelService.GetLabelsByTaskId(output.PaxTask.Id.Value).Result.ToList();
 
             if (output.PaxTask.ReporterId != 0)
             {
@@ -231,6 +242,8 @@ namespace PAX.Next.TaskManager
                 var _lookupTaskStatus = await _lookup_taskStatusRepository.FirstOrDefaultAsync((int)output.PaxTask.TaskStatusId);
                 output.TaskStatusName = _lookupTaskStatus?.Name?.ToString();
             }
+
+
 
             return output;
         }
@@ -258,6 +271,7 @@ namespace PAX.Next.TaskManager
             await _paxTaskRepository.InsertAsync(paxTask);
             await CurrentUnitOfWork.SaveChangesAsync();
 
+
             if (input.Watchers != null && input.Watchers.Count() > 0)
             {
                 List<Task> inserTasks = new List<Task>();
@@ -267,6 +281,22 @@ namespace PAX.Next.TaskManager
                     inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
 
                     CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = paxTask.Id, FieldName = "Watchers", CreatedUser = paxTask.ReporterId, NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
+                    inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
+                }
+
+                Task.WaitAll(inserTasks.ToArray());
+            }
+
+            //TODO history çalışmayacak
+            if (input.Labels != null && input.Labels.Count() > 0)
+            {
+                List<Task> inserTasks = new List<Task>();
+                foreach (var label in input.Labels)
+                {
+                    CreateOrEditLabelDto labelDto = new CreateOrEditLabelDto { Name = label.Name };
+                    inserTasks.Add(_labelService.CreateOrEdit(labelDto));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = paxTask.Id, FieldName = "Labels", CreatedUser = paxTask.ReporterId, NewValue = label.Name, ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
                     inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
                 }
 
@@ -286,6 +316,70 @@ namespace PAX.Next.TaskManager
             }
 
             await UpdateWatchers(paxTask.Id, input.Watchers.ToList());
+            await UpdateLabels(paxTask.Id, input.Labels.ToList());
+        }
+
+        private async Task UpdateLabels(int taskId, List<LabelDto> updatedLabels)
+        {
+            var existingLabels = _labelService.GetLabelsByTaskId(taskId).Result.ToList();
+
+            var deletedLabels = existingLabels.Where(x => updatedLabels.Select(w => w.Id).Contains(x.Id) == false).ToList();
+
+            var currentUserId = AbpSession.GetUserId();
+
+            if (deletedLabels != null && deletedLabels.Count() > 0)
+            {
+                List<Task> delTasks = new List<Task>();
+                foreach (var label in deletedLabels)
+                {
+                    delTasks.Add(_taskLabelService.Delete(label.TaskLabelId));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Labels", NewValue = label.Name, ChangeType = EntityChangeType.Deleted, CreatedDate = DateTime.Now };
+                    delTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
+                }
+
+                Task.WaitAll(delTasks.ToArray());
+            }
+
+            var insertedLabels= updatedLabels.Where(x => existingLabels.Select(w => w.Id).Contains(x.Id) == false);
+
+            if (insertedLabels != null && insertedLabels.Count() > 0)
+            {
+                List<Task> inserTasks = new List<Task>();
+                int labelId = 0;
+                foreach (var label in insertedLabels)
+                {
+                    if (!_labelRepository.GetAll().Any(x => x.Name == label.Name))
+                    {
+                        try
+                        {
+                            Label labelDto = new Label { Name = label.Name };
+
+                            await _labelRepository.InsertAsync(labelDto);
+                            await CurrentUnitOfWork.SaveChangesAsync();
+
+                            labelId = labelDto.Id;
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw;
+                        }
+                    }
+                    else
+                    {
+                        labelId = label.Id;
+                    }
+
+                    CreateOrEditTaskLabelDto taskLabelDto = new CreateOrEditTaskLabelDto { LabelId = labelId, PaxTaskId = taskId };
+                    inserTasks.Add(_taskLabelService.CreateOrEdit(taskLabelDto));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Labels", NewValue = label.Name, ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
+                    inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
+                }
+
+                Task.WaitAll(inserTasks.ToArray());
+            }
         }
 
         private async Task UpdateWatchers(int taskId, List<WatcherUserLookupTableDto> updatedWatchers)
@@ -400,7 +494,7 @@ namespace PAX.Next.TaskManager
         public async Task<PagedResultDto<PaxTaskUserLookupTableDto>> GetAllUserForLookupTable(GetAllForLookupTableInput input)
         {
             var query = _lookup_userRepository.GetAll()
-                .WhereIf(input.OmitUserIds != null, x => !input.OmitUserIds.Contains(x.Id))
+                .WhereIf(input.OmitIds != null, x => !input.OmitIds.Contains(x.Id))
                 .WhereIf(
                        !string.IsNullOrWhiteSpace(input.Filter),
                       e => (e.Name != null && e.Name.Contains(input.Filter)) || (e.Surname != null && e.Surname.Contains(input.Filter))
@@ -413,6 +507,7 @@ namespace PAX.Next.TaskManager
                 .ToListAsync();
 
             var lookupTableDtoList = new List<PaxTaskUserLookupTableDto>();
+
             foreach (var user in userList)
             {
                 lookupTableDtoList.Add(new PaxTaskUserLookupTableDto
@@ -426,6 +521,32 @@ namespace PAX.Next.TaskManager
                 totalCount,
                 lookupTableDtoList
             );
+        }
+
+        [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
+        public async Task<List<LabelDto>> GetTaskLabels(GetAllLabelsInput input)
+        {
+            var query = _labelRepository.GetAll()
+                .WhereIf(input.OmitIds != null, x => !input.OmitIds.Contains(x.Id))
+                .WhereIf(
+                       !string.IsNullOrWhiteSpace(input.Filter),
+                      e => (e.Name != null && e.Name.Contains(input.Filter))
+                   ).Select(x => new { x.Id, x.Name });
+
+            var totalCount = await query.CountAsync();
+
+            var LabelList = await query
+                .Select(e => new LabelDto { Id = e.Id, Name = e.Name })
+                .PageBy(input)
+                .ToListAsync();
+
+            LabelList.Insert(0, new LabelDto
+            {
+                Id = 1,
+                Name = input.Filter
+            });
+
+            return LabelList;
         }
 
         [AbpAuthorize(AppPermissions.Pages_PaxTasks)]
@@ -563,6 +684,17 @@ namespace PAX.Next.TaskManager
         {
             switch (fieldName)
             {
+                case "Labels":
+
+                    if (changeType == EntityChangeType.Created)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryLabelAdd").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + newValue + "</b>");
+                    }
+                    else if (changeType == EntityChangeType.Deleted)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryLabelDel").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + newValue + "</b>");
+                    }
+                    break;
                 case "Watchers":
 
                     string targetUser = watchers.Where(x => x.Name == newValue).Select(x => x.Value).FirstOrDefault();

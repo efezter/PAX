@@ -34,5 +34,7 @@ namespace PAX.Next.TaskManager.Dtos
 
         public IEnumerable<WatcherUserLookupTableDto> Watchers { get; set; }
 
+        public IEnumerable<LabelDto> Labels { get; set; }
+
     }
 }
