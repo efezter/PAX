@@ -5,7 +5,6 @@ using Abp.Application.Services.Dto;
 using PAX.Next.TaskManager.Dtos;
 using PAX.Next.Dto;
 using System.Collections.Generic;
-using System.Collections.Generic;
 
 namespace PAX.Next.TaskManager
 {
@@ -17,7 +16,7 @@ namespace PAX.Next.TaskManager
 
         Task<GetPaxTaskForEditOutput> GetPaxTaskForEdit(EntityDto input);
 
-        Task CreateOrEdit(CreateOrEditPaxTaskDto input);
+        Task<NameValueDto> CreateOrEdit(CreateOrEditPaxTaskDto input);
 
         Task Delete(EntityDto input);
 

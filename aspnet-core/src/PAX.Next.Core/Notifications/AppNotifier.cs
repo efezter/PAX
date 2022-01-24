@@ -143,5 +143,33 @@ namespace PAX.Next.Notifications
                     { "fileName", fileName }
                 });
         }
+
+        public async Task TaskChangedAsync(string reporterName, int taskId, string messageId ,UserIdentifier[] receivers)
+        {
+            var notificationData = new LocalizableMessageNotificationData(
+                new LocalizableString(
+                    messageId,
+                    NextConsts.LocalizationSourceName
+                )
+            );
+
+            notificationData["reporterName"] = reporterName;
+            notificationData["taskId"] = taskId;
+            await _notificationPublisher.PublishAsync(AppNotificationNames.TaskUpdated, notificationData, userIds: receivers );
+        }
+
+        //public async Task TaskRegisteredAsync(string reporterName, int taskId, UserIdentifier[] receivers)
+        //{
+        //    var notificationData = new LocalizableMessageNotificationData(
+        //        new LocalizableString(
+        //            "TaskCreatedNotification",
+        //            NextConsts.LocalizationSourceName
+        //        )
+        //    );
+
+        //    notificationData["reporterName"] = reporterName;
+        //    notificationData["taskId"] = taskId;
+        //    await _notificationPublisher.PublishAsync(AppNotificationNames.NewTaskRegistered, notificationData, userIds: receivers);
+        //}
     }
 }

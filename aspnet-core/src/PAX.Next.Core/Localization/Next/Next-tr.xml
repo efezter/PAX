@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="tr">
   <texts>
-    <text name="PaxTaskHistoryText">{0} tarafından {1} {2} olarak değiştirldi.</text>
+    <text name="TaskCreatedNotification">{reporterName} tarafından, sizin için yeni bir görev oluşturuldu.</text>
+    <text name="TaskChangedNotification">{reporterName} size atanmış bir görev üzerinde değişiklik yaptı.</text>
+
+    <text name="TaskCreatedNotificationWatcher">{reporterName} tarafından oluşturulan bir göreve izleyici olarak eklendiniz.</text>
+    <text name="TaskChangedNotificationWatcher">{reporterName} izleyici olduğunuz vir görev üzerinde değişiklik yaptı.</text>
+    
+    <text name="PaxTaskHistoryText">{0} tarafından {1} {2} olarak değiştirildi.</text>
     <text name="PaxTaskHistoryWatcherAdd">{0} tarafından {2} izleyicisi eklendi.</text>
     <text name="PaxTaskHistoryWatcherDel">{0} tarafından {2} izleyicisi silindi.</text>
     <text name="PaxTaskHistoryCommentAdd">{0} tarafından yeni bir yorum eklendi.</text>
@@ -23,10 +29,13 @@
     <text name="CreateNewPaxTaskAttachment">Create new pax task attachment</text>
     <text name="EditPaxTaskAttachment">Edit pax task attachment</text>
     <text name="DeletePaxTaskAttachment">Delete pax task attachment</text>
-    <text name="Comment">Comment</text>
-    <text name="CreateNewComment">Create new comment</text>
+    <text name="CreateNewComment">Yeni Yorum</text>
+    <text name="CommentExplanation">Yorumlarınıza "@" karakteri ile kişi referansı, "#" karakteri ile dosya referansı ekleyebilirsiniz.</text>
+    <text name="Comments">Yorumlar</text>
+    <text name="Comment">Yorum</text>
     <text name="EditComment">Edit comment</text>
     <text name="DeleteComment">Delete comment</text>
+    <text name="Watchers">İzleyiciler</text>
     <text name="Watcher">İzleyici</text>
     <text name="CreateNewWatcher">Create new watcher</text>
     <text name="EditWatcher">Edit watcher</text>
@@ -43,7 +52,7 @@
     <text name="PeriodInterval">Period interval</text>
     <text name="PaxTasksHeaderInfo">Pax tasks header info</text>
     <text name="CreateNewPaxTask">Create new pax task</text>
-    <text name="EditPaxTask">Edit pax task</text>
+    <text name="EditPaxTask">Düzenle</text>
     <text name="DeletePaxTask">Delete pax task</text>
     <text name="PaxTasks">Pax tasks</text>
     <text name="PickUser">Pick user</text>

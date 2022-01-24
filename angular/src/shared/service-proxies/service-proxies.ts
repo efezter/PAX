@@ -8482,7 +8482,7 @@ export class PaxTasksServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    createOrEdit(body: CreateOrEditPaxTaskDto | undefined): Observable<void> {
+    createOrEdit(body: CreateOrEditPaxTaskDto | undefined): Observable<NameValueDto> {
         let url_ = this.baseUrl + "/api/services/app/PaxTasks/CreateOrEdit";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -8494,6 +8494,7 @@ export class PaxTasksServiceProxy {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
             })
         };
 
@@ -8504,14 +8505,14 @@ export class PaxTasksServiceProxy {
                 try {
                     return this.processCreateOrEdit(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<NameValueDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<NameValueDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreateOrEdit(response: HttpResponseBase): Observable<void> {
+    protected processCreateOrEdit(response: HttpResponseBase): Observable<NameValueDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -8520,14 +8521,17 @@ export class PaxTasksServiceProxy {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = NameValueDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<NameValueDto>(<any>null);
     }
 
     /**
@@ -8865,7 +8869,7 @@ export class PaxTasksServiceProxy {
             }, 
               err => { 
                 // Error 
-                reject(err);  
+                reject(err); 
               } 
             ); 
         }); 
@@ -30088,6 +30092,7 @@ export interface IPaxTaskSeverityLookupTableDto {
 export class PaxTaskTaskStatusLookupTableDto implements IPaxTaskTaskStatusLookupTableDto {
     id!: number;
     displayName!: string | undefined;
+    iconUrl!: string | undefined;
 
     constructor(data?: IPaxTaskTaskStatusLookupTableDto) {
         if (data) {
@@ -30102,6 +30107,7 @@ export class PaxTaskTaskStatusLookupTableDto implements IPaxTaskTaskStatusLookup
         if (_data) {
             this.id = _data["id"];
             this.displayName = _data["displayName"];
+            this.iconUrl = _data["iconUrl"];
         }
     }
 
@@ -30116,6 +30122,7 @@ export class PaxTaskTaskStatusLookupTableDto implements IPaxTaskTaskStatusLookup
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["displayName"] = this.displayName;
+        data["iconUrl"] = this.iconUrl;
         return data; 
     }
 }
@@ -30123,6 +30130,7 @@ export class PaxTaskTaskStatusLookupTableDto implements IPaxTaskTaskStatusLookup
 export interface IPaxTaskTaskStatusLookupTableDto {
     id: number;
     displayName: string | undefined;
+    iconUrl: string | undefined;
 }
 
 export class PaxTaskUserLookupTableDto implements IPaxTaskUserLookupTableDto {

@@ -79,7 +79,6 @@
                                                             (onSelect)="onSelect($event)"
                                                             panelStyleClass="tag-button"
                                                             field="name"
-                                                            placeholder="Labels"
                                                             [minLength]="2"
                                                             name="MultiSelectLabels"
                                                             id="MultiSelectLabels"
@@ -98,7 +97,6 @@
                                                             (completeMethod)="getUsers($event)"
                                                             (onSelect)="onSelect($event)"
                                                             field="displayName"
-                                                            placeholder="Watchers"
                                                             [minLength]="2"
                                                             name="MultiSelectWatcher"
                                                             id="MultiSelectWatcher"
@@ -120,7 +118,7 @@
                                         >
                                             <option value="1">{{ l('Normal') }}</option>
                         
-                                            <option value="2">{{ l('Repating') }}</option>
+                                            <option value="2">{{"Repeating" | localize}}</option>
                                         </select>
                                         <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
                                     </div>
@@ -166,17 +164,35 @@
                         
                                     <div class="form-group m-form__group">
                                         <label for="TaskStatusName">{{ l('TaskStatus') }}</label>
-                                        <select
+                                        <p-dropdown [options]="allTaskStatuss" [(ngModel)]="selectedStatus" styleClass="width-percent-100" name="selectedStatus" optionLabel="displayName">
+                                            <ng-template pTemplate="selectedItem">
+                                                <div class="row h-100 p-0" *ngIf="selectedStatus">
+                                                        <div class="col-12">
+                                                            <img src="{{ serverUrl + selectedStatus.iconUrl }}" style="width: 20px; margin-right: 10px;" [class]="'flag flag-' + selectedStatus.displayName" />                                                       
+                                                            {{selectedStatus.displayName}}
+                                                        </div>
+                                                </div>
+                                            </ng-template>
+                                            <ng-template let-taskStatus pTemplate="item">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <img src="{{ serverUrl + taskStatus.iconUrl }}" style="width: 30px;" [class]="'flag flag-' + taskStatus.displayName" />
+                                                        {{taskStatus.displayName}}
+                                                </div>
+                                            </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                        <!-- <select
                                             name="paxTask.taskStatusId"
                                             [(ngModel)]="paxTask.taskStatusId"
                                             class="form-control"
                                             required
                                         >
-                                            <!-- <option value="">{{ l('SelectATaskStatus') }}</option> -->
+                                            <option value="">{{ l('SelectATaskStatus') }}</option>
                                             <option *ngFor="let item of allTaskStatuss" value="{{ item.id }}">
                                                 {{ item.displayName }}
                                             </option>
-                                        </select>
+                                        </select> -->
                                     </div>
                         
                                     <div class="form-group aaa">
@@ -197,7 +213,7 @@
                         
                                     <div class="form-group ck-content">
                                         <label for="PaxTask_Details">{{ l('Details') }}</label>
-                                        <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask.details}}"></ckeditor>
+                                        <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask?.details}}"></ckeditor>
                                         <validation-messages  
                                         id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
                                     </div>
@@ -218,13 +234,13 @@
 
 
 
-            <div class="card card-custom gutter-b">
+            <div *ngIf="paxTask.id" class="card card-custom gutter-b">
                 <div class="card-body">
                     <tabset>
-                        <tab heading=" {{'Comments' | localize}}">
+                        <tab heading=" {{'Comments' | localize}} ({{this.commentViews?.length}})">
                             <div class="row m-3">
                                 <div class="col-xl-6">
-                                    <p>{{"CachesHeaderInfo" | localize}}</p>
+                                    <p>{{"CommentExplanation" | localize}}</p>
                                 </div>
                                 <div class="col-xl-6 text-right">
                                     <button 
@@ -296,18 +312,7 @@
                         </tab>
 
 
-                        <tab heading="{{'History' | localize}}">
-                            <div class="row m-3">
-                                <div class="col-xl-6">
-                                    <p>{{"WebSiteLogsHeaderInfo" | localize}}</p>
-                                </div>
-                                <div class="col-xl-6 text-right">
-                                    <button class="btn btn-secondary"><i
-                                            class="fa fa-download"></i> {{"DownloadAll" | localize}}</button>
-                                    <button class="btn btn-primary"><i class="fa fa-sync"></i>
-                                        {{"Refresh" | localize}}</button>
-                                </div>
-                            </div>
+                        <tab heading="{{'History' | localize}} ({{this.historyRecs.length}})">
                             <div class="row" style="padding-top: 20px;" *ngFor="let history of historyRecs">
                                 <div class="col-xl-12">
                                     {{ history.creationTime | luxonFormat: 'F' }}<div [innerHTML]="history.changeText" class="web-log-view full-height">                                        
@@ -316,26 +321,18 @@
                             </div>
                         </tab>
                         <tab heading="{{'Attachments' | localize}} ({{this.uploadedFiles.length}})">
-                            <div class="row m-3">
-                                <div class="col-xl-6">
-                                    <p>{{"WebSiteLogsHeaderInfo" | localize}}</p>
-                                </div>
-                                <div class="col-xl-6 text-right">
-                                    <button class="btn btn-secondary"><i
-                                            class="fa fa-download"></i> {{"DownloadAll" | localize}}</button>
-                                    <button class="btn btn-primary"><i class="fa fa-sync"></i>
-                                        {{"Refresh" | localize}}</button>
-                                </div>
-                            </div>
                             <div class="row">
                                 <div class="col-xl-12">
                                     <div class="web-log-view full-height">
 
-                                        <label for="DefaultFileUploadFileInput">Default file uploader</label>
+                                        <!-- <label for="DefaultFileUploadFileInput">Default file uploader</label> -->
                                         <p-fileUpload multiple="multiple"
                                                     id="DefaultFileUploadFileInput"
                                                     name="DefaultFileUploadFileInput[]"
                                                     [url]="uploadUrl"
+                                                    chooseLabel='{{"ChooseAFile" | localize}}'
+                                                    uploadLabel='{{"Upload" | localize}}'
+                                                    cancelLabel='{{"Cancel" | localize}}'
                                                     accept="application/pdf,
                                                             application/vnd.ms-excel,
                                                             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
@@ -344,7 +341,7 @@
                                                             application/vnd.oasis.opendocument.text,
                                                             application/vnd.oasis.opendocument.spreadsheet,
                                                             image/*"
-                                                    maxFileSize="1000000"
+                                                    maxFileSize="5242880"
                                                     (onUpload)="onUpload($event)"
                                                     (onBeforeSend)="onBeforeSend($event)">
 

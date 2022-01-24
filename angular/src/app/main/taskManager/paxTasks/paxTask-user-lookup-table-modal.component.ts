@@ -29,6 +29,7 @@ export class PaxTaskUserLookupTableModalComponent extends AppComponentBase {
     }
 
     show(): void {
+       
         this.active = true;
         this.paginator.rows = 5;
         this.getAll();
@@ -47,8 +48,11 @@ export class PaxTaskUserLookupTableModalComponent extends AppComponentBase {
 
         this.primengTableHelper.showLoadingIndicator();
 
-        let omitUserIds:number[] = [this.id];
-        
+        let omitUserIds = new Array<number>();
+
+        if(this.id)
+            omitUserIds.push(this.id);
+
         this._paxTasksServiceProxy
             .getAllUserForLookupTable(
                 this.filterText,

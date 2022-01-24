@@ -35,6 +35,7 @@ export class UserNotificationHelper extends AppComponentBase {
     }
 
     getUrl(userNotification: abp.notifications.IUserNotification): string {
+        debugger;
         switch (userNotification.notification.notificationName) {
             case 'App.NewUserRegistered':
                 return '/app/admin/users?filterText=' + userNotification.notification.data.properties.emailAddress;
@@ -44,7 +45,11 @@ export class UserNotificationHelper extends AppComponentBase {
                 return AppConsts.remoteServiceBaseUrl + '/File/DownloadBinaryFile?id=' + userNotification.notification.data.properties.binaryObjectId + '&contentType=application/zip&fileName=collectedData.zip';
             case 'App.DownloadInvalidImportUsers':
                 return AppConsts.remoteServiceBaseUrl + '/File/DownloadTempFile?fileToken=' + userNotification.notification.data.properties.fileToken + '&fileType=' + userNotification.notification.data.properties.fileType + '&fileName=' + userNotification.notification.data.properties.fileName;
-            //Add your custom notification names to navigate to a URL when user clicks to a notification.
+            case 'PaxTask.TaskCreated':
+                return '/app/main/taskManager/paxTasks/details?taskId=' + userNotification.notification.data.properties.taskId;
+            case 'PaxTask.TaskUpdated':
+                return '/app/main/taskManager/paxTasks/details?taskId=' + userNotification.notification.data.properties.taskId;
+                //Add your custom notification names to navigate to a URL when user clicks to a notification.
         }
 
         //No url for this notification

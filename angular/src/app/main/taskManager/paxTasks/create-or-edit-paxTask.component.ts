@@ -47,7 +47,7 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
     public Editorr = CustomCK;
     public Editorrr = CustomCK;
     public commentEditors: any[] = new Array<{ commentId: number, editor: any }>();
-
+  
     watchers: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
     filteredWathers: PaxTaskUserLookupTableDto[];
 
@@ -113,13 +113,14 @@ editorConfiguration = {
 
     allSeveritys: PaxTaskSeverityLookupTableDto[];
     allTaskStatuss: PaxTaskTaskStatusLookupTableDto[];
+    selectedStatus: PaxTaskTaskStatusLookupTableDto;
 
     constructor(
         injector: Injector,
         private _paxTasksServiceProxy: PaxTasksServiceProxy,
         private _paxTaskAttachmentsServiceProxy: PaxTaskAttachmentsServiceProxy,
         private _commentsServiceProxy: CommentsServiceProxy,
-        private _dateTimeService: DateTimeService,
+        // private _dateTimeService: DateTimeService,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
         private _abpSessionService: AbpSessionService,
@@ -180,9 +181,15 @@ editorConfiguration = {
     
 
     ngOnInit(): void {
+        this.selectedStatus = new PaxTaskTaskStatusLookupTableDto();
+
         this.cuRuserId = this._abpSessionService.userId;
         this.serverUrl = AppConsts.remoteServiceBaseUrl;
         let paxTaskId = parseInt(this._activatedRoute.snapshot.queryParams['taskId']);
+
+        this.commentViews = new Array<GetCommentForViewDto>();
+        this.uploadedFiles = new Array<PaxTaskAttachmentDto>();
+
         if (!paxTaskId) {
             this.paxTask = new CreateOrEditPaxTaskDto();
             this.paxTask.id = paxTaskId;
@@ -192,19 +199,35 @@ editorConfiguration = {
             this.severityName = '';
             this.taskStatusName = '';
             this.active = true;
+            this.getAllTaskStatuses();
         } else {
             this.uploadUrl = this.serverUrl + '/PaxTask/UploadFiles?taskId=' + paxTaskId;
-            this.getAttachments(this.paxTask.id); 
+            this.getAttachments(paxTaskId); 
             this.getTaskDetails(paxTaskId);            
         }
 
         this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
             this.allSeveritys = result;
-        });
+        });       
+    }
 
+    getAllTaskStatuses()
+    {
         this._paxTasksServiceProxy.getAllTaskStatusForTableDropdown().subscribe((result) => {
             this.allTaskStatuss = result;
+            if (this.paxTask.id)
+            {
+                this.selectedStatus = this.allTaskStatuss.find(x => x.id == this.paxTask.taskStatusId);
+            }   
+            else
+            {
+                this.selectedStatus = this.allTaskStatuss[0];
+            }    
         });
+    }
+
+    ngAfterViewInit(): void{
+        setTimeout(() => {this.generateBGColor()}, 2500); 
     }
 
     public onReady(ckEditor, commentId) {
@@ -269,7 +292,6 @@ editorConfiguration = {
             .getTaskHistory(paxTaskId)
             .subscribe((result) => {
                 this.historyRecs = result.items;
-                this.generateBGColor();
             });
     }
 
@@ -333,6 +355,7 @@ editorConfiguration = {
 
         this.paxTask.watchers = this.watchers;
         this.paxTask.labels = this.labels;
+        this.paxTask.taskStatusId = this.selectedStatus.id;
 
         this._paxTasksServiceProxy
             .createOrEdit(this.paxTask)
@@ -341,9 +364,16 @@ editorConfiguration = {
                     this.saving = false;
                 })
             )
-            .subscribe(() => {
+            .subscribe((res) => {
                 this.notify.info(this.l('SavedSuccessfully'));
-                // this.close();
+
+                if (!this.paxTask.id) {
+                    this._router.navigate(['app/main/taskManager/paxTasks/details'], {
+                        queryParams: {
+                            taskId: res.value
+                        }
+                    }).then(() => {window.location.reload()});
+                }
             });
     }
 
@@ -378,9 +408,9 @@ editorConfiguration = {
             this.reporterName = result.userName;
             this.assigneeName = result.userName2;
             this.severityName = result.severityName;
-            this.taskStatusName = result.taskStatusName;           
-
+            this.taskStatusName = result.taskStatusName;    
             this.getTaskComments();
+            this.getAllTaskStatuses();
         });
 
     }
@@ -481,7 +511,6 @@ editorConfiguration = {
 
       // upload completed event
       onUpload(event): void {
-          debugger;
         //   event.originalEvent.body.result
         for (const file of event.originalEvent.body.result) {
         
@@ -496,7 +525,6 @@ editorConfiguration = {
     }
 
     onBeforeSend(event): void {
-        debugger;
         event.xhr.setRequestHeader('Authorization', 'Bearer ' + abp.auth.getToken());
     }
 }

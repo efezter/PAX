@@ -6,7 +6,7 @@ import { NotifyService } from 'abp-ng2-module';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { TokenAuthServiceProxy } from '@shared/service-proxies/service-proxies';
 
-import { ViewPaxTaskModalComponent } from './view-paxTask-modal.component';
+// import { ViewPaxTaskModalComponent } from './view-paxTask-modal.component';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
@@ -25,7 +25,7 @@ import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 })
 export class PaxTasksComponent extends AppComponentBase {
     @ViewChild('entityTypeHistoryModal', { static: true }) entityTypeHistoryModal: EntityTypeHistoryModalComponent;
-    @ViewChild('viewPaxTaskModalComponent', { static: true }) viewPaxTaskModal: ViewPaxTaskModalComponent;
+    // @ViewChild('viewPaxTaskModalComponent', { static: true }) viewPaxTaskModal: ViewPaxTaskModalComponent;
 
     @ViewChild('dataTable', { static: true }) dataTable: Table;
     @ViewChild('paginator', { static: true }) paginator: Paginator;
@@ -55,9 +55,9 @@ export class PaxTasksComponent extends AppComponentBase {
     constructor(
         injector: Injector,
         private _paxTasksServiceProxy: PaxTasksServiceProxy,
-        private _notifyService: NotifyService,
-        private _tokenAuth: TokenAuthServiceProxy,
-        private _activatedRoute: ActivatedRoute,
+        // private _notifyService: NotifyService,
+        // private _tokenAuth: TokenAuthServiceProxy,
+        // private _activatedRoute: ActivatedRoute,
         private _fileDownloadService: FileDownloadService,
         private _dateTimeService: DateTimeService,
         private _router: Router
@@ -135,16 +135,16 @@ export class PaxTasksComponent extends AppComponentBase {
         });
     }
 
-    deletePaxTask(paxTask: PaxTaskDto): void {
-        this.message.confirm('', this.l('AreYouSure'), (isConfirmed) => {
-            if (isConfirmed) {
-                this._paxTasksServiceProxy.delete(paxTask.id).subscribe(() => {
-                    this.reloadPage();
-                    this.notify.success(this.l('SuccessfullyDeleted'));
-                });
-            }
-        });
-    }
+    // deletePaxTask(paxTask: PaxTaskDto): void {
+    //     this.message.confirm('', this.l('AreYouSure'), (isConfirmed) => {
+    //         if (isConfirmed) {
+    //             this._paxTasksServiceProxy.delete(paxTask.id).subscribe(() => {
+    //                 this.reloadPage();
+    //                 this.notify.success(this.l('SuccessfullyDeleted'));
+    //             });
+    //         }
+    //     });
+    // }
 
     exportToExcel(): void {
         this._paxTasksServiceProxy

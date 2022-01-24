@@ -24,6 +24,14 @@ namespace PAX.Next.Notifications
                     permissionDependency: new SimplePermissionDependency(AppPermissions.Pages_Tenants)
                     )
                 );
+
+            //context.Manager.Add(
+            // new NotificationDefinition(
+            //     AppNotificationNames.NewTaskRegistered,
+            //     displayName: L("NewTenantRegisteredNotificationDefinition"),
+            //     permissionDependency: new SimplePermissionDependency(AppPermissions.Pages_PaxTasks)
+            //     )
+            // );
         }
 
         private static ILocalizableString L(string name)

@@ -1,4 +1,5 @@
-﻿using Abp.Application.Services.Dto;
+﻿using Abp;
+using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityHistory;
@@ -6,11 +7,15 @@ using Abp.Events.Bus.Entities;
 using Abp.Linq.Extensions;
 using Abp.Localization;
 using Abp.Localization.Sources;
+using Abp.Notifications;
 using Abp.Runtime.Session;
+using Abp.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
 using PAX.Next.Dto;
+using PAX.Next.Notifications;
 using PAX.Next.TaskManager.Dtos;
 using PAX.Next.TaskManager.Exporting;
 using System;
@@ -40,6 +45,7 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<Label> _labelRepository;
         private readonly ILabelsAppService _labelService;
         private readonly ITaskLabelsAppService _taskLabelService;
+        private readonly IAppNotifier _appNotifier;
 
 
         public PaxTasksAppService(
@@ -57,7 +63,8 @@ namespace PAX.Next.TaskManager
             IRepository<PaxTaskAttachment> paxTaskAttachmentRepository,
             IRepository<Label> labelRepository,
             ILabelsAppService labelService,
-            ITaskLabelsAppService taskLabelService
+            ITaskLabelsAppService taskLabelService,
+            IAppNotifier appNotifier
             )
         {
             _paxTaskRepository = paxTaskRepository;
@@ -74,6 +81,7 @@ namespace PAX.Next.TaskManager
             _labelRepository = labelRepository;
             _labelService = labelService;
             _taskLabelService = taskLabelService;
+            _appNotifier = appNotifier;
 
             _localizationSource = localizationManager.GetSource(NextConsts.LocalizationSourceName);
         }
@@ -106,7 +114,7 @@ namespace PAX.Next.TaskManager
                         .WhereIf(!string.IsNullOrWhiteSpace(input.TaskStatusNameFilter), e => e.TaskStatusFk != null && e.TaskStatusFk.Name == input.TaskStatusNameFilter);
 
             var pagedAndFilteredPaxTasks = filteredPaxTasks
-                .OrderBy(input.Sorting ?? "id asc")
+                .OrderBy(input.Sorting ?? "id desc")
                 .PageBy(input);
 
             var paxTasks = from o in pagedAndFilteredPaxTasks
@@ -211,13 +219,13 @@ namespace PAX.Next.TaskManager
             var paxTask = await _paxTaskRepository.FirstOrDefaultAsync(input.Id);
 
             var output = new GetPaxTaskForEditOutput { PaxTask = ObjectMapper.Map<CreateOrEditPaxTaskDto>(paxTask) };
-            
+
             //TODO : Too much unnecessary call to DB.
-            
+
             output.PaxTask.Watchers = _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value).Result.ToList();
 
 
-           output.PaxTask.Labels = _labelService.GetLabelsByTaskId(output.PaxTask.Id.Value).Result.ToList();
+            output.PaxTask.Labels = _labelService.GetLabelsByTaskId(output.PaxTask.Id.Value).Result.ToList();
 
             if (output.PaxTask.ReporterId != 0)
             {
@@ -248,20 +256,20 @@ namespace PAX.Next.TaskManager
             return output;
         }
 
-        public async Task CreateOrEdit(CreateOrEditPaxTaskDto input)
+        public async Task<NameValueDto> CreateOrEdit(CreateOrEditPaxTaskDto input)
         {
             if (input.Id == null)
             {
-                await Create(input);
+                return await Create(input);
             }
             else
             {
-                await Update(input);
+                return await Update(input);
             }
         }
 
         [AbpAuthorize(AppPermissions.Pages_PaxTasks_Create)]
-        protected virtual async Task Create(CreateOrEditPaxTaskDto input)
+        protected virtual async Task<NameValueDto> Create(CreateOrEditPaxTaskDto input)
         {
             var paxTask = ObjectMapper.Map<PaxTask>(input);
 
@@ -277,7 +285,7 @@ namespace PAX.Next.TaskManager
                 List<Task> inserTasks = new List<Task>();
                 foreach (var watcher in input.Watchers)
                 {
-                    CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.Id, PaxTaskId = paxTask.Id };
+                    CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.UserId, PaxTaskId = paxTask.Id };
                     inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
 
                     CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = paxTask.Id, FieldName = "Watchers", CreatedUser = paxTask.ReporterId, NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
@@ -287,37 +295,90 @@ namespace PAX.Next.TaskManager
                 Task.WaitAll(inserTasks.ToArray());
             }
 
-            //TODO history çalışmayacak
-            if (input.Labels != null && input.Labels.Count() > 0)
-            {
-                List<Task> inserTasks = new List<Task>();
-                foreach (var label in input.Labels)
-                {
-                    CreateOrEditLabelDto labelDto = new CreateOrEditLabelDto { Name = label.Name };
-                    inserTasks.Add(_labelService.CreateOrEdit(labelDto));
+            await UpdateLabels(paxTask.Id, input.Labels.ToList());
 
-                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = paxTask.Id, FieldName = "Labels", CreatedUser = paxTask.ReporterId, NewValue = label.Name, ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
-                    inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
-                }
 
-                Task.WaitAll(inserTasks.ToArray());
-            }
-        }
 
-        [AbpAuthorize(AppPermissions.Pages_PaxTasks_Edit)]
-        protected virtual async Task Update(CreateOrEditPaxTaskDto input)
-        {
-            var paxTask = await _paxTaskRepository.FirstOrDefaultAsync((int)input.Id);
-            ObjectMapper.Map(input, paxTask);
+            string changerUserName = _lookup_userRepository.Get(AbpSession.UserId.Value).FullName;
+
+            List<UserIdentifier> notificators = new List<UserIdentifier> { new UserIdentifier(AbpSession.TenantId, paxTask.AssigneeId.Value) };
+
+            await _appNotifier.TaskChangedAsync(changerUserName, paxTask.Id, "TaskCreatedNotification", notificators.ToArray());
 
             if (input.Watchers == null)
             {
                 input.Watchers = new List<WatcherUserLookupTableDto>();
             }
 
+            notificators = new List<UserIdentifier>();
+
+            foreach (var watcher in input.Watchers)
+            {
+                notificators.Add(new UserIdentifier(AbpSession.TenantId, watcher.UserId));
+            }
+
+            await _appNotifier.TaskChangedAsync(changerUserName, paxTask.Id, "TaskCreatedNotificationWatcher", notificators.ToArray());
+
+
+
+            return new NameValueDto("taskId", paxTask.Id.ToString());
+        }
+
+        [AbpAuthorize(AppPermissions.Pages_PaxTasks_Edit)]
+        protected virtual async Task<NameValueDto> Update(CreateOrEditPaxTaskDto input)
+        {
+            var paxTask = await _paxTaskRepository.FirstOrDefaultAsync((int)input.Id);
+            ObjectMapper.Map(input, paxTask);
+
+
+
+            string changerUserName = _lookup_userRepository.Get(AbpSession.UserId.Value).FullName;
+
+            List<UserIdentifier> notificators = new List<UserIdentifier> { new UserIdentifier(AbpSession.TenantId, paxTask.AssigneeId.Value) };
+
+            await _appNotifier.TaskChangedAsync(changerUserName, paxTask.Id, "TaskChangedNotification", notificators.ToArray());           
+
+            if (input.Watchers == null)
+            {
+                input.Watchers = new List<WatcherUserLookupTableDto>();
+            }
+
+            notificators = new List<UserIdentifier>();
+
+            foreach (var watcher in input.Watchers)
+            {
+                notificators.Add(new UserIdentifier(AbpSession.TenantId, watcher.UserId));
+            }
+
+            await _appNotifier.TaskChangedAsync(changerUserName, paxTask.Id, "TaskChangedNotificationWatcher", notificators.ToArray());
+
+
+
+
             await UpdateWatchers(paxTask.Id, input.Watchers.ToList());
             await UpdateLabels(paxTask.Id, input.Labels.ToList());
+
+            
+
+                
+            return new NameValueDto("taskId", paxTask.Id.ToString());
         }
+
+        //async Task Notify(string changerUserName,IEnumerable<WatcherUserLookupTableDto> watchers, PaxTask paxTask, string messageId)
+        //{
+        //    List<UserIdentifier> notificators = new List<UserIdentifier> { new UserIdentifier(AbpSession.TenantId, paxTask.AssigneeId.Value) };
+
+        //    if (watchers != null)
+        //    {
+        //        foreach (var watcher in watchers)
+        //        {
+        //            notificators.Add(new UserIdentifier(AbpSession.TenantId, watcher.UserId));
+        //        }
+        //    }
+        //     await _appNotifier.TaskChangedAsync(changerUserName, paxTask.Id, messageId, notificators.ToArray());
+            
+           
+        //}
 
         private async Task UpdateLabels(int taskId, List<LabelDto> updatedLabels)
         {
@@ -341,7 +402,7 @@ namespace PAX.Next.TaskManager
                 Task.WaitAll(delTasks.ToArray());
             }
 
-            var insertedLabels= updatedLabels.Where(x => existingLabels.Select(w => w.Id).Contains(x.Id) == false);
+            var insertedLabels = updatedLabels.Where(x => existingLabels.Select(w => w.Id).Contains(x.Id) == false);
 
             if (insertedLabels != null && insertedLabels.Count() > 0)
             {
@@ -349,22 +410,14 @@ namespace PAX.Next.TaskManager
                 int labelId = 0;
                 foreach (var label in insertedLabels)
                 {
-                    if (!_labelRepository.GetAll().Any(x => x.Name == label.Name))
+                    if (!_labelRepository.GetAll().Any(x => x.Name.ToLower() == label.Name.ToLower()))
                     {
-                        try
-                        {
-                            Label labelDto = new Label { Name = label.Name };
+                        Label labelDto = new Label { Name = label.Name };
 
-                            await _labelRepository.InsertAsync(labelDto);
-                            await CurrentUnitOfWork.SaveChangesAsync();
+                        await _labelRepository.InsertAsync(labelDto);
+                        await CurrentUnitOfWork.SaveChangesAsync();
 
-                            labelId = labelDto.Id;
-                        }
-                        catch (Exception ex)
-                        {
-
-                            throw;
-                        }
+                        labelId = labelDto.Id;
                     }
                     else
                     {
@@ -600,7 +653,8 @@ namespace PAX.Next.TaskManager
                 .Select(taskStatus => new PaxTaskTaskStatusLookupTableDto
                 {
                     Id = taskStatus.Id,
-                    DisplayName = taskStatus == null || taskStatus.Name == null ? "" : taskStatus.Name.ToString()
+                    DisplayName = taskStatus == null || taskStatus.Name == null ? "" : taskStatus.Name.ToString(),
+                    IconUrl = taskStatus.IconUrl
                 }).ToListAsync();
         }
 
@@ -624,7 +678,7 @@ namespace PAX.Next.TaskManager
             foreach (var result in results)
             {
 
-                HistoryDto history = new HistoryDto { Id = result.TaskHistory.Id, CreationTime = result.TaskHistory.CreatedTime, ChangeText = GetChangeText(result.TaskHistory.ChangeType, result.UserName, result.TaskHistory.OldValue, result.TaskHistory.NewValue,result.TaskHistory.FieldName,null,null,watchers,attachments) };
+                HistoryDto history = new HistoryDto { Id = result.TaskHistory.Id, CreationTime = result.TaskHistory.CreatedTime, ChangeText = GetChangeText(result.TaskHistory.ChangeType, result.UserName, result.TaskHistory.OldValue, result.TaskHistory.NewValue, result.TaskHistory.FieldName, null, null, watchers, attachments) };
                 histories.Add(history);
             }
 
@@ -645,7 +699,7 @@ namespace PAX.Next.TaskManager
 
             ids.Add(taskId.ToString());
 
-            List<string> trackedFieldNames = new List<string> { "UserId", "TaskType", "SeverityId", "TaskStatusId", "Header","Details", "TaskTypePeriod", "PeriodInterval" };
+            List<string> trackedFieldNames = new List<string> { "UserId", "TaskType", "SeverityId", "TaskStatusId", "Header", "Details", "TaskTypePeriod", "PeriodInterval" };
 
             string text = _localizationSource.GetString("PaxTaskHistoryText");
 
