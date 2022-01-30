@@ -51,5 +51,7 @@ namespace PAX.Next.TaskManager
         [ForeignKey("TaskStatusId")]
         public TaskStatus TaskStatusFk { get; set; }
 
+        public virtual DateTime DeadLineDate { get; set; }
+
     }
 }

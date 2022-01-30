@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PAX.Next.EntityFrameworkCore;
 
 namespace PAX.Next.Migrations
 {
     [DbContext(typeof(NextDbContext))]
-    partial class NextDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220130135607_taskDeadline")]
+    partial class taskDeadline
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2202,28 +2204,6 @@ namespace PAX.Next.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("PAX.Next.TaskManager.TaskDependancyRelation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("DependOnTaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaxTaskId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DependOnTaskId");
-
-                    b.HasIndex("PaxTaskId");
-
-                    b.ToTable("TaskDependancyRelations");
-                });
-
             modelBuilder.Entity("PAX.Next.TaskManager.TaskHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -2701,25 +2681,6 @@ namespace PAX.Next.Migrations
                         .HasForeignKey("PaxTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("PaxTaskFk");
-                });
-
-            modelBuilder.Entity("PAX.Next.TaskManager.TaskDependancyRelation", b =>
-                {
-                    b.HasOne("PAX.Next.TaskManager.PaxTask", "DependOnTaskFk")
-                        .WithMany()
-                        .HasForeignKey("DependOnTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PAX.Next.TaskManager.PaxTask", "PaxTaskFk")
-                        .WithMany()
-                        .HasForeignKey("PaxTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DependOnTaskFk");
 
                     b.Navigation("PaxTaskFk");
                 });

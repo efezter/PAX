@@ -31,6 +31,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-body">
+                                    
                                     <div  class="form-group m-form__group">
                                         <label *ngIf="reporterName" for="UserName">{{ l('Reporter') }} : {{reporterName}}</label>
                                     </div>
@@ -71,8 +72,32 @@
                                     />
 
                                     <div class="form-group row">
+                                        <label for="MultiSelectDeps" class="col-lg-12">{{ l('DepandantTasks') }}</label>
+                                        <div class="col-12">
+                                            <p-autoComplete [(ngModel)]="depentantTasks"
+                                                            [suggestions]="filteredDependants"
+                                                            (completeMethod)="filterDependantTasks($event)"
+                                                            (onSelect)="onSelect($event)"
+                                                            panelStyleClass="tag-button"
+                                                            field="dependOnHeader"
+                                                            [minLength]="2"
+                                                            name="MultiSelectDeps"
+                                                            id="MultiSelectDeps"
+                                                            [multiple]="true"
+                                                            inputStyleClass="form-control"
+                                                            styleClass="width-percent-100">
+                                                            <ng-template let-value pTemplate="selectedItem">
+                                                                <a target="_blank" style="color:white" href="{{this.clientUrl + '/app/main/taskManager/paxTasks/details?taskId=' + value.dependOnTaskId }}">{{value.dependOnHeader}}
+                                                            </a> 
+                                                            </ng-template> 
+                                            </p-autoComplete>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
                                         <label for="MultiSelectLabels" class="col-lg-12">{{ l('Labels') }}</label>
                                         <div class="col-12">
+
                                             <p-autoComplete [(ngModel)]="labels"
                                                             [suggestions]="filteredLabels"
                                                             (completeMethod)="getLabels($event)"
@@ -85,6 +110,12 @@
                                                             [multiple]="true"
                                                             inputStyleClass="form-control"
                                                             styleClass="width-percent-100">
+
+                                                            <!-- <ng-template let-value pTemplate="selectedItem">
+                                                                <a href="https://www.facebook.com">
+                                                                <span style="font-size:18px">>{{value.name}}<</span>
+                                                            </a> 
+                                                            </ng-template> -->
                                             </p-autoComplete>
                                         </div>
                                     </div>
@@ -117,10 +148,18 @@
                                             [(ngModel)]="paxTask.taskType"
                                         >
                                             <option value="1">{{ l('Normal') }}</option>
-                        
+                                            <option value="3">{{ l('DeadLine') }}</option>
                                             <option value="2">{{"Repeating" | localize}}</option>
                                         </select>
                                         <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
+                                    </div>
+
+                                    <div *ngIf="paxTask.taskType == 3" class="form-group">
+
+                                        <label for="PaxTask_DeadLineDate">{{ l('DeadLineDate') }}</label>
+
+                                        <p-calendar styleClass="width-percent-100" dateFormat="dd.mm.yy" [minDate]="minDateValue" [(ngModel)]="deadLineDate" name="deadLineDate" showTime="true" [hourFormat]="24"></p-calendar>
+                                     
                                     </div>
                         
                                     <div *ngIf="paxTask.taskType == 2" class="form-group">
@@ -151,6 +190,8 @@
                                         />
                                         <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
                                     </div>
+
+                                    
                         
                                     <div class="form-group m-form__group">
                                         <label for="SeverityName">{{ l('Severity') }}</label>
@@ -165,7 +206,7 @@
                                     <div class="form-group m-form__group">
                                         <label for="TaskStatusName">{{ l('TaskStatus') }}</label>
                                         <p-dropdown [options]="allTaskStatuss" [(ngModel)]="selectedStatus" styleClass="width-percent-100" name="selectedStatus" optionLabel="displayName">
-                                            <ng-template pTemplate="selectedItem">
+                                            <ng-template pTemplate="selectedItem">                                           
                                                 <div class="row h-100 p-0" *ngIf="selectedStatus">
                                                         <div class="col-12">
                                                             <img src="{{ serverUrl + selectedStatus.iconUrl }}" style="width: 20px; margin-right: 10px;" [class]="'flag flag-' + selectedStatus.displayName" />                                                       
@@ -175,11 +216,11 @@
                                             </ng-template>
                                             <ng-template let-taskStatus pTemplate="item">
                                                 <div class="row">
-                                                    <div class="col-12">
-                                                        <img src="{{ serverUrl + taskStatus.iconUrl }}" style="width: 30px;" [class]="'flag flag-' + taskStatus.displayName" />
-                                                        {{taskStatus.displayName}}
+                                                        <div class="col-12">
+                                                            <img src="{{ serverUrl + taskStatus.iconUrl }}" style="width: 30px;" [class]="'flag flag-' + taskStatus.displayName" />
+                                                            {{taskStatus.displayName}}
+                                                    </div>
                                                 </div>
-                                            </div>
                                             </ng-template>
                                         </p-dropdown>
                                         <!-- <select

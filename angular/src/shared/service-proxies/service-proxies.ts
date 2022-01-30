@@ -8479,6 +8479,74 @@ export class PaxTasksServiceProxy {
     }
 
     /**
+     * @param filter (optional) 
+     * @param taskId (optional) 
+     * @return Success
+     */
+    getTasksForDepandancyDrop(filter: string | undefined, taskId: number | undefined): Observable<TaskDependancyRelationDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetTasksForDepandancyDrop?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "filter=" + encodeURIComponent("" + filter) + "&";
+        if (taskId === null)
+            throw new Error("The parameter 'taskId' cannot be null.");
+        else if (taskId !== undefined)
+            url_ += "taskId=" + encodeURIComponent("" + taskId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTasksForDepandancyDrop(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTasksForDepandancyDrop(<any>response_);
+                } catch (e) {
+                    return <Observable<TaskDependancyRelationDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TaskDependancyRelationDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTasksForDepandancyDrop(response: HttpResponseBase): Observable<TaskDependancyRelationDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TaskDependancyRelationDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TaskDependancyRelationDto[]>(<any>null);
+    }
+
+    /**
      * @param body (optional) 
      * @return Success
      */
@@ -8875,6 +8943,7 @@ export class PaxTasksServiceProxy {
         }); 
         return promise; 
       }
+	  
 
     /**
      * @param filter (optional) 
@@ -12310,6 +12379,441 @@ export class TagsServiceProxy {
             }));
         }
         return _observableOf<void>(<any>null);
+    }
+}
+
+@Injectable()
+export class TaskDependancyRelationsServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param filter (optional) 
+     * @param taskIdFilter (optional) 
+     * @param paxTaskHeaderFilter (optional) 
+     * @param paxTaskHeader2Filter (optional) 
+     * @param sorting (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
+     * @return Success
+     */
+    getAll(filter: string | undefined, taskIdFilter: number | undefined, paxTaskHeaderFilter: string | undefined, paxTaskHeader2Filter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetTaskDependancyRelationForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/TaskDependancyRelations/GetAll?";
+        if (filter === null)
+            throw new Error("The parameter 'filter' cannot be null.");
+        else if (filter !== undefined)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        if (taskIdFilter === null)
+            throw new Error("The parameter 'taskIdFilter' cannot be null.");
+        else if (taskIdFilter !== undefined)
+            url_ += "TaskIdFilter=" + encodeURIComponent("" + taskIdFilter) + "&";
+        if (paxTaskHeaderFilter === null)
+            throw new Error("The parameter 'paxTaskHeaderFilter' cannot be null.");
+        else if (paxTaskHeaderFilter !== undefined)
+            url_ += "PaxTaskHeaderFilter=" + encodeURIComponent("" + paxTaskHeaderFilter) + "&";
+        if (paxTaskHeader2Filter === null)
+            throw new Error("The parameter 'paxTaskHeader2Filter' cannot be null.");
+        else if (paxTaskHeader2Filter !== undefined)
+            url_ += "PaxTaskHeader2Filter=" + encodeURIComponent("" + paxTaskHeader2Filter) + "&";
+        if (sorting === null)
+            throw new Error("The parameter 'sorting' cannot be null.");
+        else if (sorting !== undefined)
+            url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<PagedResultDtoOfGetTaskDependancyRelationForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PagedResultDtoOfGetTaskDependancyRelationForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<PagedResultDtoOfGetTaskDependancyRelationForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultDtoOfGetTaskDependancyRelationForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PagedResultDtoOfGetTaskDependancyRelationForViewDto>(<any>null);
+    }
+
+    /**
+     * @param taskId (optional) 
+     * @return Success
+     */
+    getTasksDependecies(taskId: number | undefined): Observable<TaskDependancyRelationDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/TaskDependancyRelations/GetTasksDependecies?";
+        if (taskId === null)
+            throw new Error("The parameter 'taskId' cannot be null.");
+        else if (taskId !== undefined)
+            url_ += "taskId=" + encodeURIComponent("" + taskId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTasksDependecies(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTasksDependecies(<any>response_);
+                } catch (e) {
+                    return <Observable<TaskDependancyRelationDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TaskDependancyRelationDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTasksDependecies(response: HttpResponseBase): Observable<TaskDependancyRelationDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TaskDependancyRelationDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TaskDependancyRelationDto[]>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getTaskDependancyRelationForView(id: number | undefined): Observable<GetTaskDependancyRelationForViewDto> {
+        let url_ = this.baseUrl + "/api/services/app/TaskDependancyRelations/GetTaskDependancyRelationForView?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTaskDependancyRelationForView(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTaskDependancyRelationForView(<any>response_);
+                } catch (e) {
+                    return <Observable<GetTaskDependancyRelationForViewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetTaskDependancyRelationForViewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTaskDependancyRelationForView(response: HttpResponseBase): Observable<GetTaskDependancyRelationForViewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTaskDependancyRelationForViewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetTaskDependancyRelationForViewDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getTaskDependancyRelationForEdit(id: number | undefined): Observable<GetTaskDependancyRelationForEditOutput> {
+        let url_ = this.baseUrl + "/api/services/app/TaskDependancyRelations/GetTaskDependancyRelationForEdit?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTaskDependancyRelationForEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTaskDependancyRelationForEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<GetTaskDependancyRelationForEditOutput>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetTaskDependancyRelationForEditOutput>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTaskDependancyRelationForEdit(response: HttpResponseBase): Observable<GetTaskDependancyRelationForEditOutput> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTaskDependancyRelationForEditOutput.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetTaskDependancyRelationForEditOutput>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createOrEdit(body: CreateOrEditTaskDependancyRelationDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/TaskDependancyRelations/CreateOrEdit";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateOrEdit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateOrEdit(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateOrEdit(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/TaskDependancyRelations/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllPaxTaskForTableDropdown(): Observable<TaskDependancyRelationPaxTaskLookupTableDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/TaskDependancyRelations/GetAllPaxTaskForTableDropdown";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllPaxTaskForTableDropdown(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllPaxTaskForTableDropdown(<any>response_);
+                } catch (e) {
+                    return <Observable<TaskDependancyRelationPaxTaskLookupTableDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TaskDependancyRelationPaxTaskLookupTableDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAllPaxTaskForTableDropdown(response: HttpResponseBase): Observable<TaskDependancyRelationPaxTaskLookupTableDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TaskDependancyRelationPaxTaskLookupTableDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TaskDependancyRelationPaxTaskLookupTableDto[]>(<any>null);
     }
 }
 
@@ -20033,7 +20537,9 @@ export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
     severityId!: number | undefined;
     taskStatusId!: number;
     watchers!: WatcherUserLookupTableDto[] | undefined;
+    dependentTasks!: TaskDependancyRelationDto[] | undefined;
     labels!: LabelDto[] | undefined;
+    deadLineDate!: DateTime | undefined;
     id!: number | undefined;
 
     constructor(data?: ICreateOrEditPaxTaskDto) {
@@ -20062,11 +20568,17 @@ export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
                 for (let item of _data["watchers"])
                     this.watchers!.push(WatcherUserLookupTableDto.fromJS(item));
             }
+            if (Array.isArray(_data["dependentTasks"])) {
+                this.dependentTasks = [] as any;
+                for (let item of _data["dependentTasks"])
+                    this.dependentTasks!.push(TaskDependancyRelationDto.fromJS(item));
+            }
             if (Array.isArray(_data["labels"])) {
                 this.labels = [] as any;
                 for (let item of _data["labels"])
                     this.labels!.push(LabelDto.fromJS(item));
             }
+            this.deadLineDate = _data["deadLineDate"] ? DateTime.fromISO(_data["deadLineDate"].toString()) : <any>undefined;
             this.id = _data["id"];
         }
     }
@@ -20095,11 +20607,17 @@ export class CreateOrEditPaxTaskDto implements ICreateOrEditPaxTaskDto {
             for (let item of this.watchers)
                 data["watchers"].push(item.toJSON());
         }
+        if (Array.isArray(this.dependentTasks)) {
+            data["dependentTasks"] = [];
+            for (let item of this.dependentTasks)
+                data["dependentTasks"].push(item.toJSON());
+        }
         if (Array.isArray(this.labels)) {
             data["labels"] = [];
             for (let item of this.labels)
                 data["labels"].push(item.toJSON());
         }
+        data["deadLineDate"] = this.deadLineDate ? this.deadLineDate.toString() : <any>undefined;
         data["id"] = this.id;
         return data; 
     }
@@ -20117,7 +20635,9 @@ export interface ICreateOrEditPaxTaskDto {
     severityId: number | undefined;
     taskStatusId: number;
     watchers: WatcherUserLookupTableDto[] | undefined;
+    dependentTasks: TaskDependancyRelationDto[] | undefined;
     labels: LabelDto[] | undefined;
+    deadLineDate: DateTime | undefined;
     id: number | undefined;
 }
 
@@ -20198,6 +20718,50 @@ export class CreateOrEditTagDto implements ICreateOrEditTagDto {
 }
 
 export interface ICreateOrEditTagDto {
+    id: number | undefined;
+}
+
+export class CreateOrEditTaskDependancyRelationDto implements ICreateOrEditTaskDependancyRelationDto {
+    paxTaskId!: number;
+    dependOnTaskId!: number;
+    id!: number | undefined;
+
+    constructor(data?: ICreateOrEditTaskDependancyRelationDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paxTaskId = _data["paxTaskId"];
+            this.dependOnTaskId = _data["dependOnTaskId"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CreateOrEditTaskDependancyRelationDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateOrEditTaskDependancyRelationDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paxTaskId"] = this.paxTaskId;
+        data["dependOnTaskId"] = this.dependOnTaskId;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface ICreateOrEditTaskDependancyRelationDto {
+    paxTaskId: number;
+    dependOnTaskId: number;
     id: number | undefined;
 }
 
@@ -24978,6 +25542,94 @@ export interface IGetTagForViewDto {
     tag: TagDto;
 }
 
+export class GetTaskDependancyRelationForEditOutput implements IGetTaskDependancyRelationForEditOutput {
+    taskDependancyRelation!: CreateOrEditTaskDependancyRelationDto;
+    paxTaskHeader!: string | undefined;
+    paxTaskHeader2!: string | undefined;
+
+    constructor(data?: IGetTaskDependancyRelationForEditOutput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.taskDependancyRelation = _data["taskDependancyRelation"] ? CreateOrEditTaskDependancyRelationDto.fromJS(_data["taskDependancyRelation"]) : <any>undefined;
+            this.paxTaskHeader = _data["paxTaskHeader"];
+            this.paxTaskHeader2 = _data["paxTaskHeader2"];
+        }
+    }
+
+    static fromJS(data: any): GetTaskDependancyRelationForEditOutput {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTaskDependancyRelationForEditOutput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["taskDependancyRelation"] = this.taskDependancyRelation ? this.taskDependancyRelation.toJSON() : <any>undefined;
+        data["paxTaskHeader"] = this.paxTaskHeader;
+        data["paxTaskHeader2"] = this.paxTaskHeader2;
+        return data; 
+    }
+}
+
+export interface IGetTaskDependancyRelationForEditOutput {
+    taskDependancyRelation: CreateOrEditTaskDependancyRelationDto;
+    paxTaskHeader: string | undefined;
+    paxTaskHeader2: string | undefined;
+}
+
+export class GetTaskDependancyRelationForViewDto implements IGetTaskDependancyRelationForViewDto {
+    taskDependancyRelation!: TaskDependancyRelationDto;
+    paxTaskHeader!: string | undefined;
+    paxTaskHeader2!: string | undefined;
+
+    constructor(data?: IGetTaskDependancyRelationForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.taskDependancyRelation = _data["taskDependancyRelation"] ? TaskDependancyRelationDto.fromJS(_data["taskDependancyRelation"]) : <any>undefined;
+            this.paxTaskHeader = _data["paxTaskHeader"];
+            this.paxTaskHeader2 = _data["paxTaskHeader2"];
+        }
+    }
+
+    static fromJS(data: any): GetTaskDependancyRelationForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTaskDependancyRelationForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["taskDependancyRelation"] = this.taskDependancyRelation ? this.taskDependancyRelation.toJSON() : <any>undefined;
+        data["paxTaskHeader"] = this.paxTaskHeader;
+        data["paxTaskHeader2"] = this.paxTaskHeader2;
+        return data; 
+    }
+}
+
+export interface IGetTaskDependancyRelationForViewDto {
+    taskDependancyRelation: TaskDependancyRelationDto;
+    paxTaskHeader: string | undefined;
+    paxTaskHeader2: string | undefined;
+}
+
 export class GetTaskHistoryForEditOutput implements IGetTaskHistoryForEditOutput {
     taskHistory!: CreateOrEditTaskHistoryDto;
     paxTaskHeader!: string | undefined;
@@ -28917,6 +29569,54 @@ export interface IPagedResultDtoOfGetTagForViewDto {
     items: GetTagForViewDto[] | undefined;
 }
 
+export class PagedResultDtoOfGetTaskDependancyRelationForViewDto implements IPagedResultDtoOfGetTaskDependancyRelationForViewDto {
+    totalCount!: number;
+    items!: GetTaskDependancyRelationForViewDto[] | undefined;
+
+    constructor(data?: IPagedResultDtoOfGetTaskDependancyRelationForViewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetTaskDependancyRelationForViewDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultDtoOfGetTaskDependancyRelationForViewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultDtoOfGetTaskDependancyRelationForViewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IPagedResultDtoOfGetTaskDependancyRelationForViewDto {
+    totalCount: number;
+    items: GetTaskDependancyRelationForViewDto[] | undefined;
+}
+
 export class PagedResultDtoOfGetTaskHistoryForViewDto implements IPagedResultDtoOfGetTaskHistoryForViewDto {
     totalCount!: number;
     items!: GetTaskHistoryForViewDto[] | undefined;
@@ -32062,6 +32762,94 @@ export interface ITagDto {
     id: number;
 }
 
+export class TaskDependancyRelationDto implements ITaskDependancyRelationDto {
+    paxTaskId!: number;
+    dependOnTaskId!: number;
+    dependOnHeader!: string | undefined;
+    id!: number;
+
+    constructor(data?: ITaskDependancyRelationDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.paxTaskId = _data["paxTaskId"];
+            this.dependOnTaskId = _data["dependOnTaskId"];
+            this.dependOnHeader = _data["dependOnHeader"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): TaskDependancyRelationDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TaskDependancyRelationDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["paxTaskId"] = this.paxTaskId;
+        data["dependOnTaskId"] = this.dependOnTaskId;
+        data["dependOnHeader"] = this.dependOnHeader;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface ITaskDependancyRelationDto {
+    paxTaskId: number;
+    dependOnTaskId: number;
+    dependOnHeader: string | undefined;
+    id: number;
+}
+
+export class TaskDependancyRelationPaxTaskLookupTableDto implements ITaskDependancyRelationPaxTaskLookupTableDto {
+    id!: number;
+    displayName!: string | undefined;
+
+    constructor(data?: ITaskDependancyRelationPaxTaskLookupTableDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+        }
+    }
+
+    static fromJS(data: any): TaskDependancyRelationPaxTaskLookupTableDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TaskDependancyRelationPaxTaskLookupTableDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        return data; 
+    }
+}
+
+export interface ITaskDependancyRelationPaxTaskLookupTableDto {
+    id: number;
+    displayName: string | undefined;
+}
+
 export class TaskHistoryDto implements ITaskHistoryDto {
     oldValue!: string | undefined;
     newValue!: string | undefined;
@@ -32377,6 +33165,7 @@ export interface ITaskStatusDto {
 export enum TaskType {
     Normal = 1,
     Repating = 2,
+    DeadLine = 3
 }
 
 export enum TaskTypePeriod {

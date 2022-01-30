@@ -7,10 +7,7 @@ using Abp.Events.Bus.Entities;
 using Abp.Linq.Extensions;
 using Abp.Localization;
 using Abp.Localization.Sources;
-using Abp.Notifications;
 using Abp.Runtime.Session;
-using Abp.Web.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
@@ -32,6 +29,7 @@ namespace PAX.Next.TaskManager
     {
         private readonly IRepository<PaxTask> _paxTaskRepository;
         private readonly IWatchersAppService _watcherRepository;
+        private readonly ITaskDependancyRelationsAppService _taskDependancyRelationsAppService;
         private readonly ITaskHistoriesAppService _taskHistoriesAppService;
         private readonly IPaxTasksExcelExporter _paxTasksExcelExporter;
         private readonly IRepository<User, long> _lookup_userRepository;
@@ -64,7 +62,8 @@ namespace PAX.Next.TaskManager
             IRepository<Label> labelRepository,
             ILabelsAppService labelService,
             ITaskLabelsAppService taskLabelService,
-            IAppNotifier appNotifier
+            IAppNotifier appNotifier,
+            ITaskDependancyRelationsAppService taskDependancyRelationsAppService
             )
         {
             _paxTaskRepository = paxTaskRepository;
@@ -82,6 +81,7 @@ namespace PAX.Next.TaskManager
             _labelService = labelService;
             _taskLabelService = taskLabelService;
             _appNotifier = appNotifier;
+            _taskDependancyRelationsAppService = taskDependancyRelationsAppService;
 
             _localizationSource = localizationManager.GetSource(NextConsts.LocalizationSourceName);
         }
@@ -101,7 +101,7 @@ namespace PAX.Next.TaskManager
                         .Include(e => e.SeverityFk)
                         .Include(e => e.TaskStatusFk)
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Header.Contains(input.Filter) || e.Details.Contains(input.Filter))
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.HeaderFilter), e => e.Header == input.HeaderFilter)
+                        .WhereIf(!string.IsNullOrWhiteSpace(input.HeaderFilter), e => e.Header.Contains(input.HeaderFilter))
                         .WhereIf(input.MinCreatedDateFilter != null, e => e.CreatedDate >= input.MinCreatedDateFilter)
                         .WhereIf(input.MaxCreatedDateFilter != null, e => e.CreatedDate <= input.MaxCreatedDateFilter)
                         .WhereIf(input.TaskTypeFilter.HasValue && input.TaskTypeFilter > -1, e => e.TaskType == taskTypeFilter)
@@ -224,6 +224,7 @@ namespace PAX.Next.TaskManager
 
             output.PaxTask.Watchers = _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value).Result.ToList();
 
+            output.PaxTask.DependentTasks = _taskDependancyRelationsAppService.GetTasksDependecies(output.PaxTask.Id.Value).Result.ToList();
 
             output.PaxTask.Labels = _labelService.GetLabelsByTaskId(output.PaxTask.Id.Value).Result.ToList();
 
@@ -251,9 +252,22 @@ namespace PAX.Next.TaskManager
                 output.TaskStatusName = _lookupTaskStatus?.Name?.ToString();
             }
 
-
-
             return output;
+        }
+
+        public async Task<List<TaskDependancyRelationDto>> GetTasksForDepandancyDrop(string filter,int taskId)
+        {
+            var filteredPaxTasks = _paxTaskRepository.GetAll()
+                       .WhereIf(!string.IsNullOrWhiteSpace(filter), e => false || e.Header.Contains(filter))
+                       .WhereIf(taskId != 0, e => false || e.Id == taskId);
+
+            return (from o in filteredPaxTasks
+                   select new TaskDependancyRelationDto
+                   {
+                       DependOnHeader = o.Header,
+                       DependOnTaskId = o.Id,
+
+                   }).ToList();
         }
 
         public async Task<NameValueDto> CreateOrEdit(CreateOrEditPaxTaskDto input)
@@ -297,6 +311,7 @@ namespace PAX.Next.TaskManager
 
             await UpdateLabels(paxTask.Id, input.Labels.ToList());
 
+            await UpdateDependants(paxTask.Id, input.DependentTasks.ToList());
 
 
             string changerUserName = _lookup_userRepository.Get(AbpSession.UserId.Value).FullName;
@@ -357,10 +372,10 @@ namespace PAX.Next.TaskManager
 
             await UpdateWatchers(paxTask.Id, input.Watchers.ToList());
             await UpdateLabels(paxTask.Id, input.Labels.ToList());
+            await UpdateDependants(paxTask.Id, input.DependentTasks.ToList());
 
-            
 
-                
+
             return new NameValueDto("taskId", paxTask.Id.ToString());
         }
 
@@ -428,6 +443,47 @@ namespace PAX.Next.TaskManager
                     inserTasks.Add(_taskLabelService.CreateOrEdit(taskLabelDto));
 
                     CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Labels", NewValue = label.Name, ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
+                    inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
+                }
+
+                Task.WaitAll(inserTasks.ToArray());
+            }
+        }
+
+        private async Task UpdateDependants(int taskId, List<TaskDependancyRelationDto> updatedDeps)
+        {
+            var existingDeps = _taskDependancyRelationsAppService.GetTasksDependecies(taskId).Result.ToList();
+
+            var deletedDeps = existingDeps.Where(x => updatedDeps.Select(w => w.DependOnTaskId).Contains(x.DependOnTaskId) == false).ToList();
+
+            var currentUserId = AbpSession.GetUserId();
+
+            if (deletedDeps != null && deletedDeps.Count() > 0)
+            {
+                List<Task> delTasks = new List<Task>();
+                foreach (var dep in deletedDeps)
+                {
+                    delTasks.Add(_taskDependancyRelationsAppService.Delete(dep.Id));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Dependencies", NewValue = dep.DependOnHeader, ChangeType = EntityChangeType.Deleted, CreatedDate = DateTime.Now };
+                    delTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
+                }
+
+                Task.WaitAll(delTasks.ToArray());
+            }
+
+            var insertedDeps = updatedDeps.Where(x => existingDeps.Select(w => w.DependOnTaskId).Contains(x.DependOnTaskId) == false);
+
+            if (insertedDeps != null && insertedDeps.Count() > 0)
+            {
+                List<Task> inserTasks = new List<Task>();
+                int labelId = 0;
+                foreach (var dep in insertedDeps)
+                {
+                    CreateOrEditTaskDependancyRelationDto taskDepDto = new CreateOrEditTaskDependancyRelationDto { DependOnTaskId = dep.DependOnTaskId, PaxTaskId = taskId };
+                    inserTasks.Add(_taskDependancyRelationsAppService.CreateOrEdit(taskDepDto));
+
+                    CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Dependencies", NewValue = dep.DependOnHeader, ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
                     inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
                 }
 
@@ -699,7 +755,7 @@ namespace PAX.Next.TaskManager
 
             ids.Add(taskId.ToString());
 
-            List<string> trackedFieldNames = new List<string> { "UserId", "TaskType", "SeverityId", "TaskStatusId", "Header", "Details", "TaskTypePeriod", "PeriodInterval" };
+            List<string> trackedFieldNames = new List<string> { "UserId", "TaskType", "SeverityId", "TaskStatusId", "Header", "Details", "TaskTypePeriod", "PeriodInterval", "DeadLineDate" };
 
             string text = _localizationSource.GetString("PaxTaskHistoryText");
 
@@ -762,6 +818,17 @@ namespace PAX.Next.TaskManager
                         return _localizationSource.GetString("PaxTaskHistoryWatcherDel").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + targetUser + "</b>");
                     }
                     break;
+                case "Dependencies":
+
+                    if (changeType == EntityChangeType.Created)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryDependencyAdd").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + newValue + "</b>");
+                    }
+                    else if (changeType == EntityChangeType.Deleted)
+                    {
+                        return _localizationSource.GetString("PaxTaskHistoryDependencyDel").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + newValue + "</b>");
+                    }
+                    break;
                 case "Comments":
                     if (changeType == EntityChangeType.Created)
                     {
@@ -787,12 +854,31 @@ namespace PAX.Next.TaskManager
                         return _localizationSource.GetString("PaxTaskHistoryAttchDel").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{2}", "<b>" + fileName + "</b>");
                     }
                     break;
+                case "DeadLineDate":
+                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString(fieldName) + "</b>").Replace("{2}", "<b>" + DateTime.Parse(newValue.Replace("\"", "")).ToShortDateString() + "</b>");
                 case "SeverityId":
                     return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString("SeverityName") + "</b>").Replace("{2}", "<b>" + severities.Where(x => x.Id.ToString() == newValue).Select(x => x.Name).FirstOrDefault() + "</b>");
                 case "TaskStatusId":
                     return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString("TaskStatusName") + "</b>").Replace("{2}", "<b>" + taskStatuses.Where(x => x.Id.ToString() == newValue).Select(x => x.Name).FirstOrDefault() + "</b>");
                 case "TaskType":
-                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString(fieldName) + "</b>").Replace("{2}", "<b>" + newValue == "1" ? "<b>Normal</b>" : "<b>" + _localizationSource.GetString("Repeating") + "</b>");
+
+                    var val = string.Empty;
+
+                    switch (newValue)
+                    {
+                        case "1":
+                            val = "Normal";
+                            break;
+                        case "2":
+                            val = _localizationSource.GetString("Repeating");
+                            break;
+                        case "3":
+                            val = _localizationSource.GetString("DeadLine");
+                            break;
+                    }
+
+                    return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString(fieldName) + "</b>").Replace("{2}", "<b>" + val + "</b>");
+
                 case "TaskTypePeriod":
                     return _localizationSource.GetString("PaxTaskHistoryText").Replace("{0}", "<b>" + userFullName + "</b>").Replace("{1}", "<b>" + _localizationSource.GetString(fieldName) + "</b>").Replace("{2}", "<b>" + newValue == "1" ? "<b>" + _localizationSource.GetString("Weekly") + "</b>" : "<b>" + _localizationSource.GetString("Monthly") + "</b>");
                 default:

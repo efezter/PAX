@@ -5,12 +5,13 @@ import { PaxTaskDetailsRoutingModule } from './create-or-edit-paxTask-routing.mo
 import { CreateOrEditPaxTaskModalComponent } from './create-or-edit-paxTask.component';
 import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-table-modal.component';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import {CalendarModule} from 'primeng/calendar';
 
 @NgModule({
     declarations: [
         CreateOrEditPaxTaskModalComponent,
         PaxTaskUserLookupTableModalComponent
     ],
-    imports: [AppSharedModule, PaxTaskDetailsRoutingModule, AdminSharedModule,CKEditorModule],
+    imports: [AppSharedModule, PaxTaskDetailsRoutingModule, AdminSharedModule, CKEditorModule, CalendarModule],
 })
 export class PaxTaskDetailsModule {}

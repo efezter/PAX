@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PAX.Next.EntityFrameworkCore;
 
 namespace PAX.Next.Migrations
 {
     [DbContext(typeof(NextDbContext))]
-    partial class NextDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220130201106_nullabledeadline")]
+    partial class nullabledeadline
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2077,7 +2079,7 @@ namespace PAX.Next.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeadLineDate")
+                    b.Property<DateTime?>("DeadLineDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Details")

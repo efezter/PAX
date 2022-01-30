@@ -6,6 +6,11 @@
     /// </summary>
     public static class AppPermissions
     {
+        public const string Pages_TaskDependancyRelations = "Pages.TaskDependancyRelations";
+        public const string Pages_TaskDependancyRelations_Create = "Pages.TaskDependancyRelations.Create";
+        public const string Pages_TaskDependancyRelations_Edit = "Pages.TaskDependancyRelations.Edit";
+        public const string Pages_TaskDependancyRelations_Delete = "Pages.TaskDependancyRelations.Delete";
+
         public const string Pages_TaskLabels = "Pages.TaskLabels";
         public const string Pages_TaskLabels_Create = "Pages.TaskLabels.Create";
         public const string Pages_TaskLabels_Edit = "Pages.TaskLabels.Edit";

@@ -28,5 +28,7 @@ namespace PAX.Next.TaskManager
 
         Task<List<PaxTaskTaskStatusLookupTableDto>> GetAllTaskStatusForTableDropdown();
 
+        Task<List<TaskDependancyRelationDto>> GetTasksForDepandancyDrop(string filter, int taskId);
+
     }
 }

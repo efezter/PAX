@@ -9,7 +9,8 @@ namespace PAX.Next.TaskManager.Utils
         public enum TaskType
         {
             Normal = 1,
-            Repating = 2
+            Repating = 2,
+            DeadLine = 3
         }
 
         public enum TaskTypePeriod

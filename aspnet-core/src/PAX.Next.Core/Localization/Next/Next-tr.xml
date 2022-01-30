@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="tr">
   <texts>
+    <text name="DeadLine">Bitiş süreli</text>
+    <text name="DeadLineDate">Bitiş Tarihi</text>
+    
     <text name="TaskCreatedNotification">{reporterName} tarafından, sizin için yeni bir görev oluşturuldu.</text>
     <text name="TaskChangedNotification">{reporterName} size atanmış bir görev üzerinde değişiklik yaptı.</text>
 
     <text name="TaskCreatedNotificationWatcher">{reporterName} tarafından oluşturulan bir göreve izleyici olarak eklendiniz.</text>
     <text name="TaskChangedNotificationWatcher">{reporterName} izleyici olduğunuz vir görev üzerinde değişiklik yaptı.</text>
+
+    <text name="PaxTaskHistoryDependencyAdd">{0} tarafından {2} bağlantılı görevi eklendi.</text>
+    <text name="PaxTaskHistoryDependencyDel">{0} tarafından {2} bağlantılı görevi silindi.</text>
     
     <text name="PaxTaskHistoryText">{0} tarafından {1} {2} olarak değiştirildi.</text>
     <text name="PaxTaskHistoryWatcherAdd">{0} tarafından {2} izleyicisi eklendi.</text>
