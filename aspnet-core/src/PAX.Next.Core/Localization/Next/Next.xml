@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
-  <texts>    <text name="DeadLine">Deadline</text>    <text name="DeadLineDate">Deadline date</text>        <text name="TaskDependancyRelation">Task dependancy relation</text>
+  <texts>
+    <text name="DepandantTasks">Depandant tasks</text>        <text name="DeadLine">Deadline</text>    <text name="DeadLineDate">Deadline date</text>        <text name="TaskDependancyRelation">Task dependancy relation</text>
     <text name="CreateNewTaskDependancyRelation">Create new task dependancy relation</text>
     <text name="EditTaskDependancyRelation">Edit task dependancy relation</text>
     <text name="DeleteTaskDependancyRelation">Delete task dependancy relation</text>
@@ -300,10 +301,14 @@
     <text name="Apply">Apply</text>
     <text name="CustomRange">Custom range</text>
     <text name="DashboardNoteForMpaVersion">
-      <![CDATA[      See Demo for Multi-Page Application version with <strong>ASP.NET MVC</strong> and <strong>jQuery</strong>.      ]]>
+      <![CDATA[
+      See Demo for Multi-Page Application version with <strong>ASP.NET MVC</strong> and <strong>jQuery</strong>.
+      ]]>
     </text>
     <text name="DashboardNoteForSpaVersion">
-      <![CDATA[      Notice: There is also a <strong>Single-Page Application</strong> version built using ASP.NET MVC and <strong>AngularJs</strong>.      ]]>
+      <![CDATA[
+      Notice: There is also a <strong>Single-Page Application</strong> version built using ASP.NET MVC and <strong>AngularJs</strong>.
+      ]]>
     </text>
     <text name="SeeDemo">See demo</text>
     <text name="Edition">Edition</text>
@@ -478,7 +483,14 @@
     <text name="YouDontHaveAnyFriend">You don't have any friends. Write a username to above input box and click "Add Friend" button.</text>
     <text name="YouDontHaveAnyBlockedFriend">You don't have any blocked users. In order to block a friend, select a friend and select block from actions dropdown.</text>
     <text name="ChatUserSearch_Hint">
-      <![CDATA[      Write only username for same tenant users, <br>      <strong>[tenancyName]\[userName]</strong> for other tenant's users <br><br>      for example: <br>      .\admin -> for host admin <br>      Test\admin -> for test tenant's admin <br>      admin -> for your tenant's admin      ]]>
+      <![CDATA[
+      Write only username for same tenant users, <br>
+      <strong>[tenancyName]\[userName]</strong> for other tenant's users <br><br>
+      for example: <br>
+      .\admin -> for host admin <br>
+      Test\admin -> for test tenant's admin <br>
+      admin -> for your tenant's admin
+      ]]>
     </text>
     <text name="AddFriend">Add friend</text>
     <text name="TypeAMessageHere">Type a message here...</text>

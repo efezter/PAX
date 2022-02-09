@@ -169,8 +169,8 @@
                                             #PaxTask_TaskTypePeriod="ngModel"
                                             name="TaskTypePeriod"
                                             id="PaxTask_TaskTypePeriod"
-                                            [(ngModel)]="paxTask.taskTypePeriod"
-                                        >
+                                            [(ngModel)]="paxTask.taskTypePeriod">
+
                                             <option value="1">{{ l('Weekly') }}</option>
                         
                                             <option value="2">{{ l('Monthly') }}</option>
@@ -236,7 +236,7 @@
                                         </select> -->
                                     </div>
                         
-                                    <div class="form-group aaa">
+                                    <div class="form-group ">
                                         <label for="PaxTask_Header">{{ l('Header') }} *</label>
                                         <input
                                             type="text"
@@ -252,7 +252,7 @@
                                         <validation-messages [formCtrl]="PaxTask_Header"></validation-messages>
                                     </div>
                         
-                                    <div class="form-group ck-content">
+                                    <div id="aaa" style="height: 500px;" class="form-group ck-content">
                                         <label for="PaxTask_Details">{{ l('Details') }}</label>
                                         <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask?.details}}"></ckeditor>
                                         <validation-messages  
@@ -270,10 +270,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
 
             <div *ngIf="paxTask.id" class="card card-custom gutter-b">
                 <div class="card-body">
@@ -318,7 +314,51 @@
 
                                     <div *ngIf="commentViews && commentViews.length > 0">
 
-                                        <div class="form-group" *ngFor="let commentView of commentViews">
+                                        <p-timeline style="padding-top: 20px;" [value]="commentViews" align="alternate" styleClass="customized-timeline">
+                                            <!-- <ng-template pTemplate="marker" let-comment>
+                                                <span class="custom-marker p-shadow-2" [style.backgroundColor]="selectedBGColors[6]">
+                                                    <i class="pi pi-envelope"></i>
+                                                </span>
+                                            </ng-template> -->
+                                            <ng-template pTemplate="content" let-comment>
+                                                <p-card [header]="comment.userName" [subheader]="comment.creationTime">
+                                                     <ckeditor
+                                                        [editor]="Editorrr" 
+                                                        [config]="editorConfiguration"
+                                                        (ready)="onReady($event, comment.comment.id)" 
+                                                        name="CommentText" 
+                                                        [(ngModel)]="comment.comment.commentText"
+                                                        data="{{comment.comment.commentText}}">
+                                                    </ckeditor>
+
+                                                    <div *ngIf="comment.comment.userId == cuRuserId" class="col-xl-6">
+                                                        <button [hidden]="isCommentEditing" pButton label="{{'Edit' | localize}}" class="p-button-text" (click)="prepareForEdit(comment.comment.id, true)"></button>
+                                                        <button pButton [hidden]="isCommentEditing" label="{{'Delete' | localize}}" class="p-button-text" (click)="deleteComment(comment.comment.id)"></button>
+                                                        <button pButton [hidden]="!isCommentEditing" label="{{'Save' | localize}}" class="p-button-text" (click)="saveComment(comment.comment)"></button>
+                                                        <button pButton [hidden]="!isCommentEditing" label="{{'Cancel' | localize}}" class="p-button-text" (click)="prepareForEdit(comment.comment.id,false)"></button>
+                                                        <!-- <button 
+                                                        [hidden]="isCommentEditing"
+                                                        class="btn btn-primary btn-sm pull-right"  
+                                                        (click)="prepareForEdit(commentView.comment.id, true)" >
+                                                            {{"Edit" | localize}}
+                                                        </button>                                               
+                                                        <button [hidden]="isCommentEditing" class="btn btn-danger btn-sm pull-right" (click)="deleteComment(commentView.comment.id)" >
+                                                            {{"Delete" | localize}}
+                                                        </button>
+                                                        <button [hidden]="!isCommentEditing" class="btn btn-success btn-sm pull-right" (click)="saveComment(commentView.comment)" >
+                                                            {{"Save" | localize}}
+                                                        </button>
+                                                        <button [hidden]="!isCommentEditing" class="btn btn-secondary btn-sm pull-right" (click)="prepareForEdit(commentView.comment.id,false)" >
+                                                            {{"Cancel" | localize}}
+                                                        </button> -->
+                                                    </div> 
+                                                    <!-- <button pButton label="Read more" class="p-button-text"></button> -->
+
+                                                </p-card>
+                                            </ng-template>
+                                        </p-timeline>
+
+                                        <!-- <div class="form-group" *ngFor="let commentView of commentViews">
                                             <label for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
                                             <ckeditor
                                                 [editor]="Editorrr" 
@@ -345,7 +385,7 @@
                                                     {{"Cancel" | localize}}
                                                 </button>
                                             </div> 
-                                        </div>
+                                        </div> -->
 
                                     </div>
                                 </div>
@@ -354,12 +394,22 @@
 
 
                         <tab heading="{{'History' | localize}} ({{this.historyRecs.length}})">
-                            <div class="row" style="padding-top: 20px;" *ngFor="let history of historyRecs">
+
+                                <p-timeline style="float: left; padding-top: 20px;" [value]="historyRecs">
+                                    <ng-template pTemplate="content" let-history>
+                                        <div [innerHTML]="history.changeText" class="web-log-view full-height"> </div>
+                                    </ng-template>
+                                    <ng-template pTemplate="opposite" let-history>
+                                        <small class="p-text-secondary">{{ history.creationTime | luxonFormat: 'F' }}</small>
+                                    </ng-template>
+                                </p-timeline>
+
+                            <!-- <div class="row" style="padding-top: 20px;" *ngFor="let history of historyRecs">
                                 <div class="col-xl-12">
                                     {{ history.creationTime | luxonFormat: 'F' }}<div [innerHTML]="history.changeText" class="web-log-view full-height">                                        
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </tab>
                         <tab heading="{{'Attachments' | localize}} ({{this.uploadedFiles.length}})">
                             <div class="row">
