@@ -1,4 +1,4 @@
-﻿import { AppConsts } from '@shared/AppConsts';
+import { AppConsts } from '@shared/AppConsts';
 import { Component, Injector, ViewEncapsulation, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaxTasksServiceProxy, PaxTaskDto, TaskType, TaskTypePeriod } from '@shared/service-proxies/service-proxies';

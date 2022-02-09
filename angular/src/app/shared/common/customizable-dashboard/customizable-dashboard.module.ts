@@ -28,6 +28,7 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { AppBsModalModule } from '@shared/common/appBsModal/app-bs-modal.module';
 import { CountoModule } from 'angular2-counto';
 import { TableModule } from 'primeng/table';
+// import {TreeSelectModule} from 'primeng/treeselect';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { SubheaderModule } from '../sub-header/subheader.module';
 
@@ -48,6 +49,7 @@ import { SubheaderModule } from '../sub-header/subheader.module';
         AppBsModalModule,
         CountoModule,
         TableModule,
+        // TreeSelectModule,
         BsDatepickerModule,
         SubheaderModule
     ],

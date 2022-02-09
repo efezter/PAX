@@ -96,11 +96,11 @@ export class CommonLookupModalComponent extends AppComponentBase {
     getRecords(event?: LazyLoadEvent): void {
         const maxResultCount = this.primengTableHelper.getMaxResultCount(this.paginator, event);
         const skipCount = this.primengTableHelper.getSkipCount(this.paginator, event);
-        if (this.primengTableHelper.shouldResetPaging(event)) {
-            this.paginator.changePage(0);
+        // if (this.primengTableHelper.shouldResetPaging(event)) {
+        //     this.paginator.changePage(0);
 
-            return;
-        }
+        //     return;
+        // }
 
         this.primengTableHelper.showLoadingIndicator();
 

@@ -6,16 +6,15 @@
             </span>
         </h3>
         <div class="card-toolbar" *ngIf="dailySalesLineChart && !dailySalesLineChart.loading">
-           
-            aaaaaaaaaaaaaaaaaaaaaaaa
+            <!-- <p-treeSelect  [(ngModel)]="dailySalesLineChart.selectedNode" [options]="dailySalesLineChart.nodes"  [metaKeySelection]="false" selectionMode="multiple" placeholder="Select Item"></p-treeSelect> -->
+            <!-- <p-treeSelect [(ngModel)]="dailySalesLineChart.selectedNode" inputStyleClass="form-control" styleClass="width-percent-100" [options]="dailySalesLineChart.nodes" placeholder="Select Item"  metaKeySelection="false" selectionMode="multiple"></p-treeSelect> -->
+        
         </div>
     </div>
     <div class="card-body" [perfectScrollbar]> 
         <div class="row">
             <div class="col" style="max-height: 200px">
 
-                <!-- <p-treeSelect [(ngModel)]="dailySalesLineChart.selectedNodes2" options="dailySalesLineChart.departments" display="chip" metaKeySelection="false" selectionMode="checkbox" placeholder="Select Item"></p-treeSelect> -->
-                
                 <ngx-charts-bar-vertical-stacked *ngIf="dailySalesLineChart.showChart"
                 [results]="dailySalesLineChart.multi"
                 [scheme]="dailySalesLineChart.scheme"
