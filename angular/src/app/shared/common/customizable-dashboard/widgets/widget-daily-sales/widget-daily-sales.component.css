@@ -1,0 +1,4 @@
+/* p-inputwrapper */
+:host ::ng-deep p-treeSelect div {
+    width: 250px;
+}

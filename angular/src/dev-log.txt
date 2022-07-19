@@ -1,0 +1,13 @@
+ primeng v13 updatinden sonra table paginatorlari aşağıdaki değişiklik yapılana kadar çalışmadı.
+
+ BUNDAN
+ getPageCount() {
+        return Math.ceil(this.totalRecords/this.rows);
+    }
+
+    BUNDA
+
+    getPageCount() {
+        return Math.ceil(this.totalRecords/this.rows)||1;
+    }
+	

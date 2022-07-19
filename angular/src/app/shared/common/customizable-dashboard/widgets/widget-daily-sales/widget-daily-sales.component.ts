@@ -1,7 +1,12 @@
 import { Component, OnInit, Injector } from '@angular/core';
-import { TenantDashboardServiceProxy } from '@shared/service-proxies/service-proxies';
+import { TenantDashboardServiceProxy, OrganizationUnitServiceProxy } from '@shared/service-proxies/service-proxies';
 import { DashboardChartBase } from '../dashboard-chart-base';
 import { WidgetComponentBaseComponent } from '../widget-component-base';
+import {
+  ReportServiceProxy,
+  ListResultDtoOfOrganizationUnitDto
+} from '@shared/service-proxies/service-proxies';
+import { ArrayToTreeConverterService } from '@shared/utils/array-to-tree-converter.service';
 
 class DailySalesLineChart extends DashboardChartBase {
 
@@ -91,8 +96,6 @@ class DailySalesLineChart extends DashboardChartBase {
             "children": [{
                     "label": "Work",
                     "data": "Work Folder",
-                    "expandedIcon": "pi pi-folder-open",
-                    "collapsedIcon": "pi pi-folder",
                     "children": [{"label": "Expenses.doc", "icon": "pi pi-file", "data": "Expenses Document"}, {"label": "Resume.doc", "icon": "pi pi-file", "data": "Resume Document"}]
                 },
                 {
@@ -131,7 +134,8 @@ class DailySalesLineChart extends DashboardChartBase {
         }
     ];
 
-  constructor(private _dashboardService: TenantDashboardServiceProxy) {
+  constructor(
+    private _dashboardService: TenantDashboardServiceProxy) {
     super();
   }
 
@@ -172,12 +176,106 @@ export class WidgetDailySalesComponent extends WidgetComponentBaseComponent impl
   dailySalesLineChart: DailySalesLineChart;
 
   constructor(injector: Injector,
-    private _tenantdashboardService: TenantDashboardServiceProxy) {
+    private _tenantdashboardService: TenantDashboardServiceProxy,
+    private _reportServiceProxy: ReportServiceProxy,
+    private _organizationUnitService: OrganizationUnitServiceProxy,
+    private _arrayToTreeConverterService: ArrayToTreeConverterService) {
     super(injector);
     this.dailySalesLineChart = new DailySalesLineChart(this._tenantdashboardService);
   }
 
   ngOnInit() {
     this.dailySalesLineChart.reload();
+    this.getOrganizationSchema();
+  }
+
+//   private getTreeDataFromServer(): void {
+//     let self = this;
+//     this._organizationUnitService.getOrganizationUnits().subscribe((result: ListResultDtoOfOrganizationUnitDto) => {
+//         this.totalUnitCount = result.items.length;
+//         this.treeData = this._arrayToTreeConverterService.createTree(result.items,
+//             'parentId',
+//             'id',
+//             null,
+//             'children',
+//             [
+//                 {
+//                     target: 'label',
+//                     targetFunction(item) {
+//                         return item.displayName;
+//                     }
+//                 }, {
+//                     target: 'expandedIcon',
+//                     value: 'fa fa-folder-open text-warning'
+//                 },
+//                 {
+//                     target: 'collapsedIcon',
+//                     value: 'fa fa-folder text-warning'
+//                 },
+//                 {
+//                     target: 'selectable',
+//                     value: true
+//                 },
+//                 {
+//                     target: 'memberCount',
+//                     targetFunction(item) {
+//                         return item.memberCount;
+//                     }
+//                 },
+//                 {
+//                     target: 'roleCount',
+//                     targetFunction(item) {
+//                         return item.roleCount;
+//                     }
+//                 }
+//             ]);
+//     });
+// }
+
+totalUnitCount = 0;
+treeData: any;
+
+getOrganizationSchema()
+  {
+    let self = this;
+        this._organizationUnitService.getOrganizationUnits().subscribe((result: ListResultDtoOfOrganizationUnitDto) => {
+            this.totalUnitCount = result.items.length;
+            this.treeData = this._arrayToTreeConverterService.createTree(result.items,
+                'parentId',
+                'id',
+                null,
+                'children',
+                [
+                    {
+                        target: 'label',
+                        targetFunction(item) {
+                            return item.displayName;
+                        }
+                    }, {
+                        target: 'expandedIcon',
+                        value: 'fa fa-folder-open text-warning'
+                    },
+                    {
+                        target: 'collapsedIcon',
+                        value: 'fa fa-folder text-warning'
+                    },
+                    {
+                        target: 'selectable',
+                        value: true
+                    },
+                    {
+                        target: 'memberCount',
+                        targetFunction(item) {
+                            return item.memberCount;
+                        }
+                    },
+                    {
+                        target: 'roleCount',
+                        targetFunction(item) {
+                            return item.roleCount;
+                        }
+                    }
+                ]);
+        });
   }
 }

@@ -6,15 +6,41 @@
             </span>
         </h3>
         <div class="card-toolbar" *ngIf="dailySalesLineChart && !dailySalesLineChart.loading">
-            <!-- <p-treeSelect  [(ngModel)]="dailySalesLineChart.selectedNode" [options]="dailySalesLineChart.nodes"  [metaKeySelection]="false" selectionMode="multiple" placeholder="Select Item"></p-treeSelect> -->
-            <!-- <p-treeSelect [(ngModel)]="dailySalesLineChart.selectedNode" inputStyleClass="form-control" styleClass="width-percent-100" [options]="dailySalesLineChart.nodes" placeholder="Select Item"  metaKeySelection="false" selectionMode="multiple"></p-treeSelect> -->
+
+            <!-- <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-secondary active"
+                       [ngClass]="{'active': salesSummaryChart.selectedDatePeriod ==  appSalesSummaryDateInterval.Daily}"
+                       (click)="salesSummaryChart.reload(appSalesSummaryDateInterval.Daily)">
+                    <input type="radio" name="SalesSummaryDateInterval"
+                           [value]="appSalesSummaryDateInterval.Daily">
+                    {{"Departman" | localize}}
+                </label>
+                <label class="btn btn-secondary"
+                       [ngClass]="{'active': salesSummaryChart.selectedDatePeriod ==  appSalesSummaryDateInterval.Weekly}"
+                       (click)="salesSummaryChart.reload(appSalesSummaryDateInterval.Weekly)">
+                    <input type="radio" name="SalesSummaryDateInterval"
+                           [value]="appSalesSummaryDateInterval.Weekly">
+                    {{"Personal" | localize}}
+                </label> 
+            </div>-->
+
+            <p-treeSelect  styleClass="tree-panel" [(ngModel)]="dailySalesLineChart.selectedNode" [options]="treeData"  [metaKeySelection]="false" selectionMode="multiple" placeholder="Select Item"></p-treeSelect>
+            <!-- <p-treeSelect 
+            [(ngModel)]="dailySalesLineChart.selectedNode" 
+            inputStyleClass="form-control" 
+            styleClass="width-percent-100" 
+            [options]="dailySalesLineChart.nodes" 
+            placeholder="Select Item"  
+            metaKeySelection="false" 
+            selectionMode="multiple">
+        </p-treeSelect> -->
         
         </div>
     </div>
     <div class="card-body" [perfectScrollbar]> 
         <div class="row">
             <div class="col" style="max-height: 200px">
-
+               
                 <ngx-charts-bar-vertical-stacked *ngIf="dailySalesLineChart.showChart"
                 [results]="dailySalesLineChart.multi"
                 [scheme]="dailySalesLineChart.scheme"

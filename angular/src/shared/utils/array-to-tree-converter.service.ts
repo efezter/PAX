@@ -27,7 +27,6 @@ export class ArrayToTreeConverterService {
 
             tree.push(newNode);
         });
-
         return tree;
     }
 

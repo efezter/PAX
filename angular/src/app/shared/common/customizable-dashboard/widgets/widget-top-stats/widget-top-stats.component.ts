@@ -119,7 +119,6 @@ export class WidgetTopStatsComponent extends WidgetComponentBaseComponent implem
   loadPersonalStats() {
   
     this._reportServiceProxy.getPersonalSummaryWidget(this._abpSessionService.userId).subscribe((data) => {
-      debugger;
       this.dashboardTopStats.init(data);
     });
   }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PAX.Next.TaskManager.Utils
+﻿namespace PAX.Next.TaskManager.Utils
 {
     public class Enums
     {
@@ -17,6 +13,11 @@ namespace PAX.Next.TaskManager.Utils
         {
             Weekly = 1,
             Monthly = 2
+        }
+        public enum SummaryChartType
+        {
+            Department = 1,
+            Personal = 2
         }
     }
 }

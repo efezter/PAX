@@ -230,7 +230,8 @@ editorConfiguration = {
             this.allTaskStatuss = result;
             if (this.paxTask.id)
             {
-                this.selectedStatus = this.allTaskStatuss.find(x => x.id == this.paxTask.taskStatusId);
+                setTimeout(() => {this.selectedStatus = this.allTaskStatuss.find(x => x.id == this.paxTask.taskStatusId);}, 50); 
+                
             }   
             else
             {
@@ -386,7 +387,6 @@ editorConfiguration = {
         this.paxTask.labels = this.labels;
         this.paxTask.dependentTasks = this.depentantTasks;
         this.paxTask.taskStatusId = this.selectedStatus.id;
-        debugger;
         if (this.paxTask.taskType != 3) {
             this.deadLineDate = new Date()
         }
