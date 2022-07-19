@@ -13,13 +13,10 @@
 /* .p-inputtext{
   padding: 0px !important;
 } */
-
 .p-component{
   background-clip: padding-box;  
   border: 1px solid #E4E6EF;  
-border-radius: 0.42rem;
-}
+  border-radius: 0.42rem;
+  
 
-.p-autoComplete{
-  padding-left: 0px !important;
 }
