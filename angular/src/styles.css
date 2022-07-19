@@ -75,6 +75,57 @@
     width: 100%;
 }
 
+.width-task-label {
+    width: 97.8%;
+}
+@media (max-width: 767.98px) { .width-task-label{
+    width: 94% !important;
+} }
+
+/* @media (max-width: 850px) { .width-task-label{
+    width: 95% !important;
+} } */
+
+@media (max-width: 991px) { .width-task-label{
+    width: 94%;
+} }
+
+@media (max-width: 1400px) { .width-task-label{
+    width: 96%;
+} }
+
+.width-task-90 {
+    width: 96.5%;
+}
+@media (max-width: 767.98px) { .width-task-90{
+    width: 93%;
+} }
+
+@media (max-width: 991px) { .width-task-90{
+    width: 95.5%;
+} }
+
+.width-task-90 :hover {
+    border: grey !important;
+}
+
+#reis ckeditor .ck-reset .ck-editor__main .ck-editor__editable_inline {
+    min-height: 480px !important;
+}
+
+#reis2 ckeditor .ck-reset .ck-editor__main .ck-editor__editable_inline {
+    min-height: 20px !important;
+    background-color: rgb(255, 255, 255) !important;
+    /* padding: 10px !important; */
+    
+}
+
+@media (max-width: 991px) { #reis2 ckeditor .ck-reset .ck-editor__main .ck-editor__editable_inline{
+    width: 95.5%;
+} }
+
+
+
 /* Sweet alert */
 
 body.swal2-height-auto {

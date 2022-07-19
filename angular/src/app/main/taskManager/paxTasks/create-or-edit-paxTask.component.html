@@ -5,7 +5,7 @@
 
         <div [class]="containerClass">
             <div class="card card-custom gutter-b">
-                <div class="card-body">
+                <div class="customcard1">
                     <div class="row align-items-center">
                         <!--<Primeng-Datatable-Start>-->
                         <div class="primeng-datatable-container col-12" [busyIf]="primengTableHelper.isLoading">
@@ -28,236 +28,275 @@
                                         >
                                             <i class="fa fa-save"></i> <span>{{ l('Save') }}</span>
                                         </button> 
+                                        
                                     </div>
                                 </div>
                                 <div class="modal-body">
-                                    
-                                    <div  class="form-group m-form__group">
-                                        <label *ngIf="reporterName" for="UserName">{{ l('Reporter') }} : {{reporterName}}</label>
-                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8 task-part2">
+                                             <h1 class="tasklabelsize">Görev Tanımı</h1>
 
-                                    <div *ngIf="paxTask.id" class="form-group">
-                                        <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : {{ paxTask.createdDate | luxonFormat: 'F' }}</label>
-                                    </div>
-                        
-                                    <div class="form-group m-form__group">
-                                        <label for="assigneeName">{{ l('Assignee') }}</label>
-                                        <div class="input-group">
-                                            <input
-                                                class="form-control"
-                                                id="assigneeName"
-                                                name="assigneeName"
-                                                [(ngModel)]="assigneeName"
-                                                type="text"
-                                                disabled
-                                            />
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary blue" (click)="openSelectUserModal()" type="button">
-                                                    <i class="fa fa-search"></i> {{ l('Pick') }}
-                                                </button>
+                                            <div class="form-group aaa">
+                                                <label for="PaxTask_Header">{{ l('Header') }} *</label>
+                                                <input
+                                                    type="text"
+                                                    #PaxTask_Header="ngModel"
+                                                    id="PaxTask_Header"
+                                                    class="form-control"
+                                                    [(ngModel)]="paxTask.header"
+                                                    name="Header"
+                                                    minlength="3"
+                                                    maxlength="150"
+                                                    required
+                                                />
+                                                <validation-messages [formCtrl]="PaxTask_Header"></validation-messages>
                                             </div>
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-danger btn-icon" type="button" (click)="setAssigneeIdNull()">
-                                                    <i class="fa fa-times"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <input
-                                        class="form-control"
-                                        name="paxTask.assigneeId"
-                                        [(ngModel)]="paxTask.assigneeId"
-                                        type="text"
-                                        hidden
-                                    />
-
-                                    <div class="form-group row">
-                                        <label for="MultiSelectDeps" class="col-lg-12">{{ l('DepandantTasks') }}</label>
-                                        <div class="col-12">
-                                            <p-autoComplete [(ngModel)]="depentantTasks"
-                                                            [suggestions]="filteredDependants"
-                                                            (completeMethod)="filterDependantTasks($event)"
-                                                            (onSelect)="onSelect($event)"
-                                                            panelStyleClass="tag-button"
-                                                            field="dependOnHeader"
-                                                            [minLength]="2"
-                                                            name="MultiSelectDeps"
-                                                            id="MultiSelectDeps"
-                                                            [multiple]="true"
-                                                            inputStyleClass="form-control"
-                                                            styleClass="width-percent-100">
-                                                            <ng-template let-value pTemplate="selectedItem">
-                                                                <a target="_blank" style="color:white" href="{{this.clientUrl + '/app/main/taskManager/paxTasks/details?taskId=' + value.dependOnTaskId }}">{{value.dependOnHeader}}
-                                                            </a> 
-                                                            </ng-template> 
-                                            </p-autoComplete>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <label for="MultiSelectLabels" class="col-lg-12">{{ l('Labels') }}</label>
-                                        <div class="col-12">
-
-                                            <p-autoComplete [(ngModel)]="labels"
-                                                            [suggestions]="filteredLabels"
-                                                            (completeMethod)="getLabels($event)"
-                                                            (onSelect)="onSelect($event)"
-                                                            panelStyleClass="tag-button"
-                                                            field="name"
-                                                            [minLength]="2"
-                                                            name="MultiSelectLabels"
-                                                            id="MultiSelectLabels"
-                                                            [multiple]="true"
-                                                            inputStyleClass="form-control"
-                                                            styleClass="width-percent-100">
-
-                                                            <!-- <ng-template let-value pTemplate="selectedItem">
-                                                                <a href="https://www.facebook.com">
-                                                                <span style="font-size:18px">>{{value.name}}<</span>
-                                                            </a> 
-                                                            </ng-template> -->
-                                            </p-autoComplete>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <label for="MultiSelectWatcher" class="col-lg-12">{{ l('Watchers') }}</label>
-                                        <div class="col-12">
-                                            <p-autoComplete [(ngModel)]="watchers"
-                                                            [suggestions]="filteredWathers"
-                                                            (completeMethod)="getUsers($event)"
-                                                            (onSelect)="onSelect($event)"
-                                                            field="displayName"
-                                                            [minLength]="2"
-                                                            name="MultiSelectWatcher"
-                                                            id="MultiSelectWatcher"
-                                                            [multiple]="true"
-                                                            inputStyleClass="form-control"
-                                                            styleClass="width-percent-100">
-                                            </p-autoComplete>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
-                                        <select
-                                            class="form-control"
-                                            #PaxTask_TaskType="ngModel"
-                                            name="TaskType"
-                                            id="PaxTask_TaskType"
-                                            [(ngModel)]="paxTask.taskType"
-                                        >
-                                            <option value="1">{{ l('Normal') }}</option>
-                                            <option value="3">{{ l('DeadLine') }}</option>
-                                            <option value="2">{{"Repeating" | localize}}</option>
-                                        </select>
-                                        <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
-                                    </div>
-
-                                    <div *ngIf="paxTask.taskType == 3" class="form-group">
-
-                                        <label for="PaxTask_DeadLineDate">{{ l('DeadLineDate') }}</label>
-
-                                        <p-calendar styleClass="width-percent-100" dateFormat="dd.mm.yy" [minDate]="minDateValue" [(ngModel)]="deadLineDate" name="deadLineDate" showTime="true" [hourFormat]="24"></p-calendar>
-                                     
-                                    </div>
-                        
-                                    <div *ngIf="paxTask.taskType == 2" class="form-group">
-                                        <label for="PaxTask_TaskTypePeriod">{{ l('TaskTypePeriod') }}</label>
-                                        <select
-                                            class="form-control"
-                                            #PaxTask_TaskTypePeriod="ngModel"
-                                            name="TaskTypePeriod"
-                                            id="PaxTask_TaskTypePeriod"
-                                            [(ngModel)]="paxTask.taskTypePeriod"
-                                        >
-                                            <option value="1">{{ l('Weekly') }}</option>
-                        
-                                            <option value="2">{{ l('Monthly') }}</option>
-                                        </select>
-                                        <validation-messages [formCtrl]="PaxTask_TaskTypePeriod"></validation-messages>
-                                    </div>
-                        
-                                    <div *ngIf="paxTask.taskType == 2" class="form-group">
-                                        <label for="PaxTask_PeriodInterval">{{ l('PeriodInterval') }}</label>
-                                        <input
-                                            type="number"
-                                            #PaxTask_PeriodInterval="ngModel"
-                                            id="PaxTask_PeriodInterval"
-                                            class="form-control"
-                                            [(ngModel)]="paxTask.periodInterval"
-                                            name="PeriodInterval"
-                                        />
-                                        <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
-                                    </div>
-
-                                    
-                        
-                                    <div class="form-group m-form__group">
-                                        <label for="SeverityName">{{ l('Severity') }}</label>
-                                        <select name="paxTask.severityId" [(ngModel)]="paxTask.severityId" class="form-control">
-                                            <!-- <option value="">{{ l('SelectASeverity') }}</option> -->
-                                            <option *ngFor="let item of allSeveritys" value="{{ item.id }}">
-                                                {{ item.displayName }}
-                                            </option>
-                                        </select>
-                                    </div>
-                        
-                                    <div class="form-group m-form__group">
-                                        <label for="TaskStatusName">{{ l('TaskStatus') }}</label>
-                                        <p-dropdown [options]="allTaskStatuss" [(ngModel)]="selectedStatus" styleClass="width-percent-100" name="selectedStatus" optionLabel="displayName">
-                                            <ng-template pTemplate="selectedItem">                                           
-                                                <div class="row h-100 p-0" *ngIf="selectedStatus">
-                                                        <div class="col-12">
-                                                            <img src="{{ serverUrl + selectedStatus.iconUrl }}" style="width: 20px; margin-right: 10px;" [class]="'flag flag-' + selectedStatus.displayName" />                                                       
-                                                            {{selectedStatus.displayName}}
-                                                        </div>
+                                            
+                                            <div class="form-group row" >
+                                                <label for="MultiSelectLabels" class="col-lg-12">{{ l('Labels') }}</label>
+                                                <div class="col-12 p-0">
+        
+                                                    <p-autoComplete [(ngModel)]="labels"
+                                                                    [suggestions]="filteredLabels"
+                                                                    (completeMethod)="getLabels($event)"
+                                                                    (onSelect)="onSelect($event)"
+                                                                    panelStyleClass="tag-button"
+                                                                    field="name"
+                                                                    [minLength]="2"
+                                                                    name="MultiSelectLabels"
+                                                                    id="MultiSelectLabels"
+                                                                    [multiple]="true"
+                                                                    inputStyleClass="form-control"
+                                                                    styleClass="width-task-label">
+        
+                                                                    <!-- <ng-template let-value pTemplate="selectedItem">
+                                                                        <a href="https://www.facebook.com">
+                                                                        <span style="font-size:18px">>{{value.name}}<</span>
+                                                                    </a> 
+                                                                    </ng-template> -->
+                                                    </p-autoComplete>
                                                 </div>
-                                            </ng-template>
-                                            <ng-template let-taskStatus pTemplate="item">
-                                                <div class="row">
-                                                        <div class="col-12">
-                                                            <img src="{{ serverUrl + taskStatus.iconUrl }}" style="width: 30px;" [class]="'flag flag-' + taskStatus.displayName" />
-                                                            {{taskStatus.displayName}}
+                                            </div>
+
+                                            <div id="reis" class="form-group ck-content">
+                                                <label for="PaxTask_Details">{{ l('Details') }}</label>
+                                                <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask?.details}}"></ckeditor>
+                                                <validation-messages  
+                                                id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
+                                            </div>
+
+                                            <!-- <div class="form-group row">
+                                                <label for="MultiSelectDeps" class="col-lg-12">{{ l('DepandantTasks') }}</label>
+                                                <div class="col-12 p-0">
+                                                    <p-autoComplete [(ngModel)]="depentantTasks"
+                                                                    [suggestions]="filteredDependants"
+                                                                    (completeMethod)="filterDependantTasks($event)"
+                                                                    (onSelect)="onSelect($event)"
+                                                                    panelStyleClass="tag-button"
+                                                                    field="dependOnHeader"
+                                                                    [minLength]="2"
+                                                                    name="MultiSelectDeps"
+                                                                    id="MultiSelectDeps"
+                                                                    [multiple]="true"
+                                                                    inputStyleClass="form-control"
+                                                                    styleClass="width-task-90">
+                                                                    <ng-template let-value pTemplate="selectedItem">
+                                                                        <a target="_blank" style="color:white" href="{{this.clientUrl + '/app/main/taskManager/paxTasks/details?taskId=' + value.dependOnTaskId }}">{{value.dependOnHeader}}
+                                                                    </a> 
+                                                                    </ng-template> 
+                                                    </p-autoComplete>
+                                                </div>
+                                            </div> -->
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="task-part3">
+                                                <h1 class="tasklabelsize">İlgili Kişiler</h1>
+                                                
+                                                    <div class="form-group m-form__group">
+                                                        <label for="assigneeName">{{ l('Assignee') }}</label>
+                                                        <div class="input-group">
+                                                            <input
+                                                                class="form-control"
+                                                                id="assigneeName"
+                                                                name="assigneeName"
+                                                                [(ngModel)]="assigneeName"
+                                                                type="text"
+                                                                disabled
+                                                            />
+                                                            <div class="input-group-append">
+                                                                <button class="btn btn-primary blue" (click)="openSelectUserModal()" type="button">
+                                                                    <i class="fa fa-search"></i> {{ l('Pick') }}
+                                                                </button>
+                                                            </div>
+                                                            <div class="input-group-prepend">
+                                                                <button class="btn btn-danger btn-icon" type="button" (click)="setAssigneeIdNull()">
+                                                                    <i class="fa fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <input
+                                                        class="form-control"
+                                                        name="paxTask.assigneeId"
+                                                        [(ngModel)]="paxTask.assigneeId"
+                                                        type="text"
+                                                        hidden
+                                                    />
+                                                    <div class="form-group row">
+                                                        <label for="MultiSelectWatcher" class="col-lg-12">{{ l('Watchers') }}</label>
+                                                        <div class="col-12 p-0">
+                                                            <p-autoComplete [(ngModel)]="watchers"
+                                                                            [suggestions]="filteredWathers"
+                                                                            (completeMethod)="getUsers($event)"
+                                                                            (onSelect)="onSelect($event)"
+                                                                            field="displayName"
+                                                                            [minLength]="2"
+                                                                            name="MultiSelectWatcher"
+                                                                            id="MultiSelectWatcher"
+                                                                            [multiple]="true"
+                                                                            inputStyleClass="form-control"
+                                                                            styleClass="width-task-90">
+                                                            </p-autoComplete>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            
+                                                            <div  class="form-group m-form__group">
+                                                                <label *ngIf="reporterName" for="UserName">{{ l('Reporter') }} : <br> <div class="labelrep"> {{reporterName}} </div></label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div *ngIf="paxTask.id" class="form-group">
+                                                                <label for="PaxTask_CreatedDate">{{ l('CreatedDate') }} : <br> <div class="labelrep"> {{ paxTask.createdDate | luxonFormat: 'F' }} </div></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                
+
+                                            </div>
+                                            <div class="task-part3">
+                                                <h1 class="tasklabelsize">Görev Özellikleri</h1>
+                                                <div class="form-group">
+                                                    <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
+                                                    <select
+                                                        class="form-control"
+                                                        #PaxTask_TaskType="ngModel"
+                                                        name="TaskType"
+                                                        id="PaxTask_TaskType"
+                                                        [(ngModel)]="paxTask.taskType"
+                                                    >
+                                                        <option value="1">{{ l('Normal') }}</option>
+                                                        <option value="3">{{ l('DeadLine') }}</option>
+                                                        <option value="2">{{"Repeating" | localize}}</option>
+                                                    </select>
+                                                    <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
+                                                </div>
+            
+                                                <div *ngIf="paxTask.taskType == 3" class="form-group">
+            
+                                                    <label for="PaxTask_DeadLineDate">{{ l('DeadLineDate') }}</label>
+            
+                                                    <p-calendar styleClass="width-percent-100" dateFormat="dd.mm.yy" [minDate]="minDateValue" [(ngModel)]="deadLineDate" name="deadLineDate" showTime="true" [hourFormat]="24"></p-calendar>
+                                                 
+                                                </div>
+                                    
+                                                <div *ngIf="paxTask.taskType == 2" class="form-group">
+                                                    <label for="PaxTask_TaskTypePeriod">{{ l('TaskTypePeriod') }}</label>
+                                                    <select
+                                                        class="form-control"
+                                                        #PaxTask_TaskTypePeriod="ngModel"
+                                                        name="TaskTypePeriod"
+                                                        id="PaxTask_TaskTypePeriod"
+                                                        [(ngModel)]="paxTask.taskTypePeriod"
+                                                    >
+                                                        <option value="1">{{ l('Weekly') }}</option>
+                                    
+                                                        <option value="2">{{ l('Monthly') }}</option>
+                                                    </select>
+                                                    <validation-messages [formCtrl]="PaxTask_TaskTypePeriod"></validation-messages>
+                                                </div>
+                                    
+                                                <div *ngIf="paxTask.taskType == 2" class="form-group">
+                                                    <label for="PaxTask_PeriodInterval">{{ l('PeriodInterval') }}</label>
+                                                    <input
+                                                        type="number"
+                                                        #PaxTask_PeriodInterval="ngModel"
+                                                        id="PaxTask_PeriodInterval"
+                                                        class="form-control"
+                                                        [(ngModel)]="paxTask.periodInterval"
+                                                        name="PeriodInterval"
+                                                    />
+                                                    <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
+                                                </div>
+                                                <div class="form-group m-form__group">
+                                                    <label for="SeverityName">{{ l('Severity') }}</label>
+                                                    <select name="paxTask.severityId" [(ngModel)]="paxTask.severityId" class="form-control">
+                                                        <!-- <option value="">{{ l('SelectASeverity') }}</option> -->
+                                                        <option *ngFor="let item of allSeveritys" value="{{ item.id }}">
+                                                            {{ item.displayName }}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group m-form__group">
+                                                    <label for="TaskStatusName">{{ l('TaskStatus') }}</label>
+                                                    <p-dropdown [options]="allTaskStatuss" [(ngModel)]="selectedStatus" styleClass="width-percent-100" name="selectedStatus" optionLabel="displayName">
+                                                        <ng-template pTemplate="selectedItem">                                           
+                                                            <div class="row h-100 p-0" *ngIf="selectedStatus">
+                                                                    <div class="col-12">
+                                                                        <img src="{{ serverUrl + selectedStatus.iconUrl }}" style="width: 20px; margin-right: 10px;" [class]="'flag flag-' + selectedStatus.displayName" />                                                       
+                                                                        {{selectedStatus.displayName}}
+                                                                    </div>
+                                                            </div>
+                                                        </ng-template>
+                                                        <ng-template let-taskStatus pTemplate="item">
+                                                            <div class="row">
+                                                                    <div class="col-12">
+                                                                        <img src="{{ serverUrl + taskStatus.iconUrl }}" style="width: 30px;" [class]="'flag flag-' + taskStatus.displayName" />
+                                                                        {{taskStatus.displayName}}
+                                                                </div>
+                                                            </div>
+                                                        </ng-template>
+                                                    </p-dropdown>
+                                                    <!-- <select
+                                                        name="paxTask.taskStatusId"
+                                                        [(ngModel)]="paxTask.taskStatusId"
+                                                        class="form-control"
+                                                        required
+                                                    >
+                                                        <option value="">{{ l('SelectATaskStatus') }}</option>
+                                                        <option *ngFor="let item of allTaskStatuss" value="{{ item.id }}">
+                                                            {{ item.displayName }}
+                                                        </option>
+                                                    </select> -->
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="MultiSelectDeps" class="col-lg-12">{{ l('DepandantTasks') }}</label>
+                                                    <div class="col-12 p-0">
+                                                        <p-autoComplete [(ngModel)]="depentantTasks"
+                                                                        [suggestions]="filteredDependants"
+                                                                        (completeMethod)="filterDependantTasks($event)"
+                                                                        (onSelect)="onSelect($event)"
+                                                                        panelStyleClass="tag-button"
+                                                                        field="dependOnHeader"
+                                                                        [minLength]="2"
+                                                                        name="MultiSelectDeps"
+                                                                        id="MultiSelectDeps"
+                                                                        [multiple]="true"
+                                                                        inputStyleClass="form-control"
+                                                                        styleClass="width-task-90">
+                                                                        <ng-template let-value pTemplate="selectedItem">
+                                                                            <a target="_blank" style="color:white" href="{{this.clientUrl + '/app/main/taskManager/paxTasks/details?taskId=' + value.dependOnTaskId }}">{{value.dependOnHeader}}
+                                                                        </a> 
+                                                                        </ng-template> 
+                                                        </p-autoComplete>
                                                     </div>
                                                 </div>
-                                            </ng-template>
-                                        </p-dropdown>
-                                        <!-- <select
-                                            name="paxTask.taskStatusId"
-                                            [(ngModel)]="paxTask.taskStatusId"
-                                            class="form-control"
-                                            required
-                                        >
-                                            <option value="">{{ l('SelectATaskStatus') }}</option>
-                                            <option *ngFor="let item of allTaskStatuss" value="{{ item.id }}">
-                                                {{ item.displayName }}
-                                            </option>
-                                        </select> -->
+                                            </div>
+                                        </div>
                                     </div>
                         
-                                    <div class="form-group aaa">
-                                        <label for="PaxTask_Header">{{ l('Header') }} *</label>
-                                        <input
-                                            type="text"
-                                            #PaxTask_Header="ngModel"
-                                            id="PaxTask_Header"
-                                            class="form-control"
-                                            [(ngModel)]="paxTask.header"
-                                            name="Header"
-                                            minlength="3"
-                                            maxlength="150"
-                                            required
-                                        />
-                                        <validation-messages [formCtrl]="PaxTask_Header"></validation-messages>
-                                    </div>
-                        
-                                    <div class="form-group ck-content">
-                                        <label for="PaxTask_Details">{{ l('Details') }}</label>
-                                        <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask?.details}}"></ckeditor>
-                                        <validation-messages  
-                                        id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
-                                    </div>
+                                    
                                 </div>
                                 
                             </form>
@@ -276,7 +315,7 @@
 
 
             <div *ngIf="paxTask.id" class="card card-custom gutter-b">
-                <div class="card-body">
+                <div class="customcard2">
                     <tabset>
                         <tab heading=" {{'Comments' | localize}} ({{this.commentViews?.length}})">
                             <div class="row m-3">
@@ -318,8 +357,13 @@
 
                                     <div *ngIf="commentViews && commentViews.length > 0">
 
-                                        <div class="form-group" *ngFor="let commentView of commentViews">
-                                            <label for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
+                                        
+                                            <div class="commentcontainer">
+                                                <div id="reis2" class="form-group" *ngFor="let commentView of commentViews">
+                                                    <label class="yorumfont" for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
+                                            <div class="row">
+                                                
+                                                <div class="col-xl-11 col-lg-10 col-12">
                                             <ckeditor
                                                 [editor]="Editorrr" 
                                                 [config]="editorConfiguration"
@@ -328,23 +372,56 @@
                                                 [(ngModel)]="commentView.comment.commentText"
                                                 data="{{commentView.comment.commentText}}">
                                             </ckeditor>
-                                            <div *ngIf="commentView.comment.userId == cuRuserId" class="col-xl-6">
+                                        </div>
+                                        <div class="col-xl-1 col-lg-2">
+                                            <div *ngIf="commentView.comment.userId == cuRuserId" class="commentbutcon">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-11 col-sm-11 col-10">
                                                 <button 
                                                 [hidden]="isCommentEditing"
-                                                class="btn btn-primary btn-sm pull-right"  
+                                                class="btn btn-primary btn-sm pull-right commentbutton"  
                                                 (click)="prepareForEdit(commentView.comment.id, true)" >
-                                                    {{"Edit" | localize}}
-                                                </button>                                               
-                                                <button [hidden]="isCommentEditing" class="btn btn-danger btn-sm pull-right" (click)="deleteComment(commentView.comment.id)" >
-                                                    {{"Delete" | localize}}
-                                                </button>
-                                                <button [hidden]="!isCommentEditing" class="btn btn-success btn-sm pull-right" (click)="saveComment(commentView.comment)" >
-                                                    {{"Save" | localize}}
-                                                </button>
-                                                <button [hidden]="!isCommentEditing" class="btn btn-secondary btn-sm pull-right" (click)="prepareForEdit(commentView.comment.id,false)" >
-                                                    {{"Cancel" | localize}}
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                                  </svg>
+                                                    <!-- {{"Edit" | localize}} -->
+                                                </button>  
+                                            </div>       
+                                            <div class="col-lg-6 col-md-1 col-sm-1 col-2 commentcont">                                     
+                                                <button [hidden]="isCommentEditing" class="btn btn-danger btn-sm  commentbutton" (click)="deleteComment(commentView.comment.id)" >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                                                      </svg>
+                                                    <!-- {{"Delete" | localize}} -->
                                                 </button>
                                             </div> 
+                                            </div>
+                                            <div class="row">
+                                            <div class="col-lg-6 col-md-11 col-sm-11 col-10">   
+                                                <button [hidden]="!isCommentEditing" class="btn btn-success btn-sm pull-right commentbutton" (click)="saveComment(commentView.comment)" >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bookmark-check" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd" d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                                                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+                                                      </svg>
+                                                    <!-- {{"Save" | localize}} -->
+                                                </button>
+                                            </div> 
+                                            <div class="col-lg-6 col-md-1 col-sm-1 col-2 commentcont"> 
+                                                <button [hidden]="!isCommentEditing" class="btn btn-secondary btn-sm  commentbutton" (click)="prepareForEdit(commentView.comment.id,false)" >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/>
+                                                        <path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/>
+                                                      </svg>
+                                                    <!-- {{"Cancel" | localize}} -->
+                                                </button>
+                                            </div>
+                                        </div> 
+                                            </div> 
+                                            
+                                        </div>
+                                        </div>
+                                    </div>
                                         </div>
 
                                     </div>
@@ -355,7 +432,7 @@
 
                         <tab heading="{{'History' | localize}} ({{this.historyRecs.length}})">
                             <div class="row" style="padding-top: 20px;" *ngFor="let history of historyRecs">
-                                <div class="col-xl-12">
+                                <div class="col-xl-12 historydes">
                                     {{ history.creationTime | luxonFormat: 'F' }}<div [innerHTML]="history.changeText" class="web-log-view full-height">                                        
                                     </div>
                                 </div>

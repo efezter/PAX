@@ -1,15 +1,24 @@
-<div class="login-form" [@routerTransition]>
-    <div class="pb-13 pt-lg-0 pt-5">
-        <h3 class="font-weight-bolder text-dark font-size-h4 font-size-h1-lg">
-            {{ 'LogIn' | localize }}
+<div class="login-form form-container" [@routerTransition]>
+    <!-- <div class="pb-13 pt-lg-0 pt-5">
+
+            <img src="1234.png" class="mx-auto d-block" alt="" style="height: 100%; width: 300px;">
+
+        <h3 class="font-weight-bolder text-white font-size-h4 font-size-h1-lg">
+            {{ 'LogIn' | localize }} 
         </h3>
-    </div>
+    </div> -->
     <!--begin::Form-->
+    
     <form #loginForm="ngForm" class="login-form form" method="post" method="post" (ngSubmit)="login()">
+        <img class="logo" src="http://api.paxx.site/TenantCustomization/GetTenantLogo?skin=light&tenantId=1&id=f3950621-6e50-cc74-16a6-39ffdf7a675f" class="mx-auto d-block" alt="">
+
+        <h3 class="font-weight-bolder text-white font-size-h4 font-size-h1-lg mb-4 mt-6">
+            {{ 'LogIn' | localize }} 
+        </h3>
         <div class="form-group">
             <input #userNameOrEmailAddressInput="ngModel"
                 [(ngModel)]="loginService.authenticateModel.userNameOrEmailAddress" autoFocus
-                class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" type="text"
+                class="form-control form-text form-control-solid h-auto py-4 px-3 rounded-lg font-size-h6" type="text"
                 autocomplete="new-password" placeholder="{{'UserNameOrEmail' | localize}} *"
                 name="userNameOrEmailAddress" required />
             <validation-messages [formCtrl]="userNameOrEmailAddressInput" *ngIf="!userNameOrEmailAddressInput.touched">
@@ -18,14 +27,14 @@
 
         <div class="form-group">
             <input #passwordInput="ngModel" [(ngModel)]="loginService.authenticateModel.password"
-                class="form-control form-control-solid h-auto py-7 px-6 rounded-lg font-size-h6" type="password"
+                class="form-control form-control-solid h-auto py-4 px-3 rounded-lg font-size-h6" type="password"
                 autocomplete="new-password" placeholder="{{'Password' | localize}} *" name="password" required
                 maxlength="32" />
             <validation-messages [formCtrl]="passwordInput" *ngIf="!passwordInput.touched"></validation-messages>
         </div>
 
         <div class="form-group d-flex justify-content-between mt-4">
-            <label class="checkbox checkbox-outline">
+            <label class="checkbox">
                 <input [(ngModel)]="loginService.rememberMe" type="checkbox" name="rememberMe"
                     value="true" />
                 <span class="ml-2"></span>
@@ -39,7 +48,13 @@
             <button type="submit" class="btn btn-block btn-primary font-weight-bolder font-size-h6 px-8 py-4 my-3 mr-3"
                 [disabled]="!loginForm.form.valid">{{"LogIn" | localize}}</button>
         </div>
+        <!-- <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="link-primary">Kullanıcı adını veya şifreni mi unuttunuz?</a> -->
+        <div id="emailHelp" class="form-text">Henüz kayıtlı değil misin? İnsan kaynaklarından destek alabilirsin.</div>
+        
+
     </form>
+
+
 
     <!--end::Form-->
 
@@ -63,7 +78,7 @@
     <!--end::Options-->
 </div>
 
-<div class="mt-5">
+<!-- <div class="mt-5">
     <div>
         <span>
             {{"NotAMemberYet" | localize}}
@@ -78,4 +93,4 @@
         <span> | </span>
     </span>
     <a routerLink="/account/email-activation" id="email-activation-btn">{{"EmailActivation" | localize}}</a>
-</div>
+</div> -->
