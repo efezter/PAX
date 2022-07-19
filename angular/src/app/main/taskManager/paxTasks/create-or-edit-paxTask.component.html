@@ -108,6 +108,7 @@
                                                 </div>
                                             </div> -->
                                         </div>
+<<<<<<< HEAD
                                         <div class="col-md-4">
                                             <div class="task-part3">
                                                 <h1 class="tasklabelsize">İlgili Kişiler</h1>
@@ -173,6 +174,62 @@
                                                         </div>
                                                     </div>
                                                 
+=======
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="PaxTask_TaskType">{{ l('TaskType') }}</label>
+                                        <select
+                                            class="form-control"
+                                            #PaxTask_TaskType="ngModel"
+                                            name="TaskType"
+                                            id="PaxTask_TaskType"
+                                            [(ngModel)]="paxTask.taskType"
+                                        >
+                                            <option value="1">{{ l('Normal') }}</option>
+                                            <option value="3">{{ l('DeadLine') }}</option>
+                                            <option value="2">{{"Repeating" | localize}}</option>
+                                        </select>
+                                        <validation-messages [formCtrl]="PaxTask_TaskType"></validation-messages>
+                                    </div>
+
+                                    <div *ngIf="paxTask.taskType == 3" class="form-group">
+
+                                        <label for="PaxTask_DeadLineDate">{{ l('DeadLineDate') }}</label>
+
+                                        <p-calendar styleClass="width-percent-100" dateFormat="dd.mm.yy" [minDate]="minDateValue" [(ngModel)]="deadLineDate" name="deadLineDate" showTime="true" [hourFormat]="24"></p-calendar>
+                                     
+                                    </div>
+                        
+                                    <div *ngIf="paxTask.taskType == 2" class="form-group">
+                                        <label for="PaxTask_TaskTypePeriod">{{ l('TaskTypePeriod') }}</label>
+                                        <select
+                                            class="form-control"
+                                            #PaxTask_TaskTypePeriod="ngModel"
+                                            name="TaskTypePeriod"
+                                            id="PaxTask_TaskTypePeriod"
+                                            [(ngModel)]="paxTask.taskTypePeriod">
+
+                                            <option value="1">{{ l('Weekly') }}</option>
+                        
+                                            <option value="2">{{ l('Monthly') }}</option>
+                                        </select>
+                                        <validation-messages [formCtrl]="PaxTask_TaskTypePeriod"></validation-messages>
+                                    </div>
+                        
+                                    <div *ngIf="paxTask.taskType == 2" class="form-group">
+                                        <label for="PaxTask_PeriodInterval">{{ l('PeriodInterval') }}</label>
+                                        <input
+                                            type="number"
+                                            #PaxTask_PeriodInterval="ngModel"
+                                            id="PaxTask_PeriodInterval"
+                                            class="form-control"
+                                            [(ngModel)]="paxTask.periodInterval"
+                                            name="PeriodInterval"
+                                        />
+                                        <validation-messages [formCtrl]="PaxTask_PeriodInterval"></validation-messages>
+                                    </div>
+>>>>>>> master
 
                                             </div>
                                             <div class="task-part3">
@@ -292,11 +349,51 @@
                                                         </p-autoComplete>
                                                     </div>
                                                 </div>
+<<<<<<< HEAD
                                             </div>
                                         </div>
                                     </div>
                         
                                     
+=======
+                                            </ng-template>
+                                        </p-dropdown>
+                                        <!-- <select
+                                            name="paxTask.taskStatusId"
+                                            [(ngModel)]="paxTask.taskStatusId"
+                                            class="form-control"
+                                            required
+                                        >
+                                            <option value="">{{ l('SelectATaskStatus') }}</option>
+                                            <option *ngFor="let item of allTaskStatuss" value="{{ item.id }}">
+                                                {{ item.displayName }}
+                                            </option>
+                                        </select> -->
+                                    </div>
+                        
+                                    <div class="form-group ">
+                                        <label for="PaxTask_Header">{{ l('Header') }} *</label>
+                                        <input
+                                            type="text"
+                                            #PaxTask_Header="ngModel"
+                                            id="PaxTask_Header"
+                                            class="form-control"
+                                            [(ngModel)]="paxTask.header"
+                                            name="Header"
+                                            minlength="3"
+                                            maxlength="150"
+                                            required
+                                        />
+                                        <validation-messages [formCtrl]="PaxTask_Header"></validation-messages>
+                                    </div>
+                        
+                                    <div id="aaa" style="height: 500px;" class="form-group ck-content">
+                                        <label for="PaxTask_Details">{{ l('Details') }}</label>
+                                        <ckeditor #PaxTask_Details="ngModel" [config]="editorConfiguration" (ready)="onReady($event,0)"  [(ngModel)]="paxTask.details" [editor]="Editor" name="Text" data="{{paxTask?.details}}"></ckeditor>
+                                        <validation-messages  
+                                        id="PaxTask_Details" [formCtrl]="PaxTask_Details"></validation-messages>
+                                    </div>
+>>>>>>> master
                                 </div>
                                 
                             </form>
@@ -309,10 +406,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
 
             <div *ngIf="paxTask.id" class="card card-custom gutter-b">
                 <div class="customcard2">
@@ -357,6 +450,7 @@
 
                                     <div *ngIf="commentViews && commentViews.length > 0">
 
+<<<<<<< HEAD
                                         
                                             <div class="commentcontainer">
                                                 <div id="reis2" class="form-group" *ngFor="let commentView of commentViews">
@@ -364,6 +458,54 @@
                                             <div class="row">
                                                 
                                                 <div class="col-xl-11 col-lg-10 col-12">
+=======
+                                        <p-timeline style="padding-top: 20px;" [value]="commentViews" align="alternate" styleClass="customized-timeline">
+                                            <!-- <ng-template pTemplate="marker" let-comment>
+                                                <span class="custom-marker p-shadow-2" [style.backgroundColor]="selectedBGColors[6]">
+                                                    <i class="pi pi-envelope"></i>
+                                                </span>
+                                            </ng-template> -->
+                                            <ng-template pTemplate="content" let-comment>
+                                                <p-card [header]="comment.userName" [subheader]="comment.creationTime">
+                                                     <ckeditor
+                                                        [editor]="Editorrr" 
+                                                        [config]="editorConfiguration"
+                                                        (ready)="onReady($event, comment.comment.id)" 
+                                                        name="CommentText" 
+                                                        [(ngModel)]="comment.comment.commentText"
+                                                        data="{{comment.comment.commentText}}">
+                                                    </ckeditor>
+
+                                                    <div *ngIf="comment.comment.userId == cuRuserId" class="col-xl-6">
+                                                        <button [hidden]="isCommentEditing" pButton label="{{'Edit' | localize}}" class="p-button-text" (click)="prepareForEdit(comment.comment.id, true)"></button>
+                                                        <button pButton [hidden]="isCommentEditing" label="{{'Delete' | localize}}" class="p-button-text" (click)="deleteComment(comment.comment.id)"></button>
+                                                        <button pButton [hidden]="!isCommentEditing" label="{{'Save' | localize}}" class="p-button-text" (click)="saveComment(comment.comment)"></button>
+                                                        <button pButton [hidden]="!isCommentEditing" label="{{'Cancel' | localize}}" class="p-button-text" (click)="prepareForEdit(comment.comment.id,false)"></button>
+                                                        <!-- <button 
+                                                        [hidden]="isCommentEditing"
+                                                        class="btn btn-primary btn-sm pull-right"  
+                                                        (click)="prepareForEdit(commentView.comment.id, true)" >
+                                                            {{"Edit" | localize}}
+                                                        </button>                                               
+                                                        <button [hidden]="isCommentEditing" class="btn btn-danger btn-sm pull-right" (click)="deleteComment(commentView.comment.id)" >
+                                                            {{"Delete" | localize}}
+                                                        </button>
+                                                        <button [hidden]="!isCommentEditing" class="btn btn-success btn-sm pull-right" (click)="saveComment(commentView.comment)" >
+                                                            {{"Save" | localize}}
+                                                        </button>
+                                                        <button [hidden]="!isCommentEditing" class="btn btn-secondary btn-sm pull-right" (click)="prepareForEdit(commentView.comment.id,false)" >
+                                                            {{"Cancel" | localize}}
+                                                        </button> -->
+                                                    </div> 
+                                                    <!-- <button pButton label="Read more" class="p-button-text"></button> -->
+
+                                                </p-card>
+                                            </ng-template>
+                                        </p-timeline>
+
+                                        <!-- <div class="form-group" *ngFor="let commentView of commentViews">
+                                            <label for="comment_{{commentView.comment.id}}">{{commentView.userName}} - {{commentView.creationTime | luxonFormat:'F'}}</label>
+>>>>>>> master
                                             <ckeditor
                                                 [editor]="Editorrr" 
                                                 [config]="editorConfiguration"
@@ -418,11 +560,15 @@
                                             </div>
                                         </div> 
                                             </div> 
+<<<<<<< HEAD
                                             
                                         </div>
                                         </div>
                                     </div>
                                         </div>
+=======
+                                        </div> -->
+>>>>>>> master
 
                                     </div>
                                 </div>
@@ -431,12 +577,27 @@
 
 
                         <tab heading="{{'History' | localize}} ({{this.historyRecs.length}})">
+<<<<<<< HEAD
                             <div class="row" style="padding-top: 20px;" *ngFor="let history of historyRecs">
                                 <div class="col-xl-12 historydes">
+=======
+
+                                <p-timeline style="float: left; padding-top: 20px;" [value]="historyRecs">
+                                    <ng-template pTemplate="content" let-history>
+                                        <div [innerHTML]="history.changeText" class="web-log-view full-height"> </div>
+                                    </ng-template>
+                                    <ng-template pTemplate="opposite" let-history>
+                                        <small class="p-text-secondary">{{ history.creationTime | luxonFormat: 'F' }}</small>
+                                    </ng-template>
+                                </p-timeline>
+
+                            <!-- <div class="row" style="padding-top: 20px;" *ngFor="let history of historyRecs">
+                                <div class="col-xl-12">
+>>>>>>> master
                                     {{ history.creationTime | luxonFormat: 'F' }}<div [innerHTML]="history.changeText" class="web-log-view full-height">                                        
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </tab>
                         <tab heading="{{'Attachments' | localize}} ({{this.uploadedFiles.length}})">
                             <div class="row">

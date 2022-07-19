@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="tr">
   <texts>
+    <text name="DepandantTasks">Bağlantılı görevler</text>
+    
     <text name="DeadLine">Bitiş süreli</text>
-    <text name="DeadLineDate">Bitiş Tarihi</text>
+    <text name="DeadLineDate">Bitiş tarihi</text>
     
     <text name="TaskCreatedNotification">{reporterName} tarafından, sizin için yeni bir görev oluşturuldu.</text>
     <text name="TaskChangedNotification">{reporterName} size atanmış bir görev üzerinde değişiklik yaptı.</text>

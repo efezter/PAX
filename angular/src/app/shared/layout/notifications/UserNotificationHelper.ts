@@ -35,7 +35,6 @@ export class UserNotificationHelper extends AppComponentBase {
     }
 
     getUrl(userNotification: abp.notifications.IUserNotification): string {
-        debugger;
         switch (userNotification.notification.notificationName) {
             case 'App.NewUserRegistered':
                 return '/app/admin/users?filterText=' + userNotification.notification.data.properties.emailAddress;

@@ -1,4 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+
+#aaa ckeditor .ck-reset .ck-editor__main .ck-editor__editable_inline {
+    height: 500px !important;
+}
+
+
 .margin-left-5 {
     margin-left: 5px !important;
 }
