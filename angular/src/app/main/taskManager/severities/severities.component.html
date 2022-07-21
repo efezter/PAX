@@ -158,6 +158,9 @@
                                             {{ l('Order') }}
                                             <p-sortIcon field="severity.order"></p-sortIcon>
                                         </th>
+                                        <th style="width: 150px" pSortableColumn="name">
+                                            {{ l('Icon') }}
+                                        </th>
                                         <th style="width: 150px" pSortableColumn="insertedDate">
                                             {{ l('InsertedDate') }}
                                             <p-sortIcon field="severity.insertedDate"></p-sortIcon>
@@ -222,6 +225,22 @@
                                             <span class="p-column-title"> {{ l('Order') }}</span>
                                             {{ record.severity.order }}
                                         </td>
+                                        <td style="width: 100px">
+                                            <a
+                                                            href="javascript:;"
+                                                            class="dropdown-item"
+                                                            (click)="changeIconModal.show(record)"
+                                                            >
+                                                <div class="symbol symbol-50 symbol-light mt-2 mr-2">
+                                                    <div class="symbol-label">
+                                                        <img alt="photo"
+                                                            src="{{ serverUrl + record.severity.iconUrl }}" class="h-75 align-self-end">
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            <!-- <span class="p-column-title"> {{ l('Name') }}</span>
+                                            {{ record.taskStatus.name }} -->
+                                        </td>
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('InsertedDate') }}</span>
                                             <span *ngIf="record.severity.insertedDate">
@@ -258,5 +277,6 @@
         <createOrEditSeverityModal #createOrEditSeverityModal (modalSave)="getSeverities()"></createOrEditSeverityModal>
         <viewSeverityModal #viewSeverityModal></viewSeverityModal>
         <entityTypeHistoryModal #entityTypeHistoryModal></entityTypeHistoryModal>
+        <changeIconModal #changeIconModal></changeIconModal>
     </div>
 </div>

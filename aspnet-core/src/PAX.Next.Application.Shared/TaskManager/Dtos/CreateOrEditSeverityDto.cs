@@ -11,6 +11,8 @@ namespace PAX.Next.TaskManager.Dtos
         [StringLength(SeverityConsts.MaxNameLength, MinimumLength = SeverityConsts.MinNameLength)]
         public string Name { get; set; }
 
+        public string IconUrl { get; set; }
+
         public int Order { get; set; }
 
     }

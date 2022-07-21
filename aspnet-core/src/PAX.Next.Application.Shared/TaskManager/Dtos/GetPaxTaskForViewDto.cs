@@ -10,7 +10,11 @@
 
         public string SeverityName { get; set; }
 
+        public string SeverityImgUrl { get; set; }
+
         public string TaskStatusName { get; set; }
+
+        public string StatusImgUrl { get; set; }
 
     }
 }

@@ -15,6 +15,9 @@ using Abp.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Abp.UI;
 using PAX.Next.Storage;
+using System.Drawing;
+using System.IO;
+using Microsoft.Extensions.Hosting;
 
 namespace PAX.Next.TaskManager
 {
@@ -23,11 +26,15 @@ namespace PAX.Next.TaskManager
     {
         private readonly IRepository<Severity> _severityRepository;
         private readonly ISeveritiesExcelExporter _severitiesExcelExporter;
+        private readonly ITempFileCacheManager _tempFileCacheManager;
+        private readonly IHostEnvironment _env;
 
-        public SeveritiesAppService(IRepository<Severity> severityRepository, ISeveritiesExcelExporter severitiesExcelExporter)
+        public SeveritiesAppService(IRepository<Severity> severityRepository, ISeveritiesExcelExporter severitiesExcelExporter, ITempFileCacheManager tempFileCacheManager, IHostEnvironment env)
         {
             _severityRepository = severityRepository;
             _severitiesExcelExporter = severitiesExcelExporter;
+            _tempFileCacheManager = tempFileCacheManager;
+            _env = env;
 
         }
 
@@ -49,8 +56,8 @@ namespace PAX.Next.TaskManager
             var severities = from o in pagedAndFilteredSeverities
                              select new
                              {
-
                                  o.Name,
+                                 o.IconUrl,
                                  o.Order,
                                  o.InsertedDate,
                                  Id = o.Id
@@ -69,6 +76,7 @@ namespace PAX.Next.TaskManager
                     {
 
                         Name = o.Name,
+                        IconUrl = o.IconUrl,
                         Order = o.Order,
                         InsertedDate = o.InsertedDate,
                         Id = o.Id,
@@ -136,6 +144,7 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_Severities_Delete)]
         public async Task Delete(EntityDto input)
         {
+            await DeleteIcon(input.Id);
             await _severityRepository.DeleteAsync(input.Id);
         }
 
@@ -165,6 +174,81 @@ namespace PAX.Next.TaskManager
             var severityListDtos = await query.ToListAsync();
 
             return _severitiesExcelExporter.ExportToFile(severityListDtos);
+        }
+
+        /// <summary>
+        /// Updates Icon of task status
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task UpdateIcon(UpdateIconInput input)
+        {
+            byte[] byteArray;
+
+            var imageBytes = _tempFileCacheManager.GetFile(input.FileToken);
+
+            if (imageBytes == null)
+            {
+                throw new UserFriendlyException("There is no such image file with the token: " + input.FileToken);
+            }
+
+            using (var bmpImage = new Bitmap(new MemoryStream(imageBytes)))
+            {
+                var width = (input.Width == 0 || input.Width > bmpImage.Width) ? bmpImage.Width : input.Width;
+                var height = (input.Height == 0 || input.Height > bmpImage.Height) ? bmpImage.Height : input.Height;
+                var bmCrop = bmpImage.Clone(new Rectangle(input.X, input.Y, width, height), bmpImage.PixelFormat);
+
+                using (var stream = new MemoryStream())
+                {
+                    bmCrop.Save(stream, bmpImage.RawFormat);
+                    byteArray = stream.ToArray();
+                }
+            }
+
+            if (byteArray.Length > AppConsts.MaxIconBytes)
+            {
+                throw new UserFriendlyException(L("ResizedProfilePicture_Warn_SizeLimit",
+                    AppConsts.ResizedMaxIconBytesUserFriendlyValue));
+            }
+
+            var iconUrl = "wwwroot/Common/Images/" + AbpSession.TenantId + "/Task/SeverityIcons";
+
+            var dir = Path.Combine(_env.ContentRootPath, iconUrl);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            var filePath = Path.Combine(dir, input.TaskStatusId + ".png");
+
+            File.WriteAllBytes(filePath, byteArray);
+
+            iconUrl = "/" + iconUrl.Replace("wwwroot/", "") + "/" + input.TaskStatusId + ".png";
+
+            SaveImagePathToDb(input.TaskStatusId, iconUrl);
+
+        }
+
+        public async Task DeleteIcon(int severityId)
+        {
+            var taskStatus = await _severityRepository.GetAsync(severityId);
+
+            if (!string.IsNullOrEmpty(taskStatus.IconUrl))
+            {
+                var path = "wwwroot" + taskStatus.IconUrl;
+                var dir = Path.Combine(_env.ContentRootPath, path);
+
+                if (File.Exists(dir))
+                {
+                    File.Delete(dir);
+                }
+            }
+        }
+
+        private void SaveImagePathToDb(int severityId, string iconUrl)
+        {
+            var severity = _severityRepository.FirstOrDefault(severityId);
+            CreateOrEditSeverityDto input = new CreateOrEditSeverityDto { Id = severityId, Name = severity.Name, IconUrl = iconUrl };
+            ObjectMapper.Map(input, severity);
         }
 
     }

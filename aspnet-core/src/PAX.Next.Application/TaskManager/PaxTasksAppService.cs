@@ -132,16 +132,18 @@ namespace PAX.Next.TaskManager
 
                            select new
                            {
-
                                o.Header,
                                o.CreatedDate,
                                o.TaskType,
                                o.TaskTypePeriod,
                                o.PeriodInterval,
+                               o.DeadLineDate,
                                Id = o.Id,
-                               UserName = s1 == null || s1.Name == null ? "" : s1.Name.ToString(),
-                               UserName2 = s2 == null || s2.Name == null ? "" : s2.Name.ToString(),
+                               UserName = s1 == null || s1.FullName == null ? "" : s1.FullName.ToString(),
+                               UserName2 = s2 == null || s2.FullName == null ? "" : s2.FullName.ToString(),
                                SeverityName = s3 == null || s3.Name == null ? "" : s3.Name.ToString(),
+                               SeverityIconUrl = s4 == null || s3.IconUrl == null ? "" : s3.IconUrl.ToString(),
+                               StatusImgUrl = s4 == null || s4.IconUrl == null ? "" : s4.IconUrl.ToString(),
                                TaskStatusName = s4 == null || s4.Name == null ? "" : s4.Name.ToString()
                            };
 
@@ -162,12 +164,15 @@ namespace PAX.Next.TaskManager
                         TaskType = o.TaskType,
                         TaskTypePeriod = o.TaskTypePeriod,
                         PeriodInterval = o.PeriodInterval,
+                        DeadLineDate = o.DeadLineDate,
                         Id = o.Id,
                     },
                     UserName = o.UserName,
                     UserName2 = o.UserName2,
                     SeverityName = o.SeverityName,
-                    TaskStatusName = o.TaskStatusName
+                    SeverityImgUrl = o.SeverityIconUrl,
+                    TaskStatusName = o.TaskStatusName,
+                    StatusImgUrl = o.StatusImgUrl
                 };
 
                 results.Add(res);
@@ -698,7 +703,8 @@ namespace PAX.Next.TaskManager
                 .Select(severity => new PaxTaskSeverityLookupTableDto
                 {
                     Id = severity.Id,
-                    DisplayName = severity == null || severity.Name == null ? "" : severity.Name.ToString()
+                    DisplayName = severity == null || severity.Name == null ? "" : severity.Name.ToString(),
+                    IconUrl = severity.IconUrl
                 }).ToListAsync();
         }
 

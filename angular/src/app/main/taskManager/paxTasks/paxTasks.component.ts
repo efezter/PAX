@@ -1,12 +1,9 @@
 import { AppConsts } from '@shared/AppConsts';
 import { Component, Injector, ViewEncapsulation, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { PaxTasksServiceProxy, PaxTaskDto, TaskType, TaskTypePeriod } from '@shared/service-proxies/service-proxies';
-import { NotifyService } from 'abp-ng2-module';
 import { AppComponentBase } from '@shared/common/app-component-base';
-import { TokenAuthServiceProxy } from '@shared/service-proxies/service-proxies';
 
-// import { ViewPaxTaskModalComponent } from './view-paxTask-modal.component';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { Table } from 'primeng/table';
 import { Paginator } from 'primeng/paginator';
@@ -25,11 +22,11 @@ import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 })
 export class PaxTasksComponent extends AppComponentBase {
     @ViewChild('entityTypeHistoryModal', { static: true }) entityTypeHistoryModal: EntityTypeHistoryModalComponent;
-    // @ViewChild('viewPaxTaskModalComponent', { static: true }) viewPaxTaskModal: ViewPaxTaskModalComponent;
 
     @ViewChild('dataTable', { static: true }) dataTable: Table;
     @ViewChild('paginator', { static: true }) paginator: Paginator;
 
+    serverUrl = AppConsts.remoteServiceBaseUrl;
     advancedFiltersAreShown = false;
     filterText = '';
     headerFilter = '';
@@ -52,17 +49,22 @@ export class PaxTasksComponent extends AppComponentBase {
     _entityTypeFullName = 'PAX.Next.TaskManager.PaxTask';
     entityHistoryEnabled = false;
 
+    displayFilters: any[];
+    selectedDisplayFilter: number = 0;       
+
     constructor(
         injector: Injector,
         private _paxTasksServiceProxy: PaxTasksServiceProxy,
-        // private _notifyService: NotifyService,
-        // private _tokenAuth: TokenAuthServiceProxy,
-        // private _activatedRoute: ActivatedRoute,
         private _fileDownloadService: FileDownloadService,
         private _dateTimeService: DateTimeService,
         private _router: Router
     ) {
         super(injector);
+
+        this.displayFilters = [
+            {label: 'Bana Atananlar', value: 0},
+            {label: 'Benim oluşturduklarım', value: 1}
+        ];   
     }
 
     ngOnInit(): void {
@@ -113,6 +115,7 @@ export class PaxTasksComponent extends AppComponentBase {
                 this.primengTableHelper.getMaxResultCount(this.paginator, event)
             )
             .subscribe((result) => {
+                debugger;
                 this.primengTableHelper.totalRecordsCount = result.totalCount;
                 this.primengTableHelper.records = result.items;
                 this.primengTableHelper.hideLoadingIndicator();

@@ -7,6 +7,8 @@ namespace PAX.Next.TaskManager.Dtos
     {
         public string Name { get; set; }
 
+        public string IconUrl { get; set; }
+
         public int Order { get; set; }
 
         public DateTime InsertedDate { get; set; }

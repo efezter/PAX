@@ -125,6 +125,7 @@ editorConfiguration = {
     allSeveritys: PaxTaskSeverityLookupTableDto[];
     allTaskStatuss: PaxTaskTaskStatusLookupTableDto[];
     selectedStatus: PaxTaskTaskStatusLookupTableDto;
+    selectedSeverity: PaxTaskSeverityLookupTableDto;
 
     constructor(
         injector: Injector,
@@ -194,6 +195,7 @@ editorConfiguration = {
 
     ngOnInit(): void {
         this.selectedStatus = new PaxTaskTaskStatusLookupTableDto();
+        this.selectedSeverity = new PaxTaskSeverityLookupTableDto();
 
         this.cuRuserId = this._abpSessionService.userId;
         this.serverUrl = AppConsts.remoteServiceBaseUrl;
@@ -221,6 +223,15 @@ editorConfiguration = {
 
         this._paxTasksServiceProxy.getAllSeverityForTableDropdown().subscribe((result) => {
             this.allSeveritys = result;
+            if (this.paxTask.id)
+            {
+                setTimeout(() => {this.selectedSeverity = this.allSeveritys.find(x => x.id == this.paxTask.severityId);}, 50); 
+                
+            }   
+            else
+            {
+                this.selectedSeverity = this.allSeveritys[0];
+            }    
         });       
     }
 
@@ -387,6 +398,7 @@ editorConfiguration = {
         this.paxTask.labels = this.labels;
         this.paxTask.dependentTasks = this.depentantTasks;
         this.paxTask.taskStatusId = this.selectedStatus.id;
+        this.paxTask.severityId = this.selectedSeverity.id;
         if (this.paxTask.taskType != 3) {
             this.deadLineDate = new Date()
         }

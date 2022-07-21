@@ -16,6 +16,8 @@ namespace PAX.Next.TaskManager
         [StringLength(SeverityConsts.MaxNameLength, MinimumLength = SeverityConsts.MinNameLength)]
         public virtual string Name { get; set; }
 
+        public virtual string IconUrl { get; set; }
+
         public virtual int Order { get; set; }
 
         public virtual DateTime InsertedDate { get; set; }

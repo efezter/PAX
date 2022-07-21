@@ -25,5 +25,7 @@ namespace PAX.Next.TaskManager.Dtos
 
         public int TaskStatusId { get; set; }
 
+        public DateTime? DeadLineDate { get; set; }
+
     }
 }

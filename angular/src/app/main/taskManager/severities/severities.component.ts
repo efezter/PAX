@@ -18,6 +18,7 @@ import { filter as _filter } from 'lodash-es';
 import { DateTime } from 'luxon';
 
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
+import { ChangeIconModalComponent } from './change-icon-modal.component';
 
 @Component({
     templateUrl: './severities.component.html',
@@ -32,7 +33,9 @@ export class SeveritiesComponent extends AppComponentBase {
 
     @ViewChild('dataTable', { static: true }) dataTable: Table;
     @ViewChild('paginator', { static: true }) paginator: Paginator;
+    @ViewChild('changeIconModalComponent', { static: true }) changeIconModal: ChangeIconModalComponent;
 
+    serverUrl = AppConsts.remoteServiceBaseUrl;
     advancedFiltersAreShown = false;
     filterText = '';
     nameFilter = '';

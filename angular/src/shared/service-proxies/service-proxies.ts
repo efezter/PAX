@@ -11869,6 +11869,110 @@ export class SeveritiesServiceProxy {
         }
         return _observableOf<FileDto>(<any>null);
     }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    updateIcon(body: UpdateIconInput | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Severities/UpdateIcon";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateIcon(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateIcon(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateIcon(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param severityId (optional) 
+     * @return Success
+     */
+    deleteIcon(severityId: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Severities/DeleteIcon?";
+        if (severityId === null)
+            throw new Error("The parameter 'severityId' cannot be null.");
+        else if (severityId !== undefined)
+            url_ += "severityId=" + encodeURIComponent("" + severityId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteIcon(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteIcon(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDeleteIcon(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
 }
 
 @Injectable()
@@ -14078,6 +14182,58 @@ export class TaskStatusesServiceProxy {
     }
 
     protected processUpdateIcon(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param statusId (optional) 
+     * @return Success
+     */
+    deleteIcon(statusId: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/TaskStatuses/DeleteIcon?";
+        if (statusId === null)
+            throw new Error("The parameter 'statusId' cannot be null.");
+        else if (statusId !== undefined)
+            url_ += "statusId=" + encodeURIComponent("" + statusId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteIcon(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteIcon(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDeleteIcon(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -20768,6 +20924,7 @@ export interface ICreateOrEditPaxTaskDto {
 
 export class CreateOrEditSeverityDto implements ICreateOrEditSeverityDto {
     name!: string;
+    iconUrl!: string | undefined;
     order!: number;
     id!: number | undefined;
 
@@ -20783,6 +20940,7 @@ export class CreateOrEditSeverityDto implements ICreateOrEditSeverityDto {
     init(_data?: any) {
         if (_data) {
             this.name = _data["name"];
+            this.iconUrl = _data["iconUrl"];
             this.order = _data["order"];
             this.id = _data["id"];
         }
@@ -20798,6 +20956,7 @@ export class CreateOrEditSeverityDto implements ICreateOrEditSeverityDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
+        data["iconUrl"] = this.iconUrl;
         data["order"] = this.order;
         data["id"] = this.id;
         return data; 
@@ -20806,6 +20965,7 @@ export class CreateOrEditSeverityDto implements ICreateOrEditSeverityDto {
 
 export interface ICreateOrEditSeverityDto {
     name: string;
+    iconUrl: string | undefined;
     order: number;
     id: number | undefined;
 }
@@ -25132,7 +25292,9 @@ export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
     userName!: string | undefined;
     userName2!: string | undefined;
     severityName!: string | undefined;
+    severityImgUrl!: string | undefined;
     taskStatusName!: string | undefined;
+    statusImgUrl!: string | undefined;
 
     constructor(data?: IGetPaxTaskForViewDto) {
         if (data) {
@@ -25149,7 +25311,9 @@ export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
             this.userName = _data["userName"];
             this.userName2 = _data["userName2"];
             this.severityName = _data["severityName"];
+            this.severityImgUrl = _data["severityImgUrl"];
             this.taskStatusName = _data["taskStatusName"];
+            this.statusImgUrl = _data["statusImgUrl"];
         }
     }
 
@@ -25166,7 +25330,9 @@ export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
         data["userName"] = this.userName;
         data["userName2"] = this.userName2;
         data["severityName"] = this.severityName;
+        data["severityImgUrl"] = this.severityImgUrl;
         data["taskStatusName"] = this.taskStatusName;
+        data["statusImgUrl"] = this.statusImgUrl;
         return data; 
     }
 }
@@ -25176,7 +25342,9 @@ export interface IGetPaxTaskForViewDto {
     userName: string | undefined;
     userName2: string | undefined;
     severityName: string | undefined;
+    severityImgUrl: string | undefined;
     taskStatusName: string | undefined;
+    statusImgUrl: string | undefined;
 }
 
 export class GetProfilePictureOutput implements IGetProfilePictureOutput {
@@ -30812,6 +30980,7 @@ export class PaxTaskDto implements IPaxTaskDto {
     assigneeId!: number | undefined;
     severityId!: number | undefined;
     taskStatusId!: number;
+    deadLineDate!: DateTime;
     id!: number;
 
     constructor(data?: IPaxTaskDto) {
@@ -30834,6 +31003,7 @@ export class PaxTaskDto implements IPaxTaskDto {
             this.assigneeId = _data["assigneeId"];
             this.severityId = _data["severityId"];
             this.taskStatusId = _data["taskStatusId"];
+            this.deadLineDate = _data["deadLineDate"] ? DateTime.fromISO(_data["deadLineDate"].toString()) : <any>undefined;
             this.id = _data["id"];
         }
     }
@@ -30856,6 +31026,7 @@ export class PaxTaskDto implements IPaxTaskDto {
         data["assigneeId"] = this.assigneeId;
         data["severityId"] = this.severityId;
         data["taskStatusId"] = this.taskStatusId;
+        data["deadLineDate"] = this.deadLineDate ? this.deadLineDate.toString() : <any>undefined;
         data["id"] = this.id;
         return data; 
     }
@@ -30871,12 +31042,14 @@ export interface IPaxTaskDto {
     assigneeId: number | undefined;
     severityId: number | undefined;
     taskStatusId: number;
+    deadLineDate: DateTime;
     id: number;
 }
 
 export class PaxTaskSeverityLookupTableDto implements IPaxTaskSeverityLookupTableDto {
     id!: number;
     displayName!: string | undefined;
+    iconUrl!: string | undefined;
 
     constructor(data?: IPaxTaskSeverityLookupTableDto) {
         if (data) {
@@ -30891,6 +31064,7 @@ export class PaxTaskSeverityLookupTableDto implements IPaxTaskSeverityLookupTabl
         if (_data) {
             this.id = _data["id"];
             this.displayName = _data["displayName"];
+            this.iconUrl = _data["iconUrl"];
         }
     }
 
@@ -30905,6 +31079,7 @@ export class PaxTaskSeverityLookupTableDto implements IPaxTaskSeverityLookupTabl
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["displayName"] = this.displayName;
+        data["iconUrl"] = this.iconUrl;
         return data; 
     }
 }
@@ -30912,6 +31087,7 @@ export class PaxTaskSeverityLookupTableDto implements IPaxTaskSeverityLookupTabl
 export interface IPaxTaskSeverityLookupTableDto {
     id: number;
     displayName: string | undefined;
+    iconUrl: string | undefined;
 }
 
 export class PaxTaskTaskStatusLookupTableDto implements IPaxTaskTaskStatusLookupTableDto {
@@ -32304,6 +32480,7 @@ export enum SettingScopes {
 
 export class SeverityDto implements ISeverityDto {
     name!: string | undefined;
+    iconUrl!: string | undefined;
     order!: number;
     insertedDate!: DateTime;
     id!: number;
@@ -32320,6 +32497,7 @@ export class SeverityDto implements ISeverityDto {
     init(_data?: any) {
         if (_data) {
             this.name = _data["name"];
+            this.iconUrl = _data["iconUrl"];
             this.order = _data["order"];
             this.insertedDate = _data["insertedDate"] ? DateTime.fromISO(_data["insertedDate"].toString()) : <any>undefined;
             this.id = _data["id"];
@@ -32336,6 +32514,7 @@ export class SeverityDto implements ISeverityDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
+        data["iconUrl"] = this.iconUrl;
         data["order"] = this.order;
         data["insertedDate"] = this.insertedDate ? this.insertedDate.toString() : <any>undefined;
         data["id"] = this.id;
@@ -32345,6 +32524,7 @@ export class SeverityDto implements ISeverityDto {
 
 export interface ISeverityDto {
     name: string | undefined;
+    iconUrl: string | undefined;
     order: number;
     insertedDate: DateTime;
     id: number;

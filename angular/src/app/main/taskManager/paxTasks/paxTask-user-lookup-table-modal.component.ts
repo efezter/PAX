@@ -40,7 +40,6 @@ export class PaxTaskUserLookupTableModalComponent extends AppComponentBase {
         if (!this.active) {
             return;
         }
-debugger;
         // if (this.primengTableHelper.shouldResetPaging(event)) {
         //     this.paginator.changePage(0);
         //     return;

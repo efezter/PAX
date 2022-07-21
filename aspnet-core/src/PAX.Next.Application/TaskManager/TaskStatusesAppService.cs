@@ -139,6 +139,7 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_TaskStatuses_Delete)]
         public async Task Delete(EntityDto input)
         {
+            await DeleteIcon(input.Id);
             await _taskStatusRepository.DeleteAsync(input.Id);
         }
 
@@ -214,6 +215,22 @@ namespace PAX.Next.TaskManager
 
             SaveImagePathToDb(input.TaskStatusId, iconUrl);
 
+        }
+
+        public async Task DeleteIcon(int statusId)
+        {
+            var taskStatus = await _taskStatusRepository.GetAsync(statusId);
+
+            if (!string.IsNullOrEmpty(taskStatus.IconUrl))
+            {
+                var path = "wwwroot" + taskStatus.IconUrl;
+                var dir = Path.Combine(_env.ContentRootPath, path);
+
+                if (File.Exists(dir))
+                {
+                    File.Delete(dir);
+                } 
+            }
         }
 
         private void SaveImagePathToDb(int taskStatusId, string iconUrl)
