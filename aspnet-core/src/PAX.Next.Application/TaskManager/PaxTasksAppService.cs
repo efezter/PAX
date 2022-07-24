@@ -13,6 +13,8 @@ using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
 using PAX.Next.Dto;
 using PAX.Next.Notifications;
+using PAX.Next.Organizations;
+using PAX.Next.Organizations.Dto;
 using PAX.Next.TaskManager.Dtos;
 using PAX.Next.TaskManager.Exporting;
 using System;
@@ -32,6 +34,7 @@ namespace PAX.Next.TaskManager
         private readonly ITaskDependancyRelationsAppService _taskDependancyRelationsAppService;
         private readonly ITaskHistoriesAppService _taskHistoriesAppService;
         private readonly IPaxTasksExcelExporter _paxTasksExcelExporter;
+        private readonly IOrganizationUnitAppService _organizationUnitAppService;
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly IRepository<Severity, int> _lookup_severityRepository;
         private readonly IRepository<TaskStatus, int> _lookup_taskStatusRepository;
@@ -63,7 +66,8 @@ namespace PAX.Next.TaskManager
             ILabelsAppService labelService,
             ITaskLabelsAppService taskLabelService,
             IAppNotifier appNotifier,
-            ITaskDependancyRelationsAppService taskDependancyRelationsAppService
+            ITaskDependancyRelationsAppService taskDependancyRelationsAppService,
+            IOrganizationUnitAppService organizationUnitAppService
             )
         {
             _paxTaskRepository = paxTaskRepository;
@@ -82,6 +86,7 @@ namespace PAX.Next.TaskManager
             _taskLabelService = taskLabelService;
             _appNotifier = appNotifier;
             _taskDependancyRelationsAppService = taskDependancyRelationsAppService;
+            _organizationUnitAppService = organizationUnitAppService;
 
             _localizationSource = localizationManager.GetSource(NextConsts.LocalizationSourceName);
         }
@@ -94,6 +99,20 @@ namespace PAX.Next.TaskManager
             var taskTypePeriodFilter = input.TaskTypePeriodFilter.HasValue
                 ? (TaskTypePeriod)input.TaskTypePeriodFilter
                 : default;
+
+            var currentUserId = AbpSession.GetUserId();
+            User user = new User();
+            user.Id = currentUserId;
+
+           bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+
+            if (!isAdmin)
+            {
+                FindOrganizationUnitUsersInput orgInput = new FindOrganizationUnitUsersInput();
+
+                //orgInput.OrganizationUnitId = UserManager.ur 
+                //_organizationUnitAppService.FindUsers()
+            }
 
             var filteredPaxTasks = _paxTaskRepository.GetAll()
                         .Include(e => e.ReporterFk)
@@ -111,7 +130,10 @@ namespace PAX.Next.TaskManager
                         .WhereIf(!string.IsNullOrWhiteSpace(input.UserNameFilter), e => e.ReporterFk != null && e.ReporterFk.Name == input.UserNameFilter)
                         .WhereIf(!string.IsNullOrWhiteSpace(input.UserName2Filter), e => e.AssigneeFk != null && e.AssigneeFk.Name == input.UserName2Filter)
                         .WhereIf(!string.IsNullOrWhiteSpace(input.SeverityNameFilter), e => e.SeverityFk != null && e.SeverityFk.Name == input.SeverityNameFilter)
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.TaskStatusNameFilter), e => e.TaskStatusFk != null && e.TaskStatusFk.Name == input.TaskStatusNameFilter);
+                        .WhereIf(!string.IsNullOrWhiteSpace(input.TaskStatusNameFilter), e => e.TaskStatusFk != null && e.TaskStatusFk.Name == input.TaskStatusNameFilter)
+                        .WhereIf(input.ShowOnlyCreatedByMe, e => e.ReporterId == currentUserId)
+                        .WhereIf(input.ShowOnlyMyTasks, e => e.AssigneeId == currentUserId);
+                        //.WhereIf(!isAdmin, e => (e.AssigneeFk != null && e.ReporterFk != null) && e.AssigneeFk == currentUserId);
 
             var pagedAndFilteredPaxTasks = filteredPaxTasks
                 .OrderBy(input.Sorting ?? "id desc")

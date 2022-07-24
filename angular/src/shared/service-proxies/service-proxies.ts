@@ -8253,12 +8253,14 @@ export class PaxTasksServiceProxy {
      * @param userName2Filter (optional) 
      * @param severityNameFilter (optional) 
      * @param taskStatusNameFilter (optional) 
+     * @param showOnlyMyTasks (optional) 
+     * @param showOnlyCreatedByMe (optional) 
      * @param sorting (optional) 
      * @param skipCount (optional) 
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll(filter: string | undefined, headerFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
+    getAll(filter: string | undefined, headerFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, showOnlyMyTasks: boolean | undefined, showOnlyCreatedByMe: boolean | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
         let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAll?";
         if (filter === null)
             throw new Error("The parameter 'filter' cannot be null.");
@@ -8308,6 +8310,14 @@ export class PaxTasksServiceProxy {
             throw new Error("The parameter 'taskStatusNameFilter' cannot be null.");
         else if (taskStatusNameFilter !== undefined)
             url_ += "TaskStatusNameFilter=" + encodeURIComponent("" + taskStatusNameFilter) + "&";
+        if (showOnlyMyTasks === null)
+            throw new Error("The parameter 'showOnlyMyTasks' cannot be null.");
+        else if (showOnlyMyTasks !== undefined)
+            url_ += "ShowOnlyMyTasks=" + encodeURIComponent("" + showOnlyMyTasks) + "&";
+        if (showOnlyCreatedByMe === null)
+            throw new Error("The parameter 'showOnlyCreatedByMe' cannot be null.");
+        else if (showOnlyCreatedByMe !== undefined)
+            url_ += "ShowOnlyCreatedByMe=" + encodeURIComponent("" + showOnlyCreatedByMe) + "&";
         if (sorting === null)
             throw new Error("The parameter 'sorting' cannot be null.");
         else if (sorting !== undefined)
@@ -30980,7 +30990,7 @@ export class PaxTaskDto implements IPaxTaskDto {
     assigneeId!: number | undefined;
     severityId!: number | undefined;
     taskStatusId!: number;
-    deadLineDate!: DateTime;
+    deadLineDate!: DateTime | undefined;
     id!: number;
 
     constructor(data?: IPaxTaskDto) {
@@ -31042,7 +31052,7 @@ export interface IPaxTaskDto {
     assigneeId: number | undefined;
     severityId: number | undefined;
     taskStatusId: number;
-    deadLineDate: DateTime;
+    deadLineDate: DateTime | undefined;
     id: number;
 }
 

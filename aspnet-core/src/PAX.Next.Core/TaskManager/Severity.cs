@@ -16,6 +16,7 @@ namespace PAX.Next.TaskManager
         [StringLength(SeverityConsts.MaxNameLength, MinimumLength = SeverityConsts.MinNameLength)]
         public virtual string Name { get; set; }
 
+        [StringLength(TaskStatusConsts.MaxIconUrlLength, MinimumLength = TaskStatusConsts.MinIconUrlLength)]
         public virtual string IconUrl { get; set; }
 
         public virtual int Order { get; set; }

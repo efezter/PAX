@@ -1,8 +1,12 @@
-﻿namespace PAX.Next.TaskManager.Dtos
+﻿using System.Collections.Generic;
+
+namespace PAX.Next.TaskManager.Dtos
 {
     public class GetPaxTaskForViewDto
     {
         public PaxTaskDto PaxTask { get; set; }
+
+        public List<LabelDto> Labels { get; set; }
 
         public string UserName { get; set; }
 

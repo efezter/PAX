@@ -9,8 +9,7 @@
                 <button
                     *ngIf="isGranted('Pages.PaxTasks.Create')"
                     (click)="createPaxTask()"
-                    class="btn btn-primary blue"
-                >
+                    class="btn btn-primary blue">
                     <i class="fa fa-plus"></i> {{ l('CreateNewPaxTask') }}
                 </button>
             </div>
@@ -24,7 +23,7 @@
                             <div class="row align-items-center">
                                 <div class="col-xl-6">
                                     <div class="form-group m-form__group align-items-center">
-                                        <p-selectButton  [(ngModel)]="selectedDisplayFilter"  [options]="displayFilters" name="Map"></p-selectButton>
+                                        <p-selectButton  [(ngModel)]="selectedDisplayFilter"  [options]="displayFilters" name="buttonFilter" (onChange)="reloadPage()"></p-selectButton>
                                     </div>
                                 </div>                               
                             
@@ -220,6 +219,7 @@
                                 #dataTable
                                 (onLazyLoad)="getPaxTasks($event)"
                                 [value]="primengTableHelper.records"
+                                responsiveLayout="scroll"
                                 rows="{{ primengTableHelper.defaultRecordsCountPerPage }}"
                                 [lazy]="true"
                                 [scrollable]="true"
@@ -361,6 +361,10 @@
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('TaskType') }}</span>
                                             {{ l(taskType[record.paxTask.taskType]) }}
+                                        </td>
+                                        <td>
+                                            <span class="p-column-title">Status</span>
+                                            <span class="label-span">Proposal</span>
                                         </td>
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('DeadLineDate') }}</span>

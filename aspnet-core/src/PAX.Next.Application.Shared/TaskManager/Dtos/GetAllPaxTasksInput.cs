@@ -10,6 +10,7 @@ namespace PAX.Next.TaskManager.Dtos
         public string HeaderFilter { get; set; }
 
         public DateTime? MaxCreatedDateFilter { get; set; }
+
         public DateTime? MinCreatedDateFilter { get; set; }
 
         public int? TaskTypeFilter { get; set; }
@@ -26,6 +27,10 @@ namespace PAX.Next.TaskManager.Dtos
         public string SeverityNameFilter { get; set; }
 
         public string TaskStatusNameFilter { get; set; }
+
+        public bool ShowOnlyMyTasks{ get; set; }
+
+        public bool ShowOnlyCreatedByMe { get; set; }
 
     }
 }
