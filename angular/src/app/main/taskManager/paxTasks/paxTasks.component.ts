@@ -17,7 +17,8 @@ import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 
 @Component({
     templateUrl: './paxTasks.component.html',
-    encapsulation: ViewEncapsulation.None,
+    styleUrls: ['./paxTasks.component.less'],
+    encapsulation: ViewEncapsulation.None,    
     animations: [appModuleAnimation()],
 })
 export class PaxTasksComponent extends AppComponentBase {
@@ -62,8 +63,9 @@ export class PaxTasksComponent extends AppComponentBase {
         super(injector);
 
         this.displayFilters = [
-            {label: 'Bana Atananlar', value: 0},
-            {label: 'Benim oluşturduklarım', value: 1}
+            {label: 'Hepsi', value: 0},
+            {label: 'Bana Atananlar', value: 1},
+            {label: 'Benim oluşturduklarım', value: 2}            
         ];   
     }
 
@@ -110,6 +112,8 @@ export class PaxTasksComponent extends AppComponentBase {
                 this.userName2Filter,
                 this.severityNameFilter,
                 this.taskStatusNameFilter,
+                this.selectedDisplayFilter == 1,
+                this.selectedDisplayFilter == 2,
                 this.primengTableHelper.getSorting(this.dataTable),
                 this.primengTableHelper.getSkipCount(this.paginator, event),
                 this.primengTableHelper.getMaxResultCount(this.paginator, event)
@@ -129,6 +133,12 @@ export class PaxTasksComponent extends AppComponentBase {
     createPaxTask(): void {
         this._router.navigate(['app/main/taskManager/paxTasks/details']);
     }
+
+    // buttonFilterChanged(p)
+    // {
+    //     debugger;
+    //     this.reloadPage();
+    // }
 
     showHistory(paxTask: PaxTaskDto): void {
         this.entityTypeHistoryModal.show({
