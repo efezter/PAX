@@ -10,7 +10,7 @@
     <!--begin::Form-->
     
     <form #loginForm="ngForm" class="login-form form" method="post" method="post" (ngSubmit)="login()">
-        <img class="logo" src="http://api.paxx.site/TenantCustomization/GetTenantLogo?skin=light&tenantId=1&id=f3950621-6e50-cc74-16a6-39ffdf7a675f" class="mx-auto d-block" alt="">
+        <img src="http://api.paxx.site/TenantCustomization/GetTenantLogo?skin=light&tenantId=1&id=f3950621-6e50-cc74-16a6-39ffdf7a675f" class="mx-auto d-block loginlogo" alt="">
 
         <h3 class="font-weight-bolder text-white font-size-h4 font-size-h1-lg mb-4 mt-6">
             {{ 'LogIn' | localize }} 
@@ -40,8 +40,8 @@
                 <span class="ml-2"></span>
                 {{"RememberMe" | localize}}
             </label>
-            <a routerLink="/account/forgot-password" id="forget-password"
-                class="text-primary font-size-h6 font-weight-bolder text-hover-primary">{{"ForgotPassword" | localize}}</a>
+            <!-- <a routerLink="/account/forgot-password" id="forget-password"
+                class="text-primary font-size-h6 font-weight-bolder text-hover-primary">{{"ForgotPassword" | localize}}</a> -->
         </div>
 
         <div class="pb-lg-0 pb-5">

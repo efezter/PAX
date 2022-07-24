@@ -219,11 +219,8 @@
                                 #dataTable
                                 (onLazyLoad)="getPaxTasks($event)"
                                 [value]="primengTableHelper.records"
-                                responsiveLayout="scroll"
                                 rows="{{ primengTableHelper.defaultRecordsCountPerPage }}"
                                 [lazy]="true"
-                                [scrollable]="true"
-                                ScrollWidth="100%"
                                 [responsive]="primengTableHelper.isResponsive"
                                 [resizableColumns]="primengTableHelper.resizableColumns"
                                 [rowHover]="true"                                
@@ -339,13 +336,12 @@
                                         </td>
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('severityName') }}</span>
-                                            <img src="{{this.serverUrl + '/' + record.severityImgUrl}}" width="30">
-                                            <span style="margin-left: 10px;" class="image-text">{{record.severityName}}</span>
+                                            <span class="image-text"><img src="{{this.serverUrl + '/' + record.severityImgUrl}}" width="30" style="margin-right: 10px;">{{record.severityName}}</span>
                                         </td>                                        
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('taskStatusName') }}</span>
-                                            <img src="{{this.serverUrl + '/' + record.statusImgUrl}}" width="30">
-                                            <span style="margin-left: 10px;" class="image-text">{{record.taskStatusName}}</span>
+                                            
+                                            <span class="image-text"><img src="{{this.serverUrl + '/' + record.statusImgUrl}}" width="30" style="margin-right: 10px;">{{record.taskStatusName}}</span>
                                         </td>
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('Header') }}</span>
