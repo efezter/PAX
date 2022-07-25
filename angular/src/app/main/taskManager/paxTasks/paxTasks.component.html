@@ -192,6 +192,20 @@
                                         />
                                     </div>
                                 </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="LabelFilter"
+                                            >({{ l('Labels') }})</label
+                                        >
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="LabelFilter"
+                                            name="LabelFilter"
+                                            [(ngModel)]="labelFilter"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-sm-12">
@@ -261,7 +275,7 @@
                                         <th style="width: 150px" pSortableColumn="taskType">
                                             {{ l('TaskType') }}
                                             <p-sortIcon field="paxTask.taskType"></p-sortIcon>
-                                        </th>
+                                        </th>                                   
                                         <th style="width: 150px" pSortableColumn="taskType">
                                             {{ l('DeadLineDate') }}aaaa
                                             <p-sortIcon field="paxTask.deadLineDate"></p-sortIcon>
@@ -273,6 +287,10 @@
                                         <th style="width: 150px" pSortableColumn="periodInterval">
                                             {{ l('PeriodInterval') }}
                                             <p-sortIcon field="paxTask.periodInterval"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="labels">
+                                            {{ l('Labels') }}
+                                            <p-sortIcon field="paxTask.labels"></p-sortIcon>
                                         </th>
                                     </tr>
                                 </ng-template>
@@ -327,11 +345,11 @@
                                             </div>
                                         </td>
                                         <td style="width: 150px">
-                                            <span class="p-column-title"> {{ l('Name') }}</span>
+                                            <span class="p-column-title"> {{ l('Reporter') }}</span>
                                             {{ record.userName }}
                                         </td>
                                         <td style="width: 150px">
-                                            <span class="p-column-title"> {{ l('Name') }}</span>
+                                            <span class="p-column-title"> {{ l('Assignee') }}</span>
                                             {{ record.userName2 }}
                                         </td>
                                         <td style="width: 150px">
@@ -357,11 +375,7 @@
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('TaskType') }}</span>
                                             {{ l(taskType[record.paxTask.taskType]) }}
-                                        </td>
-                                        <td>
-                                            <span class="p-column-title">Status</span>
-                                            <span class="label-span">Proposal</span>
-                                        </td>
+                                        </td>                                        
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('DeadLineDate') }}</span>
                                             {{ record.paxTask.deadLineDate | luxonFormat: 'F' }}
@@ -373,6 +387,10 @@
                                         <td style="width: 150px">
                                             <span class="p-column-title"> {{ l('PeriodInterval') }}</span>
                                             {{ record.paxTask.periodInterval }}
+                                        </td>
+                                        <td>
+                                            <span class="p-column-title">{{ l('Labels') }}</span>
+                                            <span class="label-span"  *ngFor="let label of record.labels" >{{label.name}}</span>
                                         </td>
                                     </tr>
                                 </ng-template>

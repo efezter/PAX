@@ -40,6 +40,7 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<TaskStatus, int> _lookup_taskStatusRepository;
         private readonly IRepository<EntityChange, long> _entityChangeRepository;
         private readonly IRepository<EntityChangeSet, long> _entityChangeSetRepository;
+        private readonly IRepository<TaskLabel, int> _taskLabelRepository;
         private readonly IRepository<EntityPropertyChange, long> _entityPropertyChangeRepository;
         private readonly ILocalizationSource _localizationSource;
         private readonly IRepository<PaxTaskAttachment> _paxTaskAttachmentRepository;
@@ -67,7 +68,8 @@ namespace PAX.Next.TaskManager
             ITaskLabelsAppService taskLabelService,
             IAppNotifier appNotifier,
             ITaskDependancyRelationsAppService taskDependancyRelationsAppService,
-            IOrganizationUnitAppService organizationUnitAppService
+            IOrganizationUnitAppService organizationUnitAppService,
+            IRepository<TaskLabel, int> taskLabelRepository
             )
         {
             _paxTaskRepository = paxTaskRepository;
@@ -84,6 +86,7 @@ namespace PAX.Next.TaskManager
             _labelRepository = labelRepository;
             _labelService = labelService;
             _taskLabelService = taskLabelService;
+            _taskLabelRepository = taskLabelRepository;
             _appNotifier = appNotifier;
             _taskDependancyRelationsAppService = taskDependancyRelationsAppService;
             _organizationUnitAppService = organizationUnitAppService;
@@ -93,118 +96,139 @@ namespace PAX.Next.TaskManager
 
         public async Task<PagedResultDto<GetPaxTaskForViewDto>> GetAll(GetAllPaxTasksInput input)
         {
-            var taskTypeFilter = input.TaskTypeFilter.HasValue
-                        ? (TaskType)input.TaskTypeFilter
-                        : default;
-            var taskTypePeriodFilter = input.TaskTypePeriodFilter.HasValue
-                ? (TaskTypePeriod)input.TaskTypePeriodFilter
-                : default;
-
-            var currentUserId = AbpSession.GetUserId();
-            User user = new User();
-            user.Id = currentUserId;
-
-           bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
-
-            if (!isAdmin)
+            try
             {
-                FindOrganizationUnitUsersInput orgInput = new FindOrganizationUnitUsersInput();
+                var taskTypeFilter = input.TaskTypeFilter.HasValue
+                                ? (TaskType)input.TaskTypeFilter
+                                : default;
+                var taskTypePeriodFilter = input.TaskTypePeriodFilter.HasValue
+                    ? (TaskTypePeriod)input.TaskTypePeriodFilter
+                    : default;
 
-                //orgInput.OrganizationUnitId = UserManager.ur 
-                //_organizationUnitAppService.FindUsers()
-            }
+                var currentUserId = AbpSession.GetUserId();
+                User user = new User();
+                user.Id = currentUserId;
 
-            var filteredPaxTasks = _paxTaskRepository.GetAll()
-                        .Include(e => e.ReporterFk)
-                        .Include(e => e.AssigneeFk)
-                        .Include(e => e.SeverityFk)
-                        .Include(e => e.TaskStatusFk)
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Header.Contains(input.Filter) || e.Details.Contains(input.Filter))
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.HeaderFilter), e => e.Header.Contains(input.HeaderFilter))
-                        .WhereIf(input.MinCreatedDateFilter != null, e => e.CreatedDate >= input.MinCreatedDateFilter)
-                        .WhereIf(input.MaxCreatedDateFilter != null, e => e.CreatedDate <= input.MaxCreatedDateFilter)
-                        .WhereIf(input.TaskTypeFilter.HasValue && input.TaskTypeFilter > -1, e => e.TaskType == taskTypeFilter)
-                        .WhereIf(input.TaskTypePeriodFilter.HasValue && input.TaskTypePeriodFilter > -1, e => e.TaskTypePeriod == taskTypePeriodFilter)
-                        .WhereIf(input.MinPeriodIntervalFilter != null, e => e.PeriodInterval >= input.MinPeriodIntervalFilter)
-                        .WhereIf(input.MaxPeriodIntervalFilter != null, e => e.PeriodInterval <= input.MaxPeriodIntervalFilter)
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.UserNameFilter), e => e.ReporterFk != null && e.ReporterFk.Name == input.UserNameFilter)
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.UserName2Filter), e => e.AssigneeFk != null && e.AssigneeFk.Name == input.UserName2Filter)
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.SeverityNameFilter), e => e.SeverityFk != null && e.SeverityFk.Name == input.SeverityNameFilter)
-                        .WhereIf(!string.IsNullOrWhiteSpace(input.TaskStatusNameFilter), e => e.TaskStatusFk != null && e.TaskStatusFk.Name == input.TaskStatusNameFilter)
-                        .WhereIf(input.ShowOnlyCreatedByMe, e => e.ReporterId == currentUserId)
-                        .WhereIf(input.ShowOnlyMyTasks, e => e.AssigneeId == currentUserId);
-                        //.WhereIf(!isAdmin, e => (e.AssigneeFk != null && e.ReporterFk != null) && e.AssigneeFk == currentUserId);
+                bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
 
-            var pagedAndFilteredPaxTasks = filteredPaxTasks
-                .OrderBy(input.Sorting ?? "id desc")
-                .PageBy(input);
-
-            var paxTasks = from o in pagedAndFilteredPaxTasks
-                           join o1 in _lookup_userRepository.GetAll() on o.ReporterId equals o1.Id into j1
-                           from s1 in j1.DefaultIfEmpty()
-
-                           join o2 in _lookup_userRepository.GetAll() on o.AssigneeId equals o2.Id into j2
-                           from s2 in j2.DefaultIfEmpty()
-
-                           join o3 in _lookup_severityRepository.GetAll() on o.SeverityId equals o3.Id into j3
-                           from s3 in j3.DefaultIfEmpty()
-
-                           join o4 in _lookup_taskStatusRepository.GetAll() on o.TaskStatusId equals o4.Id into j4
-                           from s4 in j4.DefaultIfEmpty()
-
-                           select new
-                           {
-                               o.Header,
-                               o.CreatedDate,
-                               o.TaskType,
-                               o.TaskTypePeriod,
-                               o.PeriodInterval,
-                               o.DeadLineDate,
-                               Id = o.Id,
-                               UserName = s1 == null || s1.FullName == null ? "" : s1.FullName.ToString(),
-                               UserName2 = s2 == null || s2.FullName == null ? "" : s2.FullName.ToString(),
-                               SeverityName = s3 == null || s3.Name == null ? "" : s3.Name.ToString(),
-                               SeverityIconUrl = s4 == null || s3.IconUrl == null ? "" : s3.IconUrl.ToString(),
-                               StatusImgUrl = s4 == null || s4.IconUrl == null ? "" : s4.IconUrl.ToString(),
-                               TaskStatusName = s4 == null || s4.Name == null ? "" : s4.Name.ToString()
-                           };
-
-            var totalCount = await filteredPaxTasks.CountAsync();
-
-            var dbList = await paxTasks.ToListAsync();
-            var results = new List<GetPaxTaskForViewDto>();
-
-            foreach (var o in dbList)
-            {
-                var res = new GetPaxTaskForViewDto()
+                if (!isAdmin)
                 {
-                    PaxTask = new PaxTaskDto
+                    FindOrganizationUnitUsersInput orgInput = new FindOrganizationUnitUsersInput();
+
+                    //orgInput.OrganizationUnitId = UserManager.ur 
+                    //_organizationUnitAppService.FindUsers()
+                }
+
+                List<int> labelFilteredTasks = new List<int>();
+
+                if (!string.IsNullOrEmpty(input.LabelFilter))
+                {
+                    labelFilteredTasks = (from l in _labelRepository.GetAll()
+                                          join lt in _taskLabelRepository.GetAll() on l.Id equals lt.LabelId
+                                          where l.Name.Contains(input.LabelFilter)
+                                          select lt.PaxTaskId).ToList();
+                }
+
+                var filteredPaxTasks = _paxTaskRepository.GetAll()
+                            .Include(e => e.ReporterFk)
+                            .Include(e => e.AssigneeFk)
+                            .Include(e => e.SeverityFk)
+                            .Include(e => e.TaskStatusFk)
+                            .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Header.Contains(input.Filter))
+                            .WhereIf(!string.IsNullOrWhiteSpace(input.HeaderFilter), e => e.Header.Contains(input.HeaderFilter))
+                            .WhereIf(input.MinCreatedDateFilter != null, e => e.CreatedDate >= input.MinCreatedDateFilter)
+                            .WhereIf(input.MaxCreatedDateFilter != null, e => e.CreatedDate <= input.MaxCreatedDateFilter)
+                            .WhereIf(input.TaskTypeFilter.HasValue && input.TaskTypeFilter > -1, e => e.TaskType == taskTypeFilter)
+                            .WhereIf(input.TaskTypePeriodFilter.HasValue && input.TaskTypePeriodFilter > -1, e => e.TaskTypePeriod == taskTypePeriodFilter)
+                            .WhereIf(input.MinPeriodIntervalFilter != null, e => e.PeriodInterval >= input.MinPeriodIntervalFilter)
+                            .WhereIf(input.MaxPeriodIntervalFilter != null, e => e.PeriodInterval <= input.MaxPeriodIntervalFilter)
+                            .WhereIf(!string.IsNullOrWhiteSpace(input.UserNameFilter), e => e.ReporterFk != null && e.ReporterFk.FullName.Contains(input.UserNameFilter))
+                            .WhereIf(!string.IsNullOrWhiteSpace(input.UserName2Filter), e => e.AssigneeFk != null && e.AssigneeFk.FullName.Contains(input.UserName2Filter))
+                            .WhereIf(!string.IsNullOrWhiteSpace(input.SeverityNameFilter), e => e.SeverityFk != null && e.SeverityFk.Name.Contains(input.SeverityNameFilter))
+                            .WhereIf(!string.IsNullOrWhiteSpace(input.TaskStatusNameFilter), e => e.TaskStatusFk != null && e.TaskStatusFk.Name == input.TaskStatusNameFilter)
+                            .WhereIf(input.ShowOnlyCreatedByMe, e => e.ReporterId == currentUserId)
+                            .WhereIf(input.ShowOnlyMyTasks, e => e.AssigneeId == currentUserId)
+                            .WhereIf(labelFilteredTasks != null && labelFilteredTasks.Count > 0, e => labelFilteredTasks.Contains(e.Id));
+                //.WhereIf(!isAdmin, e => (e.AssigneeFk != null && e.ReporterFk != null) && e.AssigneeFk == currentUserId);
+
+
+                var pagedAndFilteredPaxTasks = filteredPaxTasks
+                    .OrderBy(input.Sorting ?? "id desc")
+                    .PageBy(input);
+
+                var paxTasks = from o in pagedAndFilteredPaxTasks
+                               join o1 in _lookup_userRepository.GetAll() on o.ReporterId equals o1.Id into j1
+                               from s1 in j1.DefaultIfEmpty()
+
+                               join o2 in _lookup_userRepository.GetAll() on o.AssigneeId equals o2.Id into j2
+                               from s2 in j2.DefaultIfEmpty()
+
+                               join o3 in _lookup_severityRepository.GetAll() on o.SeverityId equals o3.Id into j3
+                               from s3 in j3.DefaultIfEmpty()
+
+                               join o4 in _lookup_taskStatusRepository.GetAll() on o.TaskStatusId equals o4.Id into j4
+                               from s4 in j4.DefaultIfEmpty()
+
+                               select new
+                               {
+                                   o.Header,
+                                   o.CreatedDate,
+                                   o.TaskType,
+                                   o.TaskTypePeriod,
+                                   o.PeriodInterval,
+                                   o.DeadLineDate,
+                                   Id = o.Id,
+                                   UserName = s1 == null || s1.FullName == null ? "" : s1.FullName.ToString(),
+                                   UserName2 = s2 == null || s2.FullName == null ? "" : s2.FullName.ToString(),
+                                   SeverityName = s3 == null || s3.Name == null ? "" : s3.Name.ToString(),
+                                   SeverityIconUrl = s4 == null || s3.IconUrl == null ? "" : s3.IconUrl.ToString(),
+                                   StatusImgUrl = s4 == null || s4.IconUrl == null ? "" : s4.IconUrl.ToString(),
+                                   TaskStatusName = s4 == null || s4.Name == null ? "" : s4.Name.ToString(),
+                               };
+
+
+                var totalCount = await filteredPaxTasks.CountAsync();
+
+                var dbList = await paxTasks.ToListAsync();
+                var results = new List<GetPaxTaskForViewDto>();
+
+                foreach (var o in dbList)
+                {
+                    var res = new GetPaxTaskForViewDto()
                     {
+                        PaxTask = new PaxTaskDto
+                        {
 
-                        Header = o.Header,
-                        CreatedDate = o.CreatedDate,
-                        TaskType = o.TaskType,
-                        TaskTypePeriod = o.TaskTypePeriod,
-                        PeriodInterval = o.PeriodInterval,
-                        DeadLineDate = o.DeadLineDate,
-                        Id = o.Id,
-                    },
-                    UserName = o.UserName,
-                    UserName2 = o.UserName2,
-                    SeverityName = o.SeverityName,
-                    SeverityImgUrl = o.SeverityIconUrl,
-                    TaskStatusName = o.TaskStatusName,
-                    StatusImgUrl = o.StatusImgUrl
-                };
+                            Header = o.Header,
+                            CreatedDate = o.CreatedDate,
+                            TaskType = o.TaskType,
+                            TaskTypePeriod = o.TaskTypePeriod,
+                            PeriodInterval = o.PeriodInterval,
+                            DeadLineDate = o.DeadLineDate,
+                            Id = o.Id,
+                        },
+                        Labels = _labelService.GetLabelsByTaskId(o.Id).ToList(),
+                        UserName = o.UserName,
+                        UserName2 = o.UserName2,
+                        SeverityName = o.SeverityName,
+                        SeverityImgUrl = o.SeverityIconUrl,
+                        TaskStatusName = o.TaskStatusName,
+                        StatusImgUrl = o.StatusImgUrl
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetPaxTaskForViewDto>(
+                    totalCount,
+                    results
+                );
             }
+            catch (Exception ex)
+            {
 
-            return new PagedResultDto<GetPaxTaskForViewDto>(
-                totalCount,
-                results
-            );
-
+                throw;
+            }
         }
 
         public async Task<GetPaxTaskForViewDto> GetPaxTaskForView(int id)
@@ -213,7 +237,7 @@ namespace PAX.Next.TaskManager
 
             var output = new GetPaxTaskForViewDto { PaxTask = ObjectMapper.Map<PaxTaskDto>(paxTask) };
 
-            if (output.PaxTask.ReporterId != null)
+            if (output.PaxTask.ReporterId != 0)
             {
                 var _lookupUser = await _lookup_userRepository.FirstOrDefaultAsync((long)output.PaxTask.ReporterId);
                 output.UserName = _lookupUser?.Name?.ToString();
@@ -253,7 +277,7 @@ namespace PAX.Next.TaskManager
 
             output.PaxTask.DependentTasks = _taskDependancyRelationsAppService.GetTasksDependecies(output.PaxTask.Id.Value).Result.ToList();
 
-            output.PaxTask.Labels = _labelService.GetLabelsByTaskId(output.PaxTask.Id.Value).Result.ToList();
+            output.PaxTask.Labels = _labelService.GetLabelsByTaskId(output.PaxTask.Id.Value).ToList();
 
             if (output.PaxTask.ReporterId != 0)
             {
@@ -361,8 +385,6 @@ namespace PAX.Next.TaskManager
 
             await _appNotifier.TaskChangedAsync(changerUserName, paxTask.Id, "TaskCreatedNotificationWatcher", notificators.ToArray());
 
-
-
             return new NameValueDto("taskId", paxTask.Id.ToString());
         }
 
@@ -424,7 +446,7 @@ namespace PAX.Next.TaskManager
 
         private async Task UpdateLabels(int taskId, List<LabelDto> updatedLabels)
         {
-            var existingLabels = _labelService.GetLabelsByTaskId(taskId).Result.ToList();
+            var existingLabels = _labelService.GetLabelsByTaskId(taskId).ToList();
 
             var deletedLabels = existingLabels.Where(x => updatedLabels.Select(w => w.Id).Contains(x.Id) == false).ToList();
 

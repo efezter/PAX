@@ -6,6 +6,8 @@
     <text name="DeadLine">Bitiş süreli</text>
     <text name="DeadLineDate">Bitiş tarihi</text>
     
+    <text name="CommentNotification">{reporterName} tarafından, bir yorumda sizden bahsedildi.</text>
+    
     <text name="TaskCreatedNotification">{reporterName} tarafından, sizin için yeni bir görev oluşturuldu.</text>
     <text name="TaskChangedNotification">{reporterName} size atanmış bir görev üzerinde değişiklik yaptı.</text>
 

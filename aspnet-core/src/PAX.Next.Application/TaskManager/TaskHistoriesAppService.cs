@@ -1,22 +1,16 @@
-﻿using PAX.Next.TaskManager;
+﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Domain.Repositories;
+using Abp.Linq.Extensions;
+using Microsoft.EntityFrameworkCore;
+using PAX.Next.Authorization;
 using PAX.Next.Authorization.Users;
-
-using System;
+using PAX.Next.Notifications;
+using PAX.Next.TaskManager.Dtos;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using Abp.Linq.Extensions;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Abp.Domain.Repositories;
-using PAX.Next.TaskManager.Dtos;
-using PAX.Next.Dto;
-using Abp.Application.Services.Dto;
-using PAX.Next.Authorization;
-using Abp.Extensions;
-using Abp.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Abp.UI;
-using PAX.Next.Storage;
 
 namespace PAX.Next.TaskManager
 {
@@ -26,12 +20,14 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<TaskHistory> _taskHistoryRepository;
         private readonly IRepository<PaxTask, int> _lookup_paxTaskRepository;
         private readonly IRepository<User, long> _lookup_userRepository;
+        
 
-        public TaskHistoriesAppService(IRepository<TaskHistory> taskHistoryRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository)
+        public TaskHistoriesAppService(IRepository<TaskHistory> taskHistoryRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository, IAppNotifier appNotifier)
         {
             _taskHistoryRepository = taskHistoryRepository;
             _lookup_paxTaskRepository = lookup_paxTaskRepository;
             _lookup_userRepository = lookup_userRepository;
+           
 
         }
 

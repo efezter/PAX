@@ -8243,6 +8243,7 @@ export class PaxTasksServiceProxy {
     /**
      * @param filter (optional) 
      * @param headerFilter (optional) 
+     * @param labelFilter (optional) 
      * @param maxCreatedDateFilter (optional) 
      * @param minCreatedDateFilter (optional) 
      * @param taskTypeFilter (optional) 
@@ -8260,7 +8261,7 @@ export class PaxTasksServiceProxy {
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll(filter: string | undefined, headerFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, showOnlyMyTasks: boolean | undefined, showOnlyCreatedByMe: boolean | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
+    getAll(filter: string | undefined, headerFilter: string | undefined, labelFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, showOnlyMyTasks: boolean | undefined, showOnlyCreatedByMe: boolean | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
         let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAll?";
         if (filter === null)
             throw new Error("The parameter 'filter' cannot be null.");
@@ -8270,6 +8271,10 @@ export class PaxTasksServiceProxy {
             throw new Error("The parameter 'headerFilter' cannot be null.");
         else if (headerFilter !== undefined)
             url_ += "HeaderFilter=" + encodeURIComponent("" + headerFilter) + "&";
+        if (labelFilter === null)
+            throw new Error("The parameter 'labelFilter' cannot be null.");
+        else if (labelFilter !== undefined)
+            url_ += "LabelFilter=" + encodeURIComponent("" + labelFilter) + "&";
         if (maxCreatedDateFilter === null)
             throw new Error("The parameter 'maxCreatedDateFilter' cannot be null.");
         else if (maxCreatedDateFilter !== undefined)
@@ -13675,64 +13680,6 @@ export class TaskLabelsServiceProxy {
             }));
         }
         return _observableOf<void>(<any>null);
-    }
-
-    /**
-     * @return Success
-     */
-    getAllPaxTaskForTableDropdown(): Observable<TaskLabelPaxTaskLookupTableDto[]> {
-        let url_ = this.baseUrl + "/api/services/app/TaskLabels/GetAllPaxTaskForTableDropdown";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAllPaxTaskForTableDropdown(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetAllPaxTaskForTableDropdown(<any>response_);
-                } catch (e) {
-                    return <Observable<TaskLabelPaxTaskLookupTableDto[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<TaskLabelPaxTaskLookupTableDto[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetAllPaxTaskForTableDropdown(response: HttpResponseBase): Observable<TaskLabelPaxTaskLookupTableDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(TaskLabelPaxTaskLookupTableDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<TaskLabelPaxTaskLookupTableDto[]>(<any>null);
     }
 
     /**
@@ -25299,6 +25246,7 @@ export interface IGetPaxTaskForEditOutput {
 
 export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
     paxTask!: PaxTaskDto;
+    labels!: LabelDto[] | undefined;
     userName!: string | undefined;
     userName2!: string | undefined;
     severityName!: string | undefined;
@@ -25318,6 +25266,11 @@ export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
     init(_data?: any) {
         if (_data) {
             this.paxTask = _data["paxTask"] ? PaxTaskDto.fromJS(_data["paxTask"]) : <any>undefined;
+            if (Array.isArray(_data["labels"])) {
+                this.labels = [] as any;
+                for (let item of _data["labels"])
+                    this.labels!.push(LabelDto.fromJS(item));
+            }
             this.userName = _data["userName"];
             this.userName2 = _data["userName2"];
             this.severityName = _data["severityName"];
@@ -25337,6 +25290,11 @@ export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["paxTask"] = this.paxTask ? this.paxTask.toJSON() : <any>undefined;
+        if (Array.isArray(this.labels)) {
+            data["labels"] = [];
+            for (let item of this.labels)
+                data["labels"].push(item.toJSON());
+        }
         data["userName"] = this.userName;
         data["userName2"] = this.userName2;
         data["severityName"] = this.severityName;
@@ -25349,6 +25307,7 @@ export class GetPaxTaskForViewDto implements IGetPaxTaskForViewDto {
 
 export interface IGetPaxTaskForViewDto {
     paxTask: PaxTaskDto;
+    labels: LabelDto[] | undefined;
     userName: string | undefined;
     userName2: string | undefined;
     severityName: string | undefined;
@@ -33437,46 +33396,6 @@ export class TaskLabelLabelLookupTableDto implements ITaskLabelLabelLookupTableD
 }
 
 export interface ITaskLabelLabelLookupTableDto {
-    id: number;
-    displayName: string | undefined;
-}
-
-export class TaskLabelPaxTaskLookupTableDto implements ITaskLabelPaxTaskLookupTableDto {
-    id!: number;
-    displayName!: string | undefined;
-
-    constructor(data?: ITaskLabelPaxTaskLookupTableDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.displayName = _data["displayName"];
-        }
-    }
-
-    static fromJS(data: any): TaskLabelPaxTaskLookupTableDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new TaskLabelPaxTaskLookupTableDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["displayName"] = this.displayName;
-        return data; 
-    }
-}
-
-export interface ITaskLabelPaxTaskLookupTableDto {
     id: number;
     displayName: string | undefined;
 }

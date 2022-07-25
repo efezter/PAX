@@ -241,7 +241,7 @@ editorConfiguration = {
             this.allTaskStatuss = result;
             if (this.paxTask.id)
             {
-                setTimeout(() => {this.selectedStatus = this.allTaskStatuss.find(x => x.id == this.paxTask.taskStatusId);}, 50); 
+                setTimeout(() => {this.selectedStatus = this.allTaskStatuss.find(x => x.id == this.paxTask.taskStatusId);}, 1000); 
                 
             }   
             else

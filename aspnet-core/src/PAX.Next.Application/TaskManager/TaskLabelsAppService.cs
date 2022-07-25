@@ -98,13 +98,13 @@ namespace PAX.Next.TaskManager
 
             var output = new GetTaskLabelForEditOutput { TaskLabel = ObjectMapper.Map<CreateOrEditTaskLabelDto>(taskLabel) };
 
-            if (output.TaskLabel.PaxTaskId != null)
+            if (output.TaskLabel.PaxTaskId != 0)
             {
                 var _lookupPaxTask = await _lookup_paxTaskRepository.FirstOrDefaultAsync((int)output.TaskLabel.PaxTaskId);
                 output.PaxTaskHeader = _lookupPaxTask?.Header?.ToString();
             }
 
-            if (output.TaskLabel.LabelId != null)
+            if (output.TaskLabel.LabelId != 0)
             {
                 var _lookupLabel = await _lookup_labelRepository.FirstOrDefaultAsync((int)output.TaskLabel.LabelId);
                 output.LabelName = _lookupLabel?.Name?.ToString();
@@ -146,16 +146,6 @@ namespace PAX.Next.TaskManager
         public async Task Delete(int Id)
         {
             await _taskLabelRepository.DeleteAsync(Id);
-        }
-        [AbpAuthorize(AppPermissions.Pages_TaskLabels)]
-        public async Task<List<TaskLabelPaxTaskLookupTableDto>> GetAllPaxTaskForTableDropdown()
-        {
-            return await _lookup_paxTaskRepository.GetAll()
-                .Select(paxTask => new TaskLabelPaxTaskLookupTableDto
-                {
-                    Id = paxTask.Id,
-                    DisplayName = paxTask == null || paxTask.Header == null ? "" : paxTask.Header.ToString()
-                }).ToListAsync();
         }
 
         [AbpAuthorize(AppPermissions.Pages_TaskLabels)]

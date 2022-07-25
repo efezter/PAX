@@ -67,7 +67,7 @@ namespace PAX.Next.TaskManager
             );
         }
 
-        public async Task<IEnumerable<LabelDto>> GetLabelsByTaskId(int taskId)
+        public IQueryable<LabelDto> GetLabelsByTaskId(int taskId)
         {
             var labels = from w in _taskLabelRepository.GetAll()
                          join o2 in _labelRepository.GetAll() on w.LabelId equals o2.Id into j2
@@ -80,9 +80,7 @@ namespace PAX.Next.TaskManager
                              Name = s2.Name
                          };
 
-            var results = await labels.ToListAsync();
-
-            return results;
+            return labels;
         }
 
 

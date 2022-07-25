@@ -82,6 +82,7 @@ export class OrganizationUnitMembersComponent extends AppComponentBase implement
     }
 
     reloadPage(): void {
+        debugger;
         this.paginator.changePage(this.paginator.getPage());
     }
 

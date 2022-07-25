@@ -14,6 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
+using PAX.Next.Notifications;
+using Abp;
 
 namespace PAX.Next.TaskManager
 {
@@ -24,13 +27,16 @@ namespace PAX.Next.TaskManager
         private readonly IRepository<PaxTask, int> _lookup_paxTaskRepository;
         private readonly IRepository<User, long> _lookup_userRepository;
         private readonly ITaskHistoriesAppService _taskHistoriesAppService;
+        private readonly IAppNotifier _appNotifier;
 
-        public CommentsAppService(IRepository<Comment> commentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository,ITaskHistoriesAppService taskHistoriesAppService)
+        public CommentsAppService(IRepository<Comment> commentRepository, IRepository<PaxTask, int> lookup_paxTaskRepository, IRepository<User, long> lookup_userRepository, ITaskHistoriesAppService taskHistoriesAppService, IAppNotifier appNotifier)
         {
             _commentRepository = commentRepository;
             _lookup_paxTaskRepository = lookup_paxTaskRepository;
             _lookup_userRepository = lookup_userRepository;
             _taskHistoriesAppService = taskHistoriesAppService;
+            _appNotifier = appNotifier;
+            
         }
 
         public async Task<PagedResultDto<GetCommentForViewDto>> GetAll(GetAllCommentsInput input)
@@ -77,7 +83,7 @@ namespace PAX.Next.TaskManager
                     Comment = new CommentDto
                     {
                         Id = o.Id,
-                        CommentText = o.CommentText,                        
+                        CommentText = o.CommentText,
                         UserId = o.CreatorUserId.Value
                     },
                     LastModificationTime = o.LastModificationTime,
@@ -122,7 +128,7 @@ namespace PAX.Next.TaskManager
         {
             if (input.Id == null)
             {
-               return await Create(input);
+                return await Create(input);
             }
             else
             {
@@ -133,17 +139,19 @@ namespace PAX.Next.TaskManager
         [AbpAuthorize(AppPermissions.Pages_Comments_Create)]
         protected virtual async Task<CommentDto> Create(CreateOrEditCommentDto input)
         {
-                input.UserId = AbpSession.GetUserId();
-                var comment = ObjectMapper.Map<Comment>(input);
+            input.UserId = AbpSession.GetUserId();
+            var comment = ObjectMapper.Map<Comment>(input);
 
-                await _commentRepository.InsertAsync(comment);
+            await _commentRepository.InsertAsync(comment);
 
-            CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = input.PaxTaskId, FieldName="Comments", CreatedUser = input.UserId,  ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
+            CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = input.PaxTaskId, FieldName = "Comments", CreatedUser = input.UserId, ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
             await _taskHistoriesAppService.CreateOrEdit(historyDto);
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-                return ObjectMapper.Map<CommentDto>(comment);
+            CheckForComment(input);
+
+            return ObjectMapper.Map<CommentDto>(comment);
         }
 
         [AbpAuthorize(AppPermissions.Pages_Comments_Edit)]
@@ -158,6 +166,8 @@ namespace PAX.Next.TaskManager
             CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = input.PaxTaskId, FieldName = "Comments", CreatedUser = input.UserId, ChangeType = EntityChangeType.Updated, CreatedDate = DateTime.Now };
             await _taskHistoriesAppService.CreateOrEdit(historyDto);
 
+            CheckForComment(input);
+
             return ObjectMapper.Map<CommentDto>(comment);
         }
 
@@ -170,6 +180,27 @@ namespace PAX.Next.TaskManager
             await _taskHistoriesAppService.CreateOrEdit(historyDto);
 
             await _commentRepository.DeleteAsync(input.Id);
+        }
+
+        private void CheckForComment(CreateOrEditCommentDto input)
+        {
+            if (input.CommentText.Contains("data-mention")) ;
+            {
+                var doc = new HtmlDocument();
+                doc.LoadHtml(input.CommentText);
+                var mention = doc.DocumentNode.SelectSingleNode("//a[@data-user-id]");
+
+                if (mention != null)
+                {
+                    var userId = int.Parse(mention.Attributes["data-user-id"].Value);
+
+                    string changerUserName = _lookup_userRepository.Get(AbpSession.UserId.Value).FullName;
+
+                    List<UserIdentifier> notificators = new List<UserIdentifier> { new UserIdentifier(AbpSession.TenantId, userId)};
+
+                    _appNotifier.TaskChangedAsync(changerUserName, input.PaxTaskId, "CommentNotification", notificators.ToArray());
+                }
+            }
         }
     }
 }

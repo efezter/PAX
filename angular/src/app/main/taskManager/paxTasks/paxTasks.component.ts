@@ -31,6 +31,7 @@ export class PaxTasksComponent extends AppComponentBase {
     advancedFiltersAreShown = false;
     filterText = '';
     headerFilter = '';
+    labelFilter = '';
     maxCreatedDateFilter: DateTime;
     minCreatedDateFilter: DateTime;
     taskTypeFilter = -1;
@@ -51,7 +52,7 @@ export class PaxTasksComponent extends AppComponentBase {
     entityHistoryEnabled = false;
 
     displayFilters: any[];
-    selectedDisplayFilter: number = 0;       
+    selectedDisplayFilter: number = 1;       
 
     constructor(
         injector: Injector,
@@ -63,7 +64,7 @@ export class PaxTasksComponent extends AppComponentBase {
         super(injector);
 
         this.displayFilters = [
-            {label: 'Hepsi', value: 0},
+           // {label: 'Hepsi', value: 0},
             {label: 'Bana Atananlar', value: 1},
             {label: 'Benim oluşturduklarım', value: 2}            
         ];   
@@ -86,18 +87,24 @@ export class PaxTasksComponent extends AppComponentBase {
         );
     }
 
+    getRandomColor() {
+        var color = Math.floor(0x1000000 * Math.random()).toString(16);
+        return '#' + ('000000' + color).slice(-6);
+      }
+
     getPaxTasks(event?: LazyLoadEvent) {
         if (this.primengTableHelper.shouldResetPaging(event)) {
             this.paginator.changePage(0);
             return;
         }
-
+        
         this.primengTableHelper.showLoadingIndicator();
 
         this._paxTasksServiceProxy
             .getAll(
                 this.filterText,
                 this.headerFilter,
+                this.labelFilter,
                 this.maxCreatedDateFilter === undefined
                     ? this.maxCreatedDateFilter
                     : this._dateTimeService.getEndOfDayForDate(this.maxCreatedDateFilter),
@@ -119,7 +126,6 @@ export class PaxTasksComponent extends AppComponentBase {
                 this.primengTableHelper.getMaxResultCount(this.paginator, event)
             )
             .subscribe((result) => {
-                debugger;
                 this.primengTableHelper.totalRecordsCount = result.totalCount;
                 this.primengTableHelper.records = result.items;
                 this.primengTableHelper.hideLoadingIndicator();
@@ -133,12 +139,6 @@ export class PaxTasksComponent extends AppComponentBase {
     createPaxTask(): void {
         this._router.navigate(['app/main/taskManager/paxTasks/details']);
     }
-
-    // buttonFilterChanged(p)
-    // {
-    //     debugger;
-    //     this.reloadPage();
-    // }
 
     showHistory(paxTask: PaxTaskDto): void {
         this.entityTypeHistoryModal.show({

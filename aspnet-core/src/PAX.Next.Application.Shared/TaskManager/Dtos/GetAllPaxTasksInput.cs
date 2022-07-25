@@ -9,6 +9,8 @@ namespace PAX.Next.TaskManager.Dtos
 
         public string HeaderFilter { get; set; }
 
+        public string LabelFilter { get; set; }
+
         public DateTime? MaxCreatedDateFilter { get; set; }
 
         public DateTime? MinCreatedDateFilter { get; set; }

@@ -27,7 +27,7 @@ namespace PAX.Next.Notifications
 
         Task SomeUsersCouldntBeImported(UserIdentifier user, string fileToken, string fileType, string fileName);
 
-        Task TaskChangedAsync(string reporterName, int taskId, string messageId, UserIdentifier[] user);
+        Task TaskChangedAsync(string modifierName, int taskId, string messageId, UserIdentifier[] user);
 
         //Task TaskRegisteredAsync(string reporterName, int taskId, UserIdentifier[] receivers);
     }

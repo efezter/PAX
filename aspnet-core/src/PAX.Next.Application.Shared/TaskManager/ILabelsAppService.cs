@@ -5,6 +5,7 @@ using Abp.Application.Services.Dto;
 using PAX.Next.TaskManager.Dtos;
 using PAX.Next.Dto;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PAX.Next.TaskManager
 {
@@ -12,7 +13,7 @@ namespace PAX.Next.TaskManager
     {
         Task<PagedResultDto<GetLabelForViewDto>> GetAll(GetAllLabelsInput input);
 
-        Task<IEnumerable<LabelDto>> GetLabelsByTaskId(int taskId);
+        IQueryable<LabelDto> GetLabelsByTaskId(int taskId);
 
         Task<GetLabelForEditOutput> GetLabelForEdit(EntityDto input);
 

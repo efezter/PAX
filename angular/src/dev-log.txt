@@ -10,4 +10,8 @@
     getPageCount() {
         return Math.ceil(this.totalRecords/this.rows)||1;
     }
+
+    F:\Projects\PAX\angular\node_modules\primeng\fesm2020
+
+    ChangePage fonsyonundaki if kaldırıldı
 	

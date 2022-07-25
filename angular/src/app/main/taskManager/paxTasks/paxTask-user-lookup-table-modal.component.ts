@@ -69,6 +69,7 @@ export class PaxTaskUserLookupTableModalComponent extends AppComponentBase {
     }
 
     reloadPage(): void {
+        debugger;
         this.paginator.changePage(this.paginator.getPage());
     }
 

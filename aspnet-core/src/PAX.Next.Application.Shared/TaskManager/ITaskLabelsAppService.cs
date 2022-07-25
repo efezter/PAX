@@ -19,8 +19,6 @@ namespace PAX.Next.TaskManager
 
         Task Delete(int Id);
 
-        Task<List<TaskLabelPaxTaskLookupTableDto>> GetAllPaxTaskForTableDropdown();
-
         Task<List<TaskLabelLabelLookupTableDto>> GetAllLabelForTableDropdown();
 
     }
