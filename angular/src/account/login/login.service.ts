@@ -15,7 +15,8 @@ import {
     ExternalAuthenticateResultModel,
     ExternalLoginProviderInfoModel,
     TokenAuthServiceProxy,
-    TwitterServiceProxy
+    TwitterServiceProxy,
+    UserRole
 } from '@shared/service-proxies/service-proxies';
 import { ScriptLoaderService } from '@shared/utils/script-loader.service';
 import { map as _map, filter as _filter } from 'lodash-es';
@@ -201,6 +202,7 @@ export class LoginService {
                 authenticateResult.expireInSeconds,
                 authenticateResult.refreshToken,
                 authenticateResult.refreshTokenExpireInSeconds,
+                authenticateResult.userRoles,
                 this.rememberMe,
                 authenticateResult.twoFactorRememberClientToken,
                 redirectUrl
@@ -219,9 +221,10 @@ export class LoginService {
         expireInSeconds: number,
         refreshToken: string,
         refreshTokenExpireInSeconds: number,
+        userRoles: UserRole[],
         rememberMe?: boolean,
         twoFactorRememberClientToken?: string,
-        redirectUrl?: string
+        redirectUrl?: string        
     ): void {
         let tokenExpireDate = rememberMe
             ? new Date(new Date().getTime() + 1000 * expireInSeconds)
@@ -242,6 +245,10 @@ export class LoginService {
         }
 
         let self = this;
+debugger;
+        this._localStorageService.setItem(AppConsts.user.userRoles,
+            JSON.stringify(userRoles));
+
         this._localStorageService.setItem(
             AppConsts.authorization.encrptedAuthTokenName,
             {
@@ -417,16 +424,16 @@ export class LoginService {
                         return;
                     }
 
-                    this.login(
-                        result.accessToken,
-                        result.encryptedAccessToken,
-                        result.expireInSeconds,
-                        result.refreshToken,
-                        result.refreshTokenExpireInSeconds,
-                        false,
-                        '',
-                        result.returnUrl
-                    );
+                    // this.login(
+                    //     result.accessToken,
+                    //     result.encryptedAccessToken,
+                    //     result.expireInSeconds,
+                    //     result.refreshToken,
+                    //     result.refreshTokenExpireInSeconds,
+                    //     false,
+                    //     '',
+                    //     result.returnUrl
+                    // );
                 });
         }
     }
@@ -467,16 +474,16 @@ export class LoginService {
                             return;
                         }
 
-                        this.login(
-                            result.accessToken,
-                            result.encryptedAccessToken,
-                            result.expireInSeconds,
-                            result.refreshToken,
-                            result.refreshTokenExpireInSeconds,
-                            false,
-                            '',
-                            result.returnUrl
-                        );
+                        // this.login(
+                        //     result.accessToken,
+                        //     result.encryptedAccessToken,
+                        //     result.expireInSeconds,
+                        //     result.refreshToken,
+                        //     result.refreshTokenExpireInSeconds,
+                        //     false,
+                        //     '',
+                        //     result.returnUrl
+                        // );
                     });
             });
         });
@@ -521,16 +528,16 @@ export class LoginService {
                         return;
                     }
 
-                    this.login(
-                        result.accessToken,
-                        result.encryptedAccessToken,
-                        result.expireInSeconds,
-                        result.refreshToken,
-                        result.refreshTokenExpireInSeconds,
-                        false,
-                        '',
-                        result.returnUrl
-                    );
+                    // this.login(
+                    //     result.accessToken,
+                    //     result.encryptedAccessToken,
+                    //     result.expireInSeconds,
+                    //     result.refreshToken,
+                    //     result.refreshTokenExpireInSeconds,
+                    //     false,
+                    //     '',
+                    //     result.returnUrl
+                    // );
                 });
         });
     }
@@ -561,16 +568,16 @@ export class LoginService {
                         return;
                     }
 
-                    this.login(
-                        result.accessToken,
-                        result.encryptedAccessToken,
-                        result.expireInSeconds,
-                        result.refreshToken,
-                        result.refreshTokenExpireInSeconds,
-                        false,
-                        '',
-                        result.returnUrl
-                    );
+                    // this.login(
+                    //     result.accessToken,
+                    //     result.encryptedAccessToken,
+                    //     result.expireInSeconds,
+                    //     result.refreshToken,
+                    //     result.refreshTokenExpireInSeconds,
+                    //     false,
+                    //     '',
+                    //     result.returnUrl
+                    // );
                 });
         }
     }
@@ -601,16 +608,16 @@ export class LoginService {
                     return;
                 }
 
-                this.login(
-                    result.accessToken,
-                    result.encryptedAccessToken,
-                    result.expireInSeconds,
-                    result.refreshToken,
-                    result.refreshTokenExpireInSeconds,
-                    false,
-                    '',
-                    result.returnUrl
-                );
+                // this.login(
+                //     result.accessToken,
+                //     result.encryptedAccessToken,
+                //     result.expireInSeconds,
+                //     result.refreshToken,
+                //     result.refreshTokenExpireInSeconds,
+                //     false,
+                //     '',
+                //     result.returnUrl
+                // );
             });
     }
 
@@ -637,16 +644,16 @@ export class LoginService {
                     return;
                 }
 
-                this.login(
-                    result.accessToken,
-                    result.encryptedAccessToken,
-                    result.expireInSeconds,
-                    result.refreshToken,
-                    result.refreshTokenExpireInSeconds,
-                    false,
-                    '',
-                    result.returnUrl
-                );
+                // this.login(
+                //     result.accessToken,
+                //     result.encryptedAccessToken,
+                //     result.expireInSeconds,
+                //     result.refreshToken,
+                //     result.refreshTokenExpireInSeconds,
+                //     false,
+                //     '',
+                //     result.returnUrl
+                // );
                 this.spinnerService.hide();
             });
     }

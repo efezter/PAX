@@ -109,15 +109,19 @@ namespace PAX.Next.TaskManager
                 User user = new User();
                 user.Id = currentUserId;
 
-                bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+                //bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
 
-                if (!isAdmin)
-                {
-                    FindOrganizationUnitUsersInput orgInput = new FindOrganizationUnitUsersInput();
+                //if (!isAdmin)
+                //{
+                //    FindOrganizationUnitUsersInput orgInput = new FindOrganizationUnitUsersInput();
 
-                    //orgInput.OrganizationUnitId = UserManager.ur 
-                    //_organizationUnitAppService.FindUsers()
-                }
+                //    //orgInput.OrganizationUnitId = UserManager.ur 
+                //    //_organizationUnitAppService.FindUsers()
+                //}
+                //else
+                //{
+                //    bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
+                //}
 
                 List<int> labelFilteredTasks = new List<int>();
 

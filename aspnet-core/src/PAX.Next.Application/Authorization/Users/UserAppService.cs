@@ -376,6 +376,15 @@ namespace PAX.Next.Authorization.Users
             }
         }
 
+        public async Task<IEnumerable<UserRole>> GetUserRoles(long userId)
+        {
+            var userRoles = await _userRoleRepository.GetAll()
+                   .Where(userRole => userId == userRole.UserId)
+                   .Select(userRole => userRole).ToListAsync();
+
+            return userRoles;
+        }
+
         private async Task FillRoleNames(IReadOnlyCollection<UserListDto> userListDtos)
         {
             /* This method is optimized to fill role names to given list. */

@@ -1,3 +1,4 @@
+using Abp.Authorization.Users;
 using System.Collections.Generic;
 
 namespace PAX.Next.Web.Models.TokenAuth
@@ -15,6 +16,8 @@ namespace PAX.Next.Web.Models.TokenAuth
         public string PasswordResetCode { get; set; }
 
         public long UserId { get; set; }
+
+        public IEnumerable<UserRole> UserRoles { get; set; }
 
         public bool RequiresTwoFactorVerification { get; set; }
 
