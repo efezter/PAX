@@ -15,8 +15,7 @@ import {
     ExternalAuthenticateResultModel,
     ExternalLoginProviderInfoModel,
     TokenAuthServiceProxy,
-    TwitterServiceProxy,
-    UserRole
+    TwitterServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import { ScriptLoaderService } from '@shared/utils/script-loader.service';
 import { map as _map, filter as _filter } from 'lodash-es';
@@ -202,7 +201,7 @@ export class LoginService {
                 authenticateResult.expireInSeconds,
                 authenticateResult.refreshToken,
                 authenticateResult.refreshTokenExpireInSeconds,
-                authenticateResult.userRoles,
+                authenticateResult.userRoleIds,
                 this.rememberMe,
                 authenticateResult.twoFactorRememberClientToken,
                 redirectUrl
@@ -221,7 +220,7 @@ export class LoginService {
         expireInSeconds: number,
         refreshToken: string,
         refreshTokenExpireInSeconds: number,
-        userRoles: UserRole[],
+        userRoleIds: number[],
         rememberMe?: boolean,
         twoFactorRememberClientToken?: string,
         redirectUrl?: string        
@@ -246,8 +245,8 @@ export class LoginService {
 
         let self = this;
 debugger;
-        this._localStorageService.setItem(AppConsts.user.userRoles,
-            JSON.stringify(userRoles));
+        this._localStorageService.setItem(AppConsts.User.userRolesKey,
+            JSON.stringify(userRoleIds));
 
         this._localStorageService.setItem(
             AppConsts.authorization.encrptedAuthTokenName,

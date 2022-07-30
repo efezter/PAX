@@ -14,6 +14,8 @@ import { filter as _filter } from 'lodash-es';
 import { DateTime } from 'luxon';
 
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
+import { LocalStorageService } from '@shared/utils/local-storage.service';
+
 
 @Component({
     templateUrl: './paxTasks.component.html',
@@ -52,13 +54,15 @@ export class PaxTasksComponent extends AppComponentBase {
     entityHistoryEnabled = false;
 
     displayFilters: any[];
-    selectedDisplayFilter: number = 1;       
+    selectedDisplayFilter: number = 1;
+    userRolesIds: number[];  
 
     constructor(
         injector: Injector,
         private _paxTasksServiceProxy: PaxTasksServiceProxy,
         private _fileDownloadService: FileDownloadService,
         private _dateTimeService: DateTimeService,
+        private _localStorageService: LocalStorageService,
         private _router: Router
     ) {
         super(injector);
@@ -66,12 +70,35 @@ export class PaxTasksComponent extends AppComponentBase {
         this.displayFilters = [
            // {label: 'Hepsi', value: 0},
             {label: 'Bana Atananlar', value: 1},
-            {label: 'Benim oluşturduklarım', value: 2}            
+            {label: 'Benim oluşturduklarım', value: 2} ,
+            {label: 'İzleyici olduklarım', value: 4}            
         ];   
     }
 
     ngOnInit(): void {
         this.entityHistoryEnabled = this.setIsEntityHistoryEnabled();
+        this._localStorageService.getItem(AppConsts.User.userRolesKey, (err, userRolesIds) => {
+            this.userRolesIds = JSON.parse(userRolesIds);
+            this.ConfigurePage();
+        });
+    }
+
+    private ConfigurePage()
+    {
+        if( this.userRolesIds.indexOf(AppConsts.UserRoles.admin) != -1 ||
+        this.userRolesIds.indexOf(AppConsts.UserRoles.dep_chief) != -1 ||
+    this.userRolesIds.indexOf(AppConsts.UserRoles.dep_man) != -1)
+    {
+        this.displayFilters.push({label: 'Departmanım', value: 3});
+    }
+
+        if(this.userRolesIds.indexOf(AppConsts.UserRoles.admin) != -1 ||
+        this.userRolesIds.indexOf(AppConsts.UserRoles.gen_man) != -1 ||
+        this.userRolesIds.indexOf(AppConsts.UserRoles.gen_man_asist) != -1 ||
+        this.userRolesIds.indexOf(AppConsts.UserRoles.gen_man_sec) != -1)
+        {
+            this.displayFilters.push({label: 'Hepsi', value: 0});
+        }
     }
 
     private setIsEntityHistoryEnabled(): boolean {
@@ -121,6 +148,8 @@ export class PaxTasksComponent extends AppComponentBase {
                 this.taskStatusNameFilter,
                 this.selectedDisplayFilter == 1,
                 this.selectedDisplayFilter == 2,
+                this.selectedDisplayFilter == 3,
+                this.selectedDisplayFilter == 4,
                 this.primengTableHelper.getSorting(this.dataTable),
                 this.primengTableHelper.getSkipCount(this.paginator, event),
                 this.primengTableHelper.getMaxResultCount(this.paginator, event)
@@ -128,7 +157,7 @@ export class PaxTasksComponent extends AppComponentBase {
             .subscribe((result) => {
                 this.primengTableHelper.totalRecordsCount = result.totalCount;
                 this.primengTableHelper.records = result.items;
-                this.primengTableHelper.hideLoadingIndicator();
+                this.primengTableHelper.hideLoadingIndicator(); 
             });
     }
 

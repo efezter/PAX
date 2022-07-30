@@ -144,11 +144,11 @@ namespace PAX.Next.Web.Controllers
                 GetTenancyNameOrNull()
             );
 
-            List<UserRole> userRoles = new List<UserRole>();
+            List<long> userRoleIds = new List<long>();
 
             if (loginResult != null && (loginResult.Result == AbpLoginResultType.Success))
             {
-                userRoles = _userAppService.GetUserRoles(loginResult.User.Id).Result.ToList();
+                userRoleIds = _userAppService.GetUserRoles(loginResult.User.Id).Result.Select(x => x.Id).ToList();
             }
 
             var returnUrl = model.ReturnUrl;
@@ -168,7 +168,7 @@ namespace PAX.Next.Web.Controllers
                 return new AuthenticateResultModel
                 {
                     ShouldResetPassword = true,
-                    UserRoles = userRoles,
+                    UserRoleIds = userRoleIds,
                     PasswordResetCode = loginResult.User.PasswordResetCode,
                     UserId = loginResult.User.Id,
                     ReturnUrl = returnUrl
@@ -195,7 +195,7 @@ namespace PAX.Next.Web.Controllers
                     {
                         RequiresTwoFactorVerification = true,
                         UserId = loginResult.User.Id,
-                        UserRoles = userRoles,
+                        UserRoleIds = userRoleIds,
                         TwoFactorAuthProviders = await _userManager.GetValidTwoFactorProvidersAsync(loginResult.User),
                         ReturnUrl = returnUrl
                     };
@@ -228,6 +228,7 @@ namespace PAX.Next.Web.Controllers
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 TwoFactorRememberClientToken = twoFactorRememberClientToken,
                 UserId = loginResult.User.Id,
+                UserRoleIds = userRoleIds,
                 ReturnUrl = returnUrl
             };
         }

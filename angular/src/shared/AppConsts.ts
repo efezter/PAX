@@ -38,7 +38,16 @@ export class AppConsts {
     static readonly WebAppGuiVersion = '10.5.0';
 
     //Customs
-    static readonly user = {
-        userRoles: 'userRoles'
+    static readonly User = {
+        userRolesKey: 'userRoles'
+    };
+
+    static readonly UserRoles = {
+        admin: 2,
+        gen_man: 4,
+        gen_man_sec: 5,
+        gen_man_asist: 6,
+        dep_man: 8,
+        dep_chief: 9
     };
 }

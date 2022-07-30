@@ -237,7 +237,6 @@ treeData: any;
 
 getOrganizationSchema()
   {
-    let self = this;
         this._organizationUnitService.getOrganizationUnits().subscribe((result: ListResultDtoOfOrganizationUnitDto) => {
             this.totalUnitCount = result.items.length;
             this.treeData = this._arrayToTreeConverterService.createTree(result.items,

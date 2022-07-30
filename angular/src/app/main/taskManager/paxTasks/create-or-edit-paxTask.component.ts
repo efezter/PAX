@@ -1,4 +1,4 @@
-﻿import { Component, ViewChild, Injector, Output, EventEmitter, OnInit, ElementRef } from '@angular/core';
+﻿import { Component, ViewChild, Injector, OnInit, ElementRef } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import {
     PaxTasksServiceProxy,
@@ -13,11 +13,13 @@ import {
     WatcherUserLookupTableDto,
     CommentDto,
     PaxTaskAttachmentsServiceProxy,
+    OrganizationUnitServiceProxy,
     PaxTaskAttachmentDto,
     PaxTaskUserLookupTableDto,
     HistoryDto,
     LabelDto,
-    TaskDependancyRelationDto
+    TaskDependancyRelationDto,
+    ListResultDtoOfOrganizationUnitDto
 } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { DateTime } from 'luxon';
@@ -27,6 +29,7 @@ import { PaxTaskUserLookupTableModalComponent } from './paxTask-user-lookup-tabl
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppConsts } from '@shared/AppConsts';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
+import { ArrayToTreeConverterService } from '@shared/utils/array-to-tree-converter.service';
 // import { LazyLoadEvent } from 'primeng/api';
 // import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 // import Mention from '@ckeditor/ckeditor5-mention/src/mention';
@@ -53,6 +56,9 @@ export class CreateOrEditPaxTaskModalComponent extends AppComponentBase implemen
   
     watchers: WatcherUserLookupTableDto[] = new Array<WatcherUserLookupTableDto>();
     filteredWathers: PaxTaskUserLookupTableDto[];
+
+    departmants: any;
+    selectedDepartmant : any;
 
     labels:LabelDto[] = new Array<LabelDto>();
     filteredLabels: LabelDto[];
@@ -134,6 +140,8 @@ editorConfiguration = {
         private _paxTaskAttachmentsServiceProxy: PaxTaskAttachmentsServiceProxy,
         private _commentsServiceProxy: CommentsServiceProxy,
         // private _dateTimeService: DateTimeService,
+        private _organizationUnitService: OrganizationUnitServiceProxy,
+        private _arrayToTreeConverterService: ArrayToTreeConverterService,
         private _activatedRoute: ActivatedRoute,
         private _router: Router,
         private _abpSessionService: AbpSessionService,
@@ -205,6 +213,8 @@ editorConfiguration = {
         this.commentViews = new Array<GetCommentForViewDto>();
         this.uploadedFiles = new Array<PaxTaskAttachmentDto>();
 
+        this.getOrganizationSchema();
+
         if (!paxTaskId) {
             this.paxTask = new CreateOrEditPaxTaskDto();
             this.paxTask.id = paxTaskId;
@@ -234,6 +244,48 @@ editorConfiguration = {
             }    
         });       
     }
+
+    getOrganizationSchema()
+  {
+        this._organizationUnitService.getOrganizationUnits().subscribe((result: ListResultDtoOfOrganizationUnitDto) => {
+            this.departmants = this._arrayToTreeConverterService.createTree(result.items,
+                'parentId',
+                'id',
+                null,
+                'children',
+                [
+                    {
+                        target: 'label',
+                        targetFunction(item) {
+                            return item.displayName;
+                        }
+                    }, {
+                        target: 'expandedIcon',
+                        value: 'fa fa-folder-open text-warning'
+                    },
+                    {
+                        target: 'collapsedIcon',
+                        value: 'fa fa-folder text-warning'
+                    },
+                    {
+                        target: 'selectable',
+                        value: true
+                    },
+                    {
+                        target: 'memberCount',
+                        targetFunction(item) {
+                            return item.memberCount;
+                        }
+                    },
+                    {
+                        target: 'roleCount',
+                        targetFunction(item) {
+                            return item.roleCount;
+                        }
+                    }
+                ]);
+        });
+  }
 
     getAllTaskStatuses()
     {

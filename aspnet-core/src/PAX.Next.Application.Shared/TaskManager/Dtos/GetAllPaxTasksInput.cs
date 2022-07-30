@@ -34,5 +34,9 @@ namespace PAX.Next.TaskManager.Dtos
 
         public bool ShowOnlyCreatedByMe { get; set; }
 
+        public bool ShowOnlyMyDepartmant { get; set; }
+
+        public bool ShowOnlyWathcing { get; set; }
+
     }
 }

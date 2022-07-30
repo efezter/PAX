@@ -17,7 +17,7 @@ namespace PAX.Next.Web.Models.TokenAuth
 
         public long UserId { get; set; }
 
-        public IEnumerable<UserRole> UserRoles { get; set; }
+        public IEnumerable<long> UserRoleIds { get; set; }
 
         public bool RequiresTwoFactorVerification { get; set; }
 

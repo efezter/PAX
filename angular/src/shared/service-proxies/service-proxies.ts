@@ -8256,12 +8256,14 @@ export class PaxTasksServiceProxy {
      * @param taskStatusNameFilter (optional) 
      * @param showOnlyMyTasks (optional) 
      * @param showOnlyCreatedByMe (optional) 
+     * @param showOnlyMyDepartmant (optional) 
+     * @param showOnlyWathcing (optional) 
      * @param sorting (optional) 
      * @param skipCount (optional) 
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll(filter: string | undefined, headerFilter: string | undefined, labelFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, showOnlyMyTasks: boolean | undefined, showOnlyCreatedByMe: boolean | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
+    getAll(filter: string | undefined, headerFilter: string | undefined, labelFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, showOnlyMyTasks: boolean | undefined, showOnlyCreatedByMe: boolean | undefined, showOnlyMyDepartmant: boolean | undefined, showOnlyWathcing: boolean | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
         let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAll?";
         if (filter === null)
             throw new Error("The parameter 'filter' cannot be null.");
@@ -8323,6 +8325,14 @@ export class PaxTasksServiceProxy {
             throw new Error("The parameter 'showOnlyCreatedByMe' cannot be null.");
         else if (showOnlyCreatedByMe !== undefined)
             url_ += "ShowOnlyCreatedByMe=" + encodeURIComponent("" + showOnlyCreatedByMe) + "&";
+        if (showOnlyMyDepartmant === null)
+            throw new Error("The parameter 'showOnlyMyDepartmant' cannot be null.");
+        else if (showOnlyMyDepartmant !== undefined)
+            url_ += "ShowOnlyMyDepartmant=" + encodeURIComponent("" + showOnlyMyDepartmant) + "&";
+        if (showOnlyWathcing === null)
+            throw new Error("The parameter 'showOnlyWathcing' cannot be null.");
+        else if (showOnlyWathcing !== undefined)
+            url_ += "ShowOnlyWathcing=" + encodeURIComponent("" + showOnlyWathcing) + "&";
         if (sorting === null)
             throw new Error("The parameter 'sorting' cannot be null.");
         else if (sorting !== undefined)
@@ -19981,7 +19991,7 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
     shouldResetPassword!: boolean;
     passwordResetCode!: string | undefined;
     userId!: number;
-    userRoles!: UserRole[] | undefined;
+    userRoleIds!: number[] | undefined;
     requiresTwoFactorVerification!: boolean;
     twoFactorAuthProviders!: string[] | undefined;
     twoFactorRememberClientToken!: string | undefined;
@@ -20006,10 +20016,10 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
             this.shouldResetPassword = _data["shouldResetPassword"];
             this.passwordResetCode = _data["passwordResetCode"];
             this.userId = _data["userId"];
-            if (Array.isArray(_data["userRoles"])) {
-                this.userRoles = [] as any;
-                for (let item of _data["userRoles"])
-                    this.userRoles!.push(UserRole.fromJS(item));
+            if (Array.isArray(_data["userRoleIds"])) {
+                this.userRoleIds = [] as any;
+                for (let item of _data["userRoleIds"])
+                    this.userRoleIds!.push(item);
             }
             this.requiresTwoFactorVerification = _data["requiresTwoFactorVerification"];
             if (Array.isArray(_data["twoFactorAuthProviders"])) {
@@ -20039,10 +20049,10 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
         data["shouldResetPassword"] = this.shouldResetPassword;
         data["passwordResetCode"] = this.passwordResetCode;
         data["userId"] = this.userId;
-        if (Array.isArray(this.userRoles)) {
-            data["userRoles"] = [];
-            for (let item of this.userRoles)
-                data["userRoles"].push(item.toJSON());
+        if (Array.isArray(this.userRoleIds)) {
+            data["userRoleIds"] = [];
+            for (let item of this.userRoleIds)
+                data["userRoleIds"].push(item);
         }
         data["requiresTwoFactorVerification"] = this.requiresTwoFactorVerification;
         if (Array.isArray(this.twoFactorAuthProviders)) {
@@ -20065,7 +20075,7 @@ export interface IAuthenticateResultModel {
     shouldResetPassword: boolean;
     passwordResetCode: string | undefined;
     userId: number;
-    userRoles: UserRole[] | undefined;
+    userRoleIds: number[] | undefined;
     requiresTwoFactorVerification: boolean;
     twoFactorAuthProviders: string[] | undefined;
     twoFactorRememberClientToken: string | undefined;

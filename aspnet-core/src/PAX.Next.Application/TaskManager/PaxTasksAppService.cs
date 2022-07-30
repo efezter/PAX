@@ -120,7 +120,6 @@ namespace PAX.Next.TaskManager
                 //}
                 //else
                 //{
-                //    bool isAdmin = await UserManager.IsInRoleAsync(user, "Admin");
                 //}
 
                 List<int> labelFilteredTasks = new List<int>();
