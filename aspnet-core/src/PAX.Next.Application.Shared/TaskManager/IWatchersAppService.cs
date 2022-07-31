@@ -5,6 +5,7 @@ using Abp.Application.Services.Dto;
 using PAX.Next.TaskManager.Dtos;
 using PAX.Next.Dto;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PAX.Next.TaskManager
 {

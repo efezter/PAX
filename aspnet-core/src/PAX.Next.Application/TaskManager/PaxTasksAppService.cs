@@ -30,7 +30,7 @@ namespace PAX.Next.TaskManager
     public class PaxTasksAppService : NextAppServiceBase, IPaxTasksAppService
     {
         private readonly IRepository<PaxTask> _paxTaskRepository;
-        private readonly IWatchersAppService _watcherRepository;
+        private readonly IWatchersAppService _watcherAppService;
         private readonly ITaskDependancyRelationsAppService _taskDependancyRelationsAppService;
         private readonly ITaskHistoriesAppService _taskHistoriesAppService;
         private readonly IPaxTasksExcelExporter _paxTasksExcelExporter;
@@ -77,7 +77,7 @@ namespace PAX.Next.TaskManager
             _lookup_userRepository = lookup_userRepository;
             _lookup_severityRepository = lookup_severityRepository;
             _lookup_taskStatusRepository = lookup_taskStatusRepository;
-            _watcherRepository = watcherRepository;
+            _watcherAppService = watcherRepository;
             _taskHistoriesAppService = taskHistoriesAppService;
             _entityChangeRepository = entityChangeRepository;
             _entityChangeSetRepository = entityChangeSetRepository;
@@ -123,6 +123,7 @@ namespace PAX.Next.TaskManager
                 //}
 
                 List<int> labelFilteredTasks = new List<int>();
+                List<int> watcherFilteredTasks = new List<int>();
 
                 if (!string.IsNullOrEmpty(input.LabelFilter))
                 {
@@ -131,6 +132,14 @@ namespace PAX.Next.TaskManager
                                           where l.Name.Contains(input.LabelFilter)
                                           select lt.PaxTaskId).ToList();
                 }
+
+
+                //if (input.ShowOnlyWathcing)
+                //{
+                //    watcherFilteredTasks = (from w in _watcherAppService.GetAll()
+                //                          where w.
+                //                          select lt.PaxTaskId).ToList();
+                //}
 
                 var filteredPaxTasks = _paxTaskRepository.GetAll()
                             .Include(e => e.ReporterFk)
@@ -276,7 +285,7 @@ namespace PAX.Next.TaskManager
 
             //TODO : Too much unnecessary call to DB.
 
-            output.PaxTask.Watchers = _watcherRepository.GetUserDetailsByTaskId(output.PaxTask.Id.Value).Result.ToList();
+            output.PaxTask.Watchers = _watcherAppService.GetUserDetailsByTaskId(output.PaxTask.Id.Value).Result.ToList();
 
             output.PaxTask.DependentTasks = _taskDependancyRelationsAppService.GetTasksDependecies(output.PaxTask.Id.Value).Result.ToList();
 
@@ -354,7 +363,7 @@ namespace PAX.Next.TaskManager
                 foreach (var watcher in input.Watchers)
                 {
                     CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.UserId, PaxTaskId = paxTask.Id };
-                    inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
+                    inserTasks.Add(_watcherAppService.CreateOrEdit(watcherDto));
 
                     CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = paxTask.Id, FieldName = "Watchers", CreatedUser = paxTask.ReporterId, NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
                     inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
@@ -545,7 +554,7 @@ namespace PAX.Next.TaskManager
 
         private async Task UpdateWatchers(int taskId, List<WatcherUserLookupTableDto> updatedWatchers)
         {
-            var existingWatchers = _watcherRepository.GetByTaskId(taskId).Result.ToList();
+            var existingWatchers = _watcherAppService.GetByTaskId(taskId).Result.ToList();
 
             var deletedWatchers = existingWatchers.Where(x => updatedWatchers.Select(w => w.UserId).Contains(x.UserId) == false).ToList();
 
@@ -556,7 +565,7 @@ namespace PAX.Next.TaskManager
                 List<Task> delTasks = new List<Task>();
                 foreach (var watcher in deletedWatchers)
                 {
-                    delTasks.Add(_watcherRepository.Delete(watcher.Id));
+                    delTasks.Add(_watcherAppService.Delete(watcher.Id));
 
                     CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Watchers", NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Deleted, CreatedDate = DateTime.Now };
                     delTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
@@ -573,7 +582,7 @@ namespace PAX.Next.TaskManager
                 foreach (var watcher in insertedWatchers)
                 {
                     CreateOrEditWatcherDto watcherDto = new CreateOrEditWatcherDto { UserId = watcher.UserId, PaxTaskId = taskId };
-                    inserTasks.Add(_watcherRepository.CreateOrEdit(watcherDto));
+                    inserTasks.Add(_watcherAppService.CreateOrEdit(watcherDto));
 
                     CreateOrEditTaskHistoryDto historyDto = new CreateOrEditTaskHistoryDto { PaxTaskId = taskId, CreatedUser = currentUserId, FieldName = "Watchers", NewValue = watcher.UserId.ToString(), ChangeType = EntityChangeType.Created, CreatedDate = DateTime.Now };
                     inserTasks.Add(_taskHistoriesAppService.CreateOrEdit(historyDto));
