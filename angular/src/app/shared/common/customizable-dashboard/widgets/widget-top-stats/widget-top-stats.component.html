@@ -1,7 +1,7 @@
 <div class="row row-no-padding row-col-separator-xl h-100" [perfectScrollbar]>
-    <div class="col pr-0" *ngFor="let stat of dashboardTopStats.personalStats;let i=index;">
-        <div class="card card-custom bgi-no-repeat card-stretch new-subscription-statistics h-100">
-            <div class="card-body">
+    <div class="col-xl col-lg col-md col-sm-6" *ngFor="let stat of dashboardTopStats.personalStats;let i=index;">
+        <div class="cardcon bgi-no-repeat card-stretch new-subscription-statistics h-100">
+            <div class="card">
                 <a href="javascript:;" class="text-left font-weight-bolder text-dark font-size-h6 text-hover-state-dark d-block">
                     {{stat.taskStatusName}}
                 </a>
@@ -55,7 +55,7 @@
                         [step]="30" [duration]="1"
                         [countFrom]="0" [countTo]="stat.count"
                         (countoChange)="dashboardTopStats.animationCounter3 = $event">
-                        {{dashboardTopStats.animationCounter3.toFixed(0)}}                            
+                        {{dashboardTopStats.animationCounter3.toFixed(0)}} adet                           
                     </span>
                     <div class="progress progress-xs bg-danger-o-60">
                         <div class="progress-bar bg-danger" role="progressbar" [style.width]="stat.percentage + '%'" [attr.aria-valuenow]="stat.percentage" 
@@ -75,7 +75,7 @@
                     [step]="30" [duration]="1"
                     [countFrom]="0" [countTo]="stat.count"
                     (countoChange)="dashboardTopStats.animationCounter4 = $event">
-                    {{dashboardTopStats.animationCounter4.toFixed(0)}}                            
+                    {{dashboardTopStats.animationCounter4.toFixed(0)}} adet                           
                 </span>
                 <div class="progress progress-xs bg-success-o-60">
                     <div class="progress-bar bg-success" role="progressbar" [style.width]="stat.percentage + '%'" [attr.aria-valuenow]="stat.percentage" 
@@ -95,7 +95,7 @@
                     [step]="30" [duration]="1"
                     [countFrom]="0" [countTo]="stat.count"
                     (countoChange)="dashboardTopStats.animationCounter5 = $event">
-                    {{dashboardTopStats.animationCounter5.toFixed(0)}}                            
+                    {{dashboardTopStats.animationCounter5.toFixed(0)}} adet                           
                 </span>
                 <div class="progress progress-xs bg-secondary-o-60">
                     <div class="progress-bar bg-secondary" role="progressbar" [style.width]="stat.percentage + '%'" [attr.aria-valuenow]="stat.percentage" 

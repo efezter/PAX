@@ -145,7 +145,14 @@ gridster.no-tab{
 
  gridster-item{
      background:none;
+     height: fit-content !important;
+     
  }
+
+ @media (max-width: 767.98px) { gridster-item{
+    height: fit-content !important;
+} }
+
 
  #dropdownMenuAddPage, #dropdownMenuRenamePage{
      min-width:250px;

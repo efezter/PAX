@@ -1,3 +1,36 @@
 .card.card-custom > .card-body{
     padding: 1rem 1.25rem;
 }
+
+
+.cbc {
+    background-color: yellow;
+}
+
+@media (max-width: 767.98px) { .cbc {
+    width: 100% !important;
+    
+} }
+
+
+.card {
+    padding: 20px;
+    
+}
+
+@media (max-width: 767.98px) { .card {
+    width: 100% !important;
+    /* margin-bottom: 10px; */
+    
+} }
+
+.cardcon {
+    padding: 1px;
+    
+}
+
+@media (max-width: 767.98px) { .cardcon {
+    /* background-color: black; */
+    padding: 5px !important;
+    
+} }
