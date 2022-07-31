@@ -29,7 +29,7 @@ export class LocalStorageService {
         if (!localForage) {
             return;
         }
-
+debugger;
         localForage.removeItem(key, callback);
     }
 

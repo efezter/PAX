@@ -20,6 +20,9 @@ export class AppAuthService {
             () => {
                 abp.auth.clearToken();
                 abp.auth.clearRefreshToken();
+                
+                new LocalStorageService().removeItem(AppConsts.User.userRolesKey);
+
                 new LocalStorageService().removeItem(AppConsts.authorization.encrptedAuthTokenName,
                     () => {
                         if (reload !== false) {

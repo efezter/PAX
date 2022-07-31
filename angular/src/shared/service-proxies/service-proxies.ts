@@ -8256,12 +8256,14 @@ export class PaxTasksServiceProxy {
      * @param taskStatusNameFilter (optional) 
      * @param showOnlyMyTasks (optional) 
      * @param showOnlyCreatedByMe (optional) 
+     * @param showOnlyMyDepartmant (optional) 
+     * @param showOnlyWathcing (optional) 
      * @param sorting (optional) 
      * @param skipCount (optional) 
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll(filter: string | undefined, headerFilter: string | undefined, labelFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, showOnlyMyTasks: boolean | undefined, showOnlyCreatedByMe: boolean | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
+    getAll(filter: string | undefined, headerFilter: string | undefined, labelFilter: string | undefined, maxCreatedDateFilter: DateTime | undefined, minCreatedDateFilter: DateTime | undefined, taskTypeFilter: number | undefined, taskTypePeriodFilter: number | undefined, maxPeriodIntervalFilter: number | undefined, minPeriodIntervalFilter: number | undefined, userNameFilter: string | undefined, userName2Filter: string | undefined, severityNameFilter: string | undefined, taskStatusNameFilter: string | undefined, showOnlyMyTasks: boolean | undefined, showOnlyCreatedByMe: boolean | undefined, showOnlyMyDepartmant: boolean | undefined, showOnlyWathcing: boolean | undefined, sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<PagedResultDtoOfGetPaxTaskForViewDto> {
         let url_ = this.baseUrl + "/api/services/app/PaxTasks/GetAll?";
         if (filter === null)
             throw new Error("The parameter 'filter' cannot be null.");
@@ -8323,6 +8325,14 @@ export class PaxTasksServiceProxy {
             throw new Error("The parameter 'showOnlyCreatedByMe' cannot be null.");
         else if (showOnlyCreatedByMe !== undefined)
             url_ += "ShowOnlyCreatedByMe=" + encodeURIComponent("" + showOnlyCreatedByMe) + "&";
+        if (showOnlyMyDepartmant === null)
+            throw new Error("The parameter 'showOnlyMyDepartmant' cannot be null.");
+        else if (showOnlyMyDepartmant !== undefined)
+            url_ += "ShowOnlyMyDepartmant=" + encodeURIComponent("" + showOnlyMyDepartmant) + "&";
+        if (showOnlyWathcing === null)
+            throw new Error("The parameter 'showOnlyWathcing' cannot be null.");
+        else if (showOnlyWathcing !== undefined)
+            url_ += "ShowOnlyWathcing=" + encodeURIComponent("" + showOnlyWathcing) + "&";
         if (sorting === null)
             throw new Error("The parameter 'sorting' cannot be null.");
         else if (sorting !== undefined)
@@ -17337,6 +17347,69 @@ export class UserServiceProxy {
         }
         return _observableOf<void>(<any>null);
     }
+
+    /**
+     * @param userId (optional) 
+     * @return Success
+     */
+    getUserRoles(userId: number | undefined): Observable<UserRole[]> {
+        let url_ = this.baseUrl + "/api/services/app/User/GetUserRoles?";
+        if (userId === null)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else if (userId !== undefined)
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserRoles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserRoles(<any>response_);
+                } catch (e) {
+                    return <Observable<UserRole[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UserRole[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetUserRoles(response: HttpResponseBase): Observable<UserRole[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(UserRole.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserRole[]>(<any>null);
+    }
 }
 
 @Injectable()
@@ -19918,6 +19991,7 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
     shouldResetPassword!: boolean;
     passwordResetCode!: string | undefined;
     userId!: number;
+    userRoleIds!: number[] | undefined;
     requiresTwoFactorVerification!: boolean;
     twoFactorAuthProviders!: string[] | undefined;
     twoFactorRememberClientToken!: string | undefined;
@@ -19942,6 +20016,11 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
             this.shouldResetPassword = _data["shouldResetPassword"];
             this.passwordResetCode = _data["passwordResetCode"];
             this.userId = _data["userId"];
+            if (Array.isArray(_data["userRoleIds"])) {
+                this.userRoleIds = [] as any;
+                for (let item of _data["userRoleIds"])
+                    this.userRoleIds!.push(item);
+            }
             this.requiresTwoFactorVerification = _data["requiresTwoFactorVerification"];
             if (Array.isArray(_data["twoFactorAuthProviders"])) {
                 this.twoFactorAuthProviders = [] as any;
@@ -19970,6 +20049,11 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
         data["shouldResetPassword"] = this.shouldResetPassword;
         data["passwordResetCode"] = this.passwordResetCode;
         data["userId"] = this.userId;
+        if (Array.isArray(this.userRoleIds)) {
+            data["userRoleIds"] = [];
+            for (let item of this.userRoleIds)
+                data["userRoleIds"].push(item);
+        }
         data["requiresTwoFactorVerification"] = this.requiresTwoFactorVerification;
         if (Array.isArray(this.twoFactorAuthProviders)) {
             data["twoFactorAuthProviders"] = [];
@@ -19991,6 +20075,7 @@ export interface IAuthenticateResultModel {
     shouldResetPassword: boolean;
     passwordResetCode: string | undefined;
     userId: number;
+    userRoleIds: number[] | undefined;
     requiresTwoFactorVerification: boolean;
     twoFactorAuthProviders: string[] | undefined;
     twoFactorRememberClientToken: string | undefined;
@@ -35742,6 +35827,62 @@ export interface IUserNotification {
 export enum UserNotificationState {
     Unread = 0,
     Read = 1,
+}
+
+export class UserRole implements IUserRole {
+    tenantId!: number | undefined;
+    userId!: number;
+    roleId!: number;
+    creationTime!: DateTime;
+    creatorUserId!: number | undefined;
+    id!: number;
+
+    constructor(data?: IUserRole) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tenantId = _data["tenantId"];
+            this.userId = _data["userId"];
+            this.roleId = _data["roleId"];
+            this.creationTime = _data["creationTime"] ? DateTime.fromISO(_data["creationTime"].toString()) : <any>undefined;
+            this.creatorUserId = _data["creatorUserId"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): UserRole {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserRole();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tenantId"] = this.tenantId;
+        data["userId"] = this.userId;
+        data["roleId"] = this.roleId;
+        data["creationTime"] = this.creationTime ? this.creationTime.toString() : <any>undefined;
+        data["creatorUserId"] = this.creatorUserId;
+        data["id"] = this.id;
+        return data; 
+    }
+}
+
+export interface IUserRole {
+    tenantId: number | undefined;
+    userId: number;
+    roleId: number;
+    creationTime: DateTime;
+    creatorUserId: number | undefined;
+    id: number;
 }
 
 export class UserRoleDto implements IUserRoleDto {

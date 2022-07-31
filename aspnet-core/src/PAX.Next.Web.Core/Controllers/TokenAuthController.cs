@@ -75,6 +75,7 @@ namespace PAX.Next.Web.Controllers
         private readonly ISettingManager _settingManager;
         private readonly IJwtSecurityStampHandler _securityStampHandler;
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
+        private readonly UserAppService _userAppService;
         public IRecaptchaValidator RecaptchaValidator { get; set; }
         private readonly IUserDelegationManager _userDelegationManager;
 
@@ -100,7 +101,8 @@ namespace PAX.Next.Web.Controllers
             ISettingManager settingManager,
             IJwtSecurityStampHandler securityStampHandler,
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
-            IUserDelegationManager userDelegationManager)
+            IUserDelegationManager userDelegationManager,
+            UserAppService userAppService)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -125,6 +127,7 @@ namespace PAX.Next.Web.Controllers
             _claimsPrincipalFactory = claimsPrincipalFactory;
             RecaptchaValidator = NullRecaptchaValidator.Instance;
             _userDelegationManager = userDelegationManager;
+            _userAppService = userAppService;
         }
 
         [HttpPost]
@@ -133,13 +136,20 @@ namespace PAX.Next.Web.Controllers
             if (UseCaptchaOnLogin())
             {
                 await ValidateReCaptcha(model.CaptchaResponse);
-            }
+            }            
 
             var loginResult = await GetLoginResultAsync(
                 model.UserNameOrEmailAddress,
                 model.Password,
                 GetTenancyNameOrNull()
             );
+
+            List<long> userRoleIds = new List<long>();
+
+            if (loginResult != null && (loginResult.Result == AbpLoginResultType.Success))
+            {
+                userRoleIds = _userAppService.GetUserRoles(loginResult.User.Id).Result.Select(x => x.Id).ToList();
+            }
 
             var returnUrl = model.ReturnUrl;
 
@@ -158,6 +168,7 @@ namespace PAX.Next.Web.Controllers
                 return new AuthenticateResultModel
                 {
                     ShouldResetPassword = true,
+                    UserRoleIds = userRoleIds,
                     PasswordResetCode = loginResult.User.PasswordResetCode,
                     UserId = loginResult.User.Id,
                     ReturnUrl = returnUrl
@@ -184,6 +195,7 @@ namespace PAX.Next.Web.Controllers
                     {
                         RequiresTwoFactorVerification = true,
                         UserId = loginResult.User.Id,
+                        UserRoleIds = userRoleIds,
                         TwoFactorAuthProviders = await _userManager.GetValidTwoFactorProvidersAsync(loginResult.User),
                         ReturnUrl = returnUrl
                     };
@@ -216,6 +228,7 @@ namespace PAX.Next.Web.Controllers
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 TwoFactorRememberClientToken = twoFactorRememberClientToken,
                 UserId = loginResult.User.Id,
+                UserRoleIds = userRoleIds,
                 ReturnUrl = returnUrl
             };
         }

@@ -8,12 +8,13 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import {CalendarModule} from 'primeng/calendar';
 import {TimelineModule} from 'primeng/timeline';
 import {CardModule} from 'primeng/card';
+import {TreeSelectModule} from 'primeng/treeselect';
 
 @NgModule({
     declarations: [
         CreateOrEditPaxTaskModalComponent,
         PaxTaskUserLookupTableModalComponent
     ],
-    imports: [AppSharedModule, PaxTaskDetailsRoutingModule, AdminSharedModule, CKEditorModule, CalendarModule, TimelineModule, CardModule],
+    imports: [AppSharedModule, PaxTaskDetailsRoutingModule, AdminSharedModule, CKEditorModule, CalendarModule, TimelineModule, CardModule, TreeSelectModule],
 })
 export class PaxTaskDetailsModule {}

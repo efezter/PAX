@@ -23,6 +23,7 @@ export class AppConsts {
     static readonly authorization = {
         encrptedAuthTokenName: 'enc_auth_token'
     };
+    
 
     static readonly grid = {
         defaultPageSize: 10
@@ -35,4 +36,18 @@ export class AppConsts {
     /// It's also shown in the web page.
     /// </summary>
     static readonly WebAppGuiVersion = '10.5.0';
+
+    //Customs
+    static readonly User = {
+        userRolesKey: 'userRoles'
+    };
+
+    static readonly UserRoles = {
+        admin: 2,
+        gen_man: 4,
+        gen_man_sec: 5,
+        gen_man_asist: 6,
+        dep_man: 8,
+        dep_chief: 9
+    };
 }
