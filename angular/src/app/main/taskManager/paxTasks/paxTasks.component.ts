@@ -69,9 +69,9 @@ export class PaxTasksComponent extends AppComponentBase {
 
         this.displayFilters = [
            // {label: 'Hepsi', value: 0},
-            {label: 'Bana Atananlar', value: 1},
-            {label: 'Benim oluşturduklarım', value: 2} ,
-            {label: 'İzleyici olduklarım', value: 4}            
+            {label: 'Gelen', value: 1},
+            {label: 'Giden', value: 2} ,
+            {label: 'İzleyici', value: 4}            
         ];   
     }
 
@@ -88,9 +88,9 @@ export class PaxTasksComponent extends AppComponentBase {
         if( this.userRolesIds.indexOf(AppConsts.UserRoles.admin) != -1 ||
         this.userRolesIds.indexOf(AppConsts.UserRoles.dep_chief) != -1 ||
     this.userRolesIds.indexOf(AppConsts.UserRoles.dep_man) != -1)
-    {
-        this.displayFilters.push({label: 'Departmanım', value: 3});
-    }
+    // {
+    //     this.displayFilters.push({label: 'Departmanım', value: 3});
+    // }
 
         if(this.userRolesIds.indexOf(AppConsts.UserRoles.admin) != -1 ||
         this.userRolesIds.indexOf(AppConsts.UserRoles.gen_man) != -1 ||

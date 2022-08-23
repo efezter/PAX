@@ -22,18 +22,19 @@ export class AppNavigationService {
             new AppMenuItem('Tenants', 'Pages.Tenants', 'flaticon-list-3', '/app/admin/tenants'),
             new AppMenuItem('Editions', 'Pages.Editions', 'flaticon-app', '/app/admin/editions'),
            
-            new AppMenuItem('Severities', 'Pages.Severities', 'flaticon-more', '/app/main/taskManager/severities'),
             
-            new AppMenuItem('TaskStatuses', 'Pages.TaskStatuses', 'flaticon-more', '/app/main/taskManager/taskStatuses'),
             
-            new AppMenuItem('PaxTasks', 'Pages.PaxTasks', 'flaticon-more', '/app/main/taskManager/paxTasks', ['/app/main/taskManager/paxTasks/details/{id}']),
+            new AppMenuItem('PaxTasks', 'Pages.PaxTasks', 'flaticon-suitcase', '/app/main/taskManager/paxTasks', ['/app/main/taskManager/paxTasks/details/{id}']),
 
-            new AppMenuItem("PhoneBook", null, "flaticon-book", "/app/main/taskManager/paxTasks/details/{id}"),
+            // new AppMenuItem("PhoneBook", null, "flaticon-book", "/app/main/taskManager/paxTasks/details/{id}"),
 
              new AppMenuItem('Administration', '', 'flaticon-interface-8', '', [], [
                 new AppMenuItem('OrganizationUnits', 'Pages.Administration.OrganizationUnits', 'flaticon-map', '/app/admin/organization-units'),
                 new AppMenuItem('Roles', 'Pages.Administration.Roles', 'flaticon-suitcase', '/app/admin/roles'),
                 new AppMenuItem('Users', 'Pages.Administration.Users', 'flaticon-users', '/app/admin/users'),
+                new AppMenuItem('Severities', 'Pages.Severities', 'flaticon-settings', '/app/main/taskManager/severities'),
+            
+            new AppMenuItem('TaskStatuses', 'Pages.TaskStatuses', 'flaticon-settings', '/app/main/taskManager/taskStatuses'),
                 new AppMenuItem('Languages', 'Pages.Administration.Languages', 'flaticon-tabs', '/app/admin/languages', ['/app/admin/languages/{name}/texts']),
                 new AppMenuItem('AuditLogs', 'Pages.Administration.AuditLogs', 'flaticon-folder-1', '/app/admin/auditLogs'),
                 new AppMenuItem('Maintenance', 'Pages.Administration.Host.Maintenance', 'flaticon-lock', '/app/admin/maintenance'),

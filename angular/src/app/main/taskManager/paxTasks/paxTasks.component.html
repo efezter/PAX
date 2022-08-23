@@ -16,14 +16,14 @@
         </sub-header>
 
         <div [class]="containerClass">
-            <div class="card card-custom gutter-b">
+            <div class="card card-custom gutter-b" style="border: 0px !important;">
                 <div class="card-body">
                     <form class="form" autocomplete="off">
                         <div>
                             <div class="row align-items-center">
                                 <div class="col-xl-6">
                                     <div class="form-group m-form__group align-items-center">
-                                        <p-selectButton  [(ngModel)]="selectedDisplayFilter"  [options]="displayFilters" name="buttonFilter" (onChange)="reloadPage()"></p-selectButton>
+                                        <p-selectButton [(ngModel)]="selectedDisplayFilter"  [options]="displayFilters" name="buttonFilter" (onChange)="reloadPage()"></p-selectButton>
                                     </div>
                                 </div>                               
                             
